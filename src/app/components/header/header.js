@@ -75,6 +75,7 @@ export default function Header() {
         <Link href="/">Accueil</Link>
         <Link href="/vieSyndicale">Vie Syndicale</Link>
         <Link href="/documents">Documents</Link>
+        <Link href="/contact">Contact</Link>
         {isAuthenticated ? (
           <>
             <Link href="/profil">Profil</Link>
