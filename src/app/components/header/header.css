@@ -1,0 +1,88 @@
+.navbar-with-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3%;
+    margin: 3%;
+    border: 2px solid black;
+    border-radius: 1.5rem;
+    box-shadow: 10px 10px 12px;
+    background-color: #d30013;
+    position: relative;
+}
+
+.image-navbar {
+width: 5%;
+padding-right: 3%;
+position: absolute;
+left: 5%;
+}
+
+.navbar {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.3rem;
+    transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+}
+
+.navbar a:hover {
+    color: white;
+    font-weight: bold;
+    transform: scale(1.1);
+}
+
+.menu-toggle {
+    display: none; /* Par défaut, l'icône de menu est masquée sur grand écran */
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+
+@media (max-width: 768px) {
+.navbar-with-img {
+    display: flex;
+    justify-content: space-between;
+}
+
+.image-navbar {
+    display: flex;
+    position: inherit;
+    width: 10%;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 200px;
+    background-color: white;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 15px;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+    border: 1px solid d30013;
+    border-radius: 1.5rem;
+    background-color: #d30013;
+}
+
+.navbar.open {
+    right: 15%; /* Le menu s'affiche sur le côté lorsque ouvert */
+  }
+
+  .menu-toggle {
+    display: block; /* Affiche l'icône de menu sur mobile */
+  }
+
+  .navbar a,
+  .navbar button {
+    font-size: 1.4rem;
+  }
+}
