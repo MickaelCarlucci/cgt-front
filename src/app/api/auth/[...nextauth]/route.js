@@ -1,3 +1,5 @@
+// src/pages/api/auth/[...nextauth].js
+
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -19,10 +21,16 @@ const handler = NextAuth({
           }),
         });
 
-        const user = await res.json();
+        const data = await res.json();
 
-        if (res.ok && user.accessToken) {
-          return user;
+        if (res.ok && data.accessToken) {
+          // Ensure the user object contains the necessary properties
+          return {
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            id: data.user.id,
+            pseudo: data.user.pseudo,
+          };
         }
 
         return null;
@@ -32,14 +40,22 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Store user data and tokens in the JWT token
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
+        token.id = user.id;
+        token.pseudo = user.pseudo;
       }
       return token;
     },
     async session({ session, token }) {
+      // Add user data and tokens to the session object
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
+      session.user = {
+        id: token.id,
+        pseudo: token.pseudo,
+      };
       return session;
     },
   },
