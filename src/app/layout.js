@@ -1,7 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import NavBar from "./components/header/header"
 import Head from "next/head"
+import Navbar from "./components/header/header"
+import Footer from "./components/footer/footer"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,8 +14,9 @@ export default function RootLayout({ children }) {
       <title>CGT Teleperformance</title>
       </Head>
       <body className={`${inter.className} container`}>
-        <NavBar />
+        <Navbar />
         {children}
+        <Footer />
         </body>
     </html>
 

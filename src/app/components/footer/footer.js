@@ -1,7 +1,7 @@
 import React from "react";
 import "./footer.css";
 import Link from "next/link";
-import { FaFacebook, FaTwitter   } from "react-icons/fa";
+import { FaFacebook, FaTwitter } from "react-icons/fa";
 
 export default function footer() {
   return (
@@ -37,21 +37,34 @@ export default function footer() {
         <p className="bold underline">Protection des données personnelles :</p>
         <p>
           Les données personnelles collectées sur le site sont utilisées pour
-          vous authentifier sur le site et sont sécurisé. Les adresses mails
-          enregistré ne servent qu'à vous notifier un nouveau document sur le
-          site ou un sondage nécéssitant votre avis. En aucun cas, ils sont
-          utilisé ou revendu à des fins commerciales. Vous disposez d'un droit
-          d'accès, de rectification et de suppression de vos données via votre profil. Pour
-          exercer ces droits, vous pouvez également contacter Didier Thiebauld à l'adresse suivante : [email de contact].
+          vous authentifier (ces informations sécurisées permettent de vous
+          reconnaître lors de vos connexions) et vous informer (les adresses
+          électroniques enregistrées servent uniquement à vous notifier les
+          nouveaux documents disponibles sur le site ou les sondages nécessitant
+          votre avis). En aucun cas, vos données ne sont utilisées ou revendues
+          à des fins commerciales. Vous disposez d'un droit d'accès, de
+          rectification et de suppression de vos données personnelles. Pour
+          exercer ces droits, vous pouvez consulter votre profil directement sur
+          le site ou contacter Didier Thiebauld à l'adresse suivante : [email de
+          contact].
         </p>
         <p>Ce site n'utilise pas de cookie qui exploite vos données.</p>
       </div>
 
       <div>
-        <p>Si vous souhaitez contacter l'un de vos représentants n'hésitez pas à vous diriger vers la rubrique <Link href="/contact">contact</Link></p>
+        <p>
+          Si vous souhaitez contacter l'un de vos représentants n'hésitez pas à
+          vous diriger vers la rubrique <Link href="/contact">contact</Link>
+        </p>
       </div>
-      <div>
-            Suivez-nous également sur nos autres réseaux <Link href="https://www.facebook.com/p/CGT-T%C3%A9l%C3%A9performance-France-100065475420295/"><FaFacebook size={16} /></Link> <Link href="https://x.com/CGT_TPF"><FaTwitter  size={16} /></Link>
+      <div className="target">
+        Suivez-nous également sur nos autres réseaux
+        <Link href="https://www.facebook.com/p/CGT-T%C3%A9l%C3%A9performance-France-100065475420295/">
+          <FaFacebook size={18} /> facebook.com/cgt-teleperformance
+        </Link>
+        <Link href="https://x.com/CGT_TPF">
+          <FaTwitter size={18} /> x.com/cgt_tpf
+        </Link>
       </div>
     </div>
   );
