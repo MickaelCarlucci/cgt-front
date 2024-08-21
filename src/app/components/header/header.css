@@ -43,8 +43,19 @@ left: 5%;
     cursor: pointer;
   }
 
+  .button-red-off {
+    background:#d30013;
+    border: 1px solid #d30013;
+    border-radius: 1.5rem;
+    transition: transform 0.3s ease;
+  }
 
-@media (max-width: 768px) {
+  .button-red-off:hover {
+    transform: scale(1.2);
+  }
+
+
+@media (max-width: 900px) {
 .navbar-with-img {
     display: flex;
     justify-content: space-between;
