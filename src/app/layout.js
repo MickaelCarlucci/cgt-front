@@ -5,6 +5,8 @@ import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import Navbar from "./components/header/header";
 import Footer from "./components/footer/footer";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +19,17 @@ export default function RootLayout({ children }) {
       </Head>
         <body className={`${inter.className} container`}> 
           <SessionProvider>  
+          <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
           <Navbar />
           {children}
           <Footer />
