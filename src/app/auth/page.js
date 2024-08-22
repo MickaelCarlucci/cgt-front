@@ -3,6 +3,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
+import Link from "next/link"
+import './page.css'
 
 export default function Page() {
     const [mail, setMail] = useState("");
@@ -35,20 +37,31 @@ export default function Page() {
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <div className="login-container">
+        <form className="login-form" onSubmit={handleLogin}>
+        <p className="heading">Connexion</p>
+        <div className="input-group">
             <input
                 type="email"
                 value={mail}
                 onChange={(e) => setMail(e.target.value)}
-                placeholder="Email"
+                placeholder="Mail"
             />
+            </div>
+            <div className="input-group">
             <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder="Mot de passe"
             />
-            <button type="submit">Connexion</button>
+            </div>
+            <button className="button-signin" type="submit">Connexion</button>
+            <div className="bottom-text">
+            <p>Vous n'avez pas encore de compte ? <Link href="/signUp">Inscrivez-vous !</Link></p>
+            <p><Link href="/reseting">Mot de passe oublié</Link></p>
+            </div>
         </form>
+        </div>
     );
 }
