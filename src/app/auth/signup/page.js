@@ -167,7 +167,7 @@ export default function Page() {
         <div className="input-group">
           <label>
             Ecrivez une question de sécurité pour récupérer votre mot de passe
-            en cas d'oublie:
+            en cas d&apos;oublie:
             <input
               type="text"
               value={firstQuestion}
@@ -179,7 +179,7 @@ export default function Page() {
         <div className="input-group">
           <label>
             Ecrivez la réponse à votre question (attention les Majuscules et
-            miniscules ont de l'importance):
+            miniscules ont de l&apos;importance):
             <input
               type="text"
               value={firstAnswer}
@@ -191,7 +191,7 @@ export default function Page() {
         <div className="input-group">
           <label>
             Ecrivez une seconde question de sécurité pour récupérer votre mot de
-            passe en cas d'oublie:
+            passe en cas d&apos;oublie:
             <input
               type="text"
               value={secondQuestion}
@@ -203,7 +203,7 @@ export default function Page() {
         <div className="input-group">
           <label>
             Ecrivez la réponse à votre question (attention les Majuscules et
-              miniscules ont de l'importance):
+              miniscules ont de l&apos;importance):
             <input
               type="text"
               value={secondAnswer}
@@ -232,7 +232,7 @@ export default function Page() {
           </label>
         </div>
         <button className="button-signin" type="submit">
-          S'inscrire
+          S&apos;inscrire
         </button>
         <div className="bottom-text">
           {message && <p style={{ color: "green" }}>{message}</p>}

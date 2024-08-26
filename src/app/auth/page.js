@@ -58,7 +58,7 @@ export default function Page() {
             </div>
             <button className="button-signin" type="submit">Connexion</button>
             <div className="bottom-text">
-            <p>Vous n'avez pas encore de compte ? <Link href="/auth/signup">Inscrivez-vous !</Link></p>
+            <p>Vous n&apos;avez pas encore de compte ? <Link href="/auth/signup">Inscrivez-vous !</Link></p>
             <p><Link href="/auth/reset">Mot de passe oublié</Link></p>
             </div>
         </form>
