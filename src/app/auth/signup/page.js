@@ -77,7 +77,6 @@ export default function Page() {
         const errorData = await response.json();
         setError(errorData.error || "Une erreur est survenue.");
         setMessage("");
-        console.error("API Error:", errorData); // Ajoutez cette ligne pour déboguer
         return;
       }
   
@@ -99,7 +98,6 @@ export default function Page() {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
-        <p className="heading">Connexion</p>
         <div className="input-group">
           <label>
             Pseudonyme:
