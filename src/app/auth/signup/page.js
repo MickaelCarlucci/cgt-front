@@ -20,7 +20,6 @@ export default function Page() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
 
   useEffect(() => {
     // Fonction pour récupérer les centres depuis l'API

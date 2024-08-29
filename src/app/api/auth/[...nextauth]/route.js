@@ -3,6 +3,11 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+
+
+// Utiliser un délai un peu plus long pour s'assurer qu'on régénère avant l'expiration
+const TOKEN_EXPIRATION_THRESHOLD = 60 * 1000; // 1 minute avant expiration
+
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -30,6 +35,8 @@ const handler = NextAuth({
             refreshToken: data.refreshToken,
             id: data.user.id,
             pseudo: data.user.pseudo,
+            center_id: data.user.center_id,
+            accessTokenExpires: Date.now() + 15 * 60 * 1000, // Access token expiration time (15 minutes)
           };
         }
 
@@ -39,27 +46,84 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Initial sign in
       if (user) {
-        // Store user data and tokens in the JWT token
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.id = user.id;
-        token.pseudo = user.pseudo;
+        return {
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          accessTokenExpires: user.accessTokenExpires,
+          id: user.id,
+          pseudo: user.pseudo,
+          center_id: user.center_id
+        };
       }
-      return token;
+
+      // Vérifie si le token a expiré
+      const now = Date.now();
+      if (now < token.accessTokenExpires - TOKEN_EXPIRATION_THRESHOLD) {
+        // Token is still valid, return it
+        return token;
+      }
+
+      // Token has expired, try to refresh it
+      try {
+        const refreshedTokens = await refreshAccessToken(token.refreshToken);
+        return {
+          ...token,
+          accessToken: refreshedTokens.accessToken,
+          accessTokenExpires: Date.now() + 15 * 60 * 1000, // Reset the expiration
+        };
+      } catch (error) {
+        console.error("Error refreshing access token", error);
+        return {
+          ...token,
+          error: "RefreshAccessTokenError",
+        };
+      }
     },
     async session({ session, token }) {
-      // Add user data and tokens to the session object
+      // Ajouter les tokens dans la session
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       session.user = {
         id: token.id,
         pseudo: token.pseudo,
+        center_id: token.center_id
       };
+
+      // Gérer une potentielle erreur de rafraîchissement
+      if (token.error) {
+        session.error = token.error;
+      }
+
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
+
+// Fonction pour rafraîchir le token d'accès
+async function refreshAccessToken(refreshToken) {
+  try {
+    const response = await fetch("http://localhost:3003/api/users/refresh-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    return {
+      accessToken: refreshedTokens.accessToken,
+    };
+  } catch (error) {
+    console.error("Error refreshing access token", error);
+    throw error;
+  }
+}
 
 export { handler as GET, handler as POST };
