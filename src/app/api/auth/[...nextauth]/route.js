@@ -36,6 +36,7 @@ const handler = NextAuth({
             id: data.user.id,
             pseudo: data.user.pseudo,
             center_id: data.user.center_id,
+            roles: data.user.roles,
             accessTokenExpires: Date.now() + 15 * 60 * 1000, // Access token expiration time (15 minutes)
           };
         }
@@ -54,7 +55,8 @@ const handler = NextAuth({
           accessTokenExpires: user.accessTokenExpires,
           id: user.id,
           pseudo: user.pseudo,
-          center_id: user.center_id
+          center_id: user.center_id,
+          roles: user.roles
         };
       }
 
@@ -88,7 +90,8 @@ const handler = NextAuth({
       session.user = {
         id: token.id,
         pseudo: token.pseudo,
-        center_id: token.center_id
+        center_id: token.center_id,
+        roles: token.roles
       };
 
       // Gérer une potentielle erreur de rafraîchissement
