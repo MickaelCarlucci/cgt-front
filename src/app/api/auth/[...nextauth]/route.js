@@ -2,6 +2,7 @@
 
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { signOut } from "next-auth/react";
 
 
 
@@ -125,6 +126,7 @@ async function refreshAccessToken(refreshToken) {
     };
   } catch (error) {
     console.error("Error refreshing access token", error);
+    await signOut({ callbackUrl: '/auth' });
     throw error;
   }
 }

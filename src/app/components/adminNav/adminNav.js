@@ -25,7 +25,7 @@ export default function AdminNav() {
       <nav className={`navbar-admin ${menuOpen ? 'open' : ''}`}>
         {roles.includes("Admin") || roles.includes("SuperAdmin") ? ( 
             <>
-        <Link href="#">Gérer les utilisateurs</Link>
+        <Link href="/admin">Gérer les utilisateurs</Link>
         <Link href="#">Ajouter un document</Link>
         </>
     ) : null }
