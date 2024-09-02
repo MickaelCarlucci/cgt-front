@@ -1,9 +1,8 @@
-import React from "react";
 import "./footer.css";
 import Link from "next/link";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 
-export default function footer() {
+export default function Footer() {
   return (
     <div className="footer">
       <div>

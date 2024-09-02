@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Modal from "../components/modal/modal";
@@ -13,6 +14,7 @@ export default function Page() {
   const [activities, setActivities] = useState([]);
   const [passwordType, setPasswordType] = useState("password");
   const [error, setError] = useState(""); // État pour stocker les messages d'erreur
+  const router = useRouter();
 
   const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
 
@@ -296,6 +298,28 @@ export default function Page() {
           );
           break;
 
+          case "delete":
+          response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/delete`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                mail: inputValue,
+              }),
+            }
+          );
+          // Si la suppression est réussie, redirigez l'utilisateur
+          if (response.ok) {
+            await signOut({ redirect: false });
+            router.push('/auth'); // Redirige vers la page de connexion
+            return;
+          }
+          break;
+
         default:
           console.error("Aucune route API correspondante pour ce champ.");
           return;
@@ -444,6 +468,15 @@ export default function Page() {
                       <MdMode
                         className="pen-icon"
                         onClick={() => openModal("activity_id")}
+                      />
+                    </span>
+                  </li>
+                  <li>
+                    Supprimer mon compte:{" "}
+                    <span>
+                     <MdMode
+                        className="pen-icon"
+                        onClick={() => openModal("delete")}
                       />
                     </span>
                   </li>
@@ -654,6 +687,24 @@ export default function Page() {
                   </div>
                   <button onClick={handleSave}>Sauvegarder</button>
                 </Modal>
+              )}
+
+              {modalField === "delete" && (
+                <Modal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  title={`Modifier`}
+                >
+                  {error && <p style={{ color: "red" }}>{error}</p>}
+                  <label>Saississez votre adresse mail pour confirmer la suppression:</label>
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                  <button onClick={handleSave}>Sauvegarder</button>
+                  </Modal>
+
               )}
             </div>
           ) : (
