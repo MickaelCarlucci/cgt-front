@@ -79,7 +79,7 @@ left: 5%;
     gap: 15px;
     transition: right 0.3s ease-in-out;
     z-index: 1000;
-    border: 1px solid d30013;
+    border: 1px solid #d30013;
     border-radius: 1.5rem;
     background-color: #d30013;
 }

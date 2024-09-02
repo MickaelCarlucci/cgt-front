@@ -4,6 +4,7 @@ import "./globals.css";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import Navbar from "./components/header/header";
+import NavAdmin from "./components/adminNav/adminNav";
 import Footer from "./components/footer/footer";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
         pauseOnHover
       />
           <Navbar />
+          <NavAdmin />
           {children}
           <Footer />
           </SessionProvider> 
