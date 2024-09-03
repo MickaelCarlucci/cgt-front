@@ -22,6 +22,52 @@
     color: #d30013; /* Couleur du texte au survol */
   }
 
+  .centers-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1%;
+  }
+
+  .centers-list .center-filtered {
+    margin-right: 0.9%;
+    font-size: 0.8rem;
+  }
+
+  .center-filtered a {
+    text-decoration: none;
+    color: #333;
+    transition: font-size 0.3s ease; 
+  }
+
+  .center-filtered a:hover {
+    font-size: 1rem; /* Taille du texte lorsque la souris est au-dessus */
+    color: #d30013;
+  }
+
+  .activities-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 1%;
+  }
+
+  .activities-list .activity-filtered {
+    margin-right: 0.9%;
+    font-size: 0.7rem;
+  }
+
+  .activity-filtered a {
+    text-decoration: none;
+    color: #333;
+    transition: font-size 0.3s ease; 
+  }
+
+  .activity-filtered a:hover {
+    font-size: 0.9rem; /* Taille du texte lorsque la souris est au-dessus */
+    color: #d30013;
+  }
+
   @media (max-width: 900px) {
     .user-grid {
         display: grid;
