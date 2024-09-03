@@ -696,7 +696,7 @@ export default function Page() {
                   title={`Modifier`}
                 >
                   {error && <p style={{ color: "red" }}>{error}</p>}
-                  <label>Saississez votre adresse mail pour confirmer la suppression:</label>
+                  <label>Saississez l&apos;adresse mail de l&apos;utilisateur pour confirmer la suppression:</label>
                   <input
                     type="text"
                     value={inputValue}

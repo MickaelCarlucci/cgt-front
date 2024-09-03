@@ -41,7 +41,7 @@
   }
 
   .center-filtered a:hover {
-    font-size: 1rem; /* Taille du texte lorsque la souris est au-dessus */
+    font-size: 1rem; 
     color: #d30013;
   }
 
@@ -64,7 +64,7 @@
   }
 
   .activity-filtered a:hover {
-    font-size: 0.9rem; /* Taille du texte lorsque la souris est au-dessus */
+    font-size: 0.9rem; 
     color: #d30013;
   }
 

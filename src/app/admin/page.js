@@ -5,7 +5,7 @@ import Link from "next/link";
 import "./page.css";
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [searchBar, setSearchBar] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
@@ -93,11 +93,31 @@ export default function Page() {
     }
   };
 
+  const resetFilters = async () => {
+    setSelectedCenter(null);
+    setActivities([]);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/search/users`
+      );
+      const data = await response.json();
+      setUsers(data);
+      setFilteredUsers(data);
+    } catch (error) {
+      setError("Erreur lors de la récupération des utilisateurs.");
+    }
+  };
+
   return (
     <>
       {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
         <>
           <h1>Liste des utilisateurs</h1>
+
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <div>
+            <button onClick={resetFilters}>Afficher tous les utilisateurs</button>
+          </div>
           <div className="centers-list">
             {centers.map((center) => (
               <div
