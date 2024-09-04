@@ -1,16 +1,19 @@
-"use client"
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
+"use client";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import Modal from "../../components/modal/modal";
 import "./page.css";
 
 export default function Page() {
   const params = useParams();
   const { id } = params;
-  const {data: session, status} = useSession();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null); // Initialiser avec null
+  const [roleList, setRoleList] = useState([]);
+  const [selectedRoles, setSelectedRoles] = useState([]);
+
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -23,10 +26,14 @@ export default function Page() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${id}`);
+        const userResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${id}`
+        );
         const userData = await userResponse.json();
         setUser(userData);
 
+        const userRoles = userData.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
+        setSelectedRoles(userRoles);
       } catch (error) {
         setError("Erreur lors de la récupération de l'utilisateur");
       }
@@ -34,48 +41,152 @@ export default function Page() {
     fetchUser();
   }, [id]);
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/roles`
+        );
+        const data = await response.json();
+        setRoleList(data);
+      } catch (error) {
+        setError("Erreur lors de la récupération des rôles", error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   const openModal = (field) => {
     setModalField(field);
-    setInputValue(""); // Pré-remplir l'input avec la valeur actuelle
+    setInputValue("");
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setModalField("");
-    setError(""); // Réinitialiser l'erreur lors de la fermeture de la modal
+    setError("");
   };
 
   const handleDelete = async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete`, 
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete`,
         {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${session.accessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              mail: inputValue,
-            }),
-          }
-        )
-
-        if (response.ok) {
-            router.push("/admin")
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mail: inputValue,
+          }),
         }
-    }
+      );
 
-  if (!user) return <p>Chargement...</p>; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+      if (response.ok) {
+        router.push("/admin");
+      } else {
+        setError("Erreur lors de la suppression de l'utilisateur");
+      }
+    } catch (err) {
+      setError("Une erreur s'est produite. Veuillez réessayer.");
+    }
+  };
+
+  const updateRoleForUser = async (roleId, action) => {
+    try {
+      if (action === "add") {
+        // Requête POST pour ajouter un rôle
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/link`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ roleId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'ajout du rôle");
+        }
+      } else if (action === "remove") {
+        // Requête DELETE pour supprimer un rôle
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/unlink`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ roleId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la suppression du rôle");
+        }
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const handleRoleChange = (roleId, roleName) => {
+    if (selectedRoles.includes(roleName)) {
+      // Supprimer le rôle si déjà sélectionné
+      setSelectedRoles(selectedRoles.filter((role) => role !== roleName));
+      updateRoleForUser(roleId, "remove"); // Envoyer l'ID du rôle à l'API pour le supprimer
+    } else {
+      // Ajouter le rôle s'il n'est pas sélectionné
+      setSelectedRoles([...selectedRoles, roleName]);
+      updateRoleForUser(roleId, "add"); // Envoyer l'ID du rôle à l'API pour l'ajouter
+    }
+  };
+
+  if (status === "loading" || !user) return <p>Chargement...</p>; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>
       {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
-        <div>
-          <h1>Vous êtes sur le profil de <span>{user.firstname} {user.lastname}</span></h1>
-          <p>Son pseudo est <span>{user.pseudo}</span></p>
-          <p>Son adresse mail est <span>{user.mail}</span></p>
-          <p><Link href="#" onClick={() => openModal("mail")}>Voulez-vous supprimer son compte ?</Link></p>
+        <>
+          <h1>
+            Vous êtes sur le profil de{" "}
+            <span>
+              {user.firstname} {user.lastname}
+            </span>
+          </h1>
+        <div className="container-management">
+          <div className="user-information">
+            <p>
+              Son pseudo est <span>{user.pseudo}</span>
+            </p>
+            <p>
+              Son adresse mail est <span>{user.mail}</span>
+            </p>
+            <p>
+              <Link href="#" onClick={() => openModal("mail")}>
+                Voulez-vous supprimer son compte ?
+              </Link>
+            </p>
+          </div>
+          <div className="role">
+            <form>
+              {roleList.map((role) => (
+                <div key={role.id}>
+                  <input
+                    type="checkbox"
+                    id={role.id}
+                    value={role.id} 
+                    checked={selectedRoles.includes(role.name)} 
+                    onChange={(e) => handleRoleChange(role.id, role.name)} 
+                  />
+                  <label htmlFor={role.id}>{role.name}</label>
+                </div>
+              ))}
+            </form>
+          </div>
         </div>
+        </>
       ) : (
         <p>
           Vous ne devriez pas être ici ! Revenez à la page d&apos;
@@ -83,16 +194,23 @@ export default function Page() {
         </p>
       )}
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} title="Confirmer la suppression">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Confirmer la suppression"
+      >
         <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
         {error && <p style={{ color: "red" }}>{error}</p>}
-                  <label>Saississez votre adresse mail pour confirmer la suppression:</label>
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)} />
+        <label>
+          Saisissez votre adresse mail pour confirmer la suppression :
+        </label>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
         <button onClick={closeModal}>Annuler</button>
-        <button onClick={() => {handleDelete}}>Supprimer</button>
+        <button onClick={handleDelete}>Supprimer</button>
       </Modal>
     </>
   );

@@ -1,0 +1,36 @@
+.container-management {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.user-information {
+    padding: 1%;
+    width: 45%;
+    background-color: #f0f0f0;
+    margin: 1%;
+}
+
+.role{
+    padding: 1%;
+    margin: 1%;
+    width: 45%;
+    background-color: #f0f0f0;
+}
+
+@media (max-width: 900px) {
+    .container-management {
+        flex-direction: column;
+    }
+
+    .user-information {   
+        width: 88%;  
+        margin: 1% auto      
+    }
+    
+    .role{
+        width: 88%;;
+        margin: 1% auto;   
+    }
+
+}
