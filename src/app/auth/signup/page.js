@@ -220,7 +220,7 @@ export default function Page() {
               required
             >
               <option value="" disabled>
-                Sélectionner un centre
+                Sélectionnez un centre
               </option>
               {centers.map((center) => (
                 <option key={center.id} value={center.id}>

@@ -26,7 +26,7 @@ export default function AdminNav() {
         {roles.includes("Admin") || roles.includes("SuperAdmin") ? ( 
             <>
         <Link href="/admin">Gérer les utilisateurs</Link>
-        <Link href="#">Ajouter un document</Link>
+        <Link href="/admin/files">Ajouter un document</Link>
         <Link href="#">Message</Link>
         </>
     ) : null }
