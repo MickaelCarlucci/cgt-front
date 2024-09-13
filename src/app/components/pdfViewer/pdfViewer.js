@@ -18,9 +18,8 @@ export default function PdfViewer({ file }) {
     }
 
     pdf.getPage(pageNum).then((page) => {
-      console.log(`Page ${pageNum} chargée`, page);
 
-      const scale = 1.2;
+      const scale = 1.3;
       const viewport = page.getViewport({ scale });
 
       // S'assurer que le canvas existe avant d'accéder à son contexte
@@ -65,7 +64,6 @@ export default function PdfViewer({ file }) {
 
     loadingTask.promise.then(
       (pdf) => {
-        console.log('PDF chargé', pdf);
         setPdfDocument(pdf); // Enregistrer le PDF chargé dans l'état
         setNumPages(pdf.numPages);
         renderPage(pdf, pageNumber); // Rendre la première page du PDF
