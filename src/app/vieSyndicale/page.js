@@ -15,6 +15,8 @@ export default function Page() {
   const [polls, setPolls] = useState([]);
   const [selectedPoll, setSelectedPoll] = useState(null); // Initialisé à null
   const [voteStatuses, setVoteStatuses] = useState({});
+  const [news, setNews] = useState([]);
+  const [selectedNewsId, setSelectedNewsId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Vérification des rôles
@@ -85,6 +87,24 @@ export default function Page() {
     }
   }, [userId, checkUserVote, status, voteStatuses]);
 
+  useEffect(() => {
+    async function fetchNews() {
+      try{
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/latest`);
+        const data = await response.json();
+        setNews(data)
+      } catch (error) {
+        console.error("Erreur lors de la récupération des news:", error);
+        setErrorMessage("Erreur lors de la récupération des informations.");
+      }
+    }
+    if (status === "authenticated" && userId) {
+      fetchNews();
+    }
+  }, [status, userId
+
+  ])
+
   // Gestion du vote
   const handleVote = async (pollId, optionId) => {
     try {
@@ -118,6 +138,7 @@ export default function Page() {
     <>
       {hasAccess ? (
         <div>
+        <div>
           <h1>Derniers Sondages</h1>
           {errorMessage && <p className="error">{errorMessage}</p>}
           <ul>
@@ -150,6 +171,30 @@ export default function Page() {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div>
+        <h2>Dernières news</h2>
+        <ul>
+          {news.map((item) => (
+            <li key={item.id}>
+              {/* Ajout d'un événement onClick pour sélectionner la news */}
+              <Link href={"#"}
+                onClick={() => setSelectedNewsId(item.id === selectedNewsId ? null : item.id)}
+              >
+                {item.title}
+              </Link >
+
+              {/* Si la news est sélectionnée, afficher son contenu */}
+              {selectedNewsId === item.id && (
+                <div>
+                  <p>{item.contain}</p>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
         </div>
       ) : (
         <p>
