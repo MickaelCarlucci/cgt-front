@@ -119,7 +119,7 @@ export default function Page() {
             <button onClick={resetFilters}>Afficher tous les utilisateurs</button>
           </div>
           <div className="centers-list">
-            {centers.map((center) => (
+            {centers.filter((center) => center.id !== 14 && center.id !== 15).map((center) => (
               <div
                 className="center-filtered"
                 key={center.id}
