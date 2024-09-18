@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
+import { TfiTrash } from "react-icons/tfi";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
 import "./page.css";
@@ -89,10 +91,12 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchNews() {
-      try{
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/latest`);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/information/latest`
+        );
         const data = await response.json();
-        setNews(data)
+        setNews(data);
       } catch (error) {
         console.error("Erreur lors de la récupération des news:", error);
         setErrorMessage("Erreur lors de la récupération des informations.");
@@ -101,9 +105,7 @@ export default function Page() {
     if (status === "authenticated" && userId) {
       fetchNews();
     }
-  }, [status, userId
-
-  ])
+  }, [status, userId]);
 
   // Gestion du vote
   const handleVote = async (pollId, optionId) => {
@@ -134,67 +136,118 @@ export default function Page() {
     }
   };
 
+  const handleDelete = async (newsId) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/information/delete/${newsId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (response.ok) {
+        // Mettre à jour la liste des news après suppression
+        setNews(news.filter((item) => item.id !== newsId));
+      } else {
+        console.error("Erreur lors de la suppression de la nouvelle");
+      }
+    } catch (error) {
+      setErrorMessage(
+        "Une erreur est survenue lors de la suppression. Veuillez réessayer."
+      );
+      console.error("Erreur lors de la suppression:", error);
+    }
+  };
+
   return (
     <>
       {hasAccess ? (
         <div>
-        <div>
-          <h1>Derniers Sondages</h1>
-          {errorMessage && <p className="error">{errorMessage}</p>}
-          <ul>
-            {polls.map((poll) => (
-              <li key={poll.id}>
-                <Link href={'#'}
-                  onClick={() =>
-                    setSelectedPoll(poll.id === selectedPoll ? null : poll.id)
-                  }
-                >
-                  {poll.question}
-                </Link>
+          <div>
+            <h1>Derniers Sondages</h1>
+            {errorMessage && <p className="error">{errorMessage}</p>}
+            <ul>
+              {polls.map((poll) => (
+                <li key={poll.id}>
+                  <Link
+                    href={"#"}
+                    onClick={() =>
+                      setSelectedPoll(poll.id === selectedPoll ? null : poll.id)
+                    }
+                  >
+                    {poll.question}
+                  </Link>
 
-                {/* Affiche les options si l'utilisateur n'a pas voté */}
-                {selectedPoll === poll.id && voteStatuses[poll.id]?.voted === false && (
-                  <div>
-                    <PollDetails pollId={poll.id} onVote={handleVote} />
-                  </div>
-                )}
+                  {/* Affiche les options si l'utilisateur n'a pas voté */}
+                  {selectedPoll === poll.id &&
+                    voteStatuses[poll.id]?.voted === false && (
+                      <div>
+                        <PollDetails pollId={poll.id} onVote={handleVote} />
+                      </div>
+                    )}
 
-                {/* Affiche les résultats si l'utilisateur a déjà voté */}
-                {selectedPoll === poll.id && voteStatuses[poll.id]?.voted === true && (
-                  <div>
-                    <PollResults
-                      pollId={poll.id}
-                      optionId={voteStatuses[poll.id].optionId}
-                    />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+                  {/* Affiche les résultats si l'utilisateur a déjà voté */}
+                  {selectedPoll === poll.id &&
+                    voteStatuses[poll.id]?.voted === true && (
+                      <div>
+                        <PollResults
+                          pollId={poll.id}
+                          optionId={voteStatuses[poll.id].optionId}
+                        />
+                      </div>
+                    )}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-        <h2>Dernières news</h2>
-        <ul>
-          {news.map((item) => (
-            <li key={item.id}>
-              {/* Ajout d'un événement onClick pour sélectionner la news */}
-              <Link href={"#"}
-                onClick={() => setSelectedNewsId(item.id === selectedNewsId ? null : item.id)}
-              >
-                {item.title}
-              </Link >
+          <div>
+            <h2>Dernières news</h2>
+            <ul>
+              {news.map((item) => (
+                <li key={item.id}>
+                  {/* Ajout d'un événement onClick pour sélectionner la news */}
+                  <Link
+                    href={"#"}
+                    onClick={() =>
+                      setSelectedNewsId(
+                        item.id === selectedNewsId ? null : item.id
+                      )
+                    }
+                  >
+                    {item.title}
+                  </Link>
 
-              {/* Si la news est sélectionnée, afficher son contenu */}
-              {selectedNewsId === item.id && (
-                <div>
-                  <p>{item.contain}</p>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+                  {roles.includes("Admin") || roles.includes("SuperAdmin") && (
+                      <Link href={"#"}>
+                        <span
+                          type="button"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <TfiTrash />
+                        </span>
+                      </Link>
+                    )}
+
+                  {/* Si la news est sélectionnée, afficher son contenu */}
+                  {selectedNewsId === item.id && (
+                    <div>
+                      {item.image_url && (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
+                          alt="Une image syndicaliste"
+                          width={500}
+                          height={300}
+                          layout="intrinsic"
+                          objectFit="cover"
+                        />
+                      )}
+                      <p>{item.contain}</p>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : (
         <p>

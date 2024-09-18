@@ -28,7 +28,7 @@ export default function AdminNav() {
         <Link href="/admin">Gérer les utilisateurs</Link>
         <Link href="/admin/files">Ajouter un document</Link>
         <Link href="/admin/poll">Ajouter/supprimer un sondage</Link>
-        <Link href="#">Message</Link>
+        <Link href="/admin/message">Message</Link>
         </>
     ) : null }
 
