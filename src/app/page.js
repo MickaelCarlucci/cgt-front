@@ -7,7 +7,7 @@ import PdfViewer from "./components/pdfViewer/pdfViewer";
 import "./page.module.css";
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [information, setInformation] = useState(null);
   const [pdf, setPdf] = useState();
   const [error, setError] = useState();
@@ -65,7 +65,7 @@ export default function Page() {
         ))} </div>
         {information.image_url && (
           <Image
-          src={`${process.env.NEXT_PUBLIC_API_URL}${info.image_url}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}${information.image_url}`}
           alt="Une image syndicaliste"
           width={500}
           height={300}

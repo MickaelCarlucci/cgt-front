@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-useState
 
 const PollDetails = ({ pollId, onVote }) => {
     const [options, setOptions] = useState([]);

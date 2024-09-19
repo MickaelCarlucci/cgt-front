@@ -13,7 +13,7 @@ export default function Page() {
       // Appel à l'API backend pour vérifier le token
       const verifyToken = async () => {
         try {
-          const response = await fetch(`${process.env.NEXT_API_URL}/api/users/verify?token=${token}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/verify?token=${token}`);
           const data = await response.json();
           if (response.ok) {
             setMessage('Votre compte a été vérifié avec succès');

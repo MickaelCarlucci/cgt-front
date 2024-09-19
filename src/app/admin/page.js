@@ -15,6 +15,9 @@ export default function Page() {
   const [error, setError] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
+  const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+    roles.includes(role)
+);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -110,7 +113,7 @@ export default function Page() {
 
   return (
     <>
-      {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
+      {hasAccess ? (
         <>
           <h1>Liste des utilisateurs</h1>
 

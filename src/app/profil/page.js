@@ -17,6 +17,9 @@ export default function Page() {
   const router = useRouter();
 
   const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
+  const hasAccess = ["Admin", "SuperAdmin", "Elus"].some((role) =>
+    roles.includes(role)
+);
 
   // États pour les modals
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -410,7 +413,7 @@ export default function Page() {
                       />
                     </span>
                   </li>
-                  {roles.includes("Admin") || roles.includes("Elus") ? (
+                  {hasAccess ? (
                     <li>
                       Mon numéro de téléphone:{" "}
                       <span>

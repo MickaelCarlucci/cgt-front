@@ -3,12 +3,14 @@ import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
+import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Link from "next/link"
 import './page.css'
 
 export default function Page() {
     const [mail, setMail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordType, setPasswordType] = useState("password");
     const router = useRouter();
     const { data: session, status } = useSession();
 
@@ -36,6 +38,10 @@ export default function Page() {
         }
     };
 
+    const togglePasswordVisibility = () => {
+        setPasswordType(passwordType === "password" ? "text" : "password");
+      };
+
     return (
         <div className="login-container">
         <form className="login-form" onSubmit={handleLogin}>
@@ -50,11 +56,24 @@ export default function Page() {
             </div>
             <div className="input-group">
             <input
-                type="password"
+                type={passwordType}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={{  width: "88%"  }} // Ajuster la taille du champ de saisie
                 placeholder="Mot de passe"
             />
+            <span
+        style={{
+          
+          right: "10px",
+          top: "65%",        
+          cursor: "pointer",
+          color: "white"
+        }}
+        onClick={togglePasswordVisibility}
+      >
+        {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
+      </span>
             </div>
             <button className="button-signin" type="submit">Connexion</button>
             <div className="bottom-text">

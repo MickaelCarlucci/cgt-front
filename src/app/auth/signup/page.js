@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import "./page.css";
 
 export default function Page() {
@@ -18,6 +19,7 @@ export default function Page() {
   const [centers, setCenters] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [passwordType, setPasswordType] = useState("password");
   const router = useRouter();
 
 
@@ -94,6 +96,10 @@ export default function Page() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setPasswordType(passwordType === "password" ? "text" : "password");
+  };
+
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
@@ -142,21 +148,37 @@ export default function Page() {
           </label>
         </div>
         <div className="input-group">
-          <label>
-            Mot de passe:
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </label>
+
+        <label style={{ position: "relative", display: "inline-block" }}>
+      Mot de passe:
+      <input
+        type={passwordType}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{  width: "88%",  }} // Ajuster la taille du champ de saisie
+        required
+      />
+      <span
+        style={{
+          position: "absolute",
+          right: "10px",
+          top: "65%",
+          transform: "translateY(-50%)",
+          cursor: "pointer",
+          color: "black"
+        }}
+        onClick={togglePasswordVisibility}
+      >
+        {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
+      </span>
+    </label>
+
         </div>
         <div className="input-group">
           <label>
             Confirmez votre mot de passe:
             <input
-              type="password"
+              type={passwordType}
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               required

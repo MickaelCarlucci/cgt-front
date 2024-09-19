@@ -45,6 +45,9 @@ export default function Page() {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${session.accessToken}`,
+                  },
                 body: formData, // Envoyer formData
             });
 

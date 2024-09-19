@@ -18,6 +18,9 @@ export default function Page() {
   const router = useRouter();
 
   const roles = session?.user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
+  const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+    roles.includes(role)
+);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalField, setModalField] = useState("");
@@ -147,7 +150,7 @@ export default function Page() {
 
   return (
     <>
-      {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
+      {hasAccess ? (
         <>
           <h1>
             Vous êtes sur le profil de{" "}

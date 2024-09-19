@@ -16,6 +16,9 @@ export default function Page() {
   const [error, setError] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || [];
+  const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+    roles.includes(role)
+);
 
   useEffect(() => {
     const centerFetch = async () => {
@@ -100,7 +103,7 @@ export default function Page() {
 
   return (
     <>
-        {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
+        {hasAccess ? (
     <div className="container-add-file">
 
       <h1>Uploader un PDF</h1>

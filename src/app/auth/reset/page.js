@@ -23,7 +23,7 @@ export default function Page() {
       const response = await fetch(
         `${
           process.env.NEXT_PUBLIC_API_URL
-        }/api/users/findUser?email=${encodeURIComponent(mail)}`
+        }/api/users/findUser?email=${encodeURIComponent(mail.toLowerCase())}`
       );
 
       if (!response.ok) {

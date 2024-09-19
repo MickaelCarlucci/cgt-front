@@ -115,6 +115,7 @@ export default function Page() {
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${session.accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ optionId }),
@@ -142,7 +143,11 @@ export default function Page() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/information/delete/${newsId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
         }
+        
       );
       if (response.ok) {
         // Mettre à jour la liste des news après suppression
@@ -253,8 +258,7 @@ export default function Page() {
         </div>
       ) : (
         <p>
-          Vous ne devriez pas être ici ! Revenez à la page d&apos;
-          <Link href="/">accueil</Link>
+          Si vous souhaitez consulter cette page, merci de vous connecter <Link href="/auth"> ici</Link>
         </p>
       )}
     </>

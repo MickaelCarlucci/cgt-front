@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import * as pdfjsLib from 'pdfjs-dist/webpack';
-import 'pdfjs-dist/web/pdf_viewer.css';
+"use client";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+import { useEffect, useRef, useState, useCallback } from 'react';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
 export default function PdfViewer({ file }) {
   const canvasRef = useRef(null);
@@ -10,25 +9,31 @@ export default function PdfViewer({ file }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfDocument, setPdfDocument] = useState(null);
   const [renderTask, setRenderTask] = useState(null);
+  const [pdfjsLib, setPdfjsLib] = useState(null); // Stocker pdfjsLib dans l'état
+
+  // Charger pdfjsLib uniquement côté client
+  useEffect(() => {
+    async function loadPdfJsLib() {
+      const pdfjs = await import('pdfjs-dist/webpack');
+      pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+      setPdfjsLib(pdfjs); // Stocker pdfjsLib dans l'état
+    }
+    loadPdfJsLib();
+  }, []);
 
   // Fonction de rendu des pages
-  const renderPage = (pdf, pageNum) => {
+  const renderPage = useCallback((pdf, pageNum) => {
+    if (!pdfjsLib) return; // Ne rien faire si pdfjsLib n'est pas encore chargé
+
     if (renderTask) {
-      renderTask.cancel(); // Annuler la tâche de rendu en cours si elle existe
+      renderTask.cancel(); // Annuler la tâche de rendu précédente
     }
 
     pdf.getPage(pageNum).then((page) => {
-
       const scale = 1.3;
       const viewport = page.getViewport({ scale });
 
-      // S'assurer que le canvas existe avant d'accéder à son contexte
       const canvas = canvasRef.current;
-      if (!canvas) {
-        console.error('Canvas is not available');
-        return;
-      }
-
       const context = canvas.getContext('2d');
       canvas.height = viewport.height;
       canvas.width = viewport.width;
@@ -38,71 +43,50 @@ export default function PdfViewer({ file }) {
         viewport: viewport,
       };
 
-      // Démarrer une nouvelle tâche de rendu et l'enregistrer dans l'état
-      const newRenderTask = page.render(renderContext);
-      setRenderTask(newRenderTask);
+      const task = page.render(renderContext);
+      setRenderTask(task);
 
-      newRenderTask.promise
-        .then(() => {
-          setRenderTask(null); // Libérer la tâche de rendu après son achèvement
-        })
-        .catch((err) => {
-          if (err.name === 'RenderingCancelledException') {
-            console.log('Le rendu a été annulé, ce qui est normal lors du changement de page.');
-          } else {
-            console.error('Erreur lors du rendu de la page', err);
-          }
-        });
+      task.promise.then(() => {
+        setRenderTask(null);
+      }).catch((err) => {
+        if (err.name !== 'RenderingCancelledException') {
+          console.error('Erreur lors du rendu de la page', err);
+        }
+      });
     });
-  };
+  }, [pdfjsLib, renderTask]); // Ajout de pdfjsLib comme dépendance
 
-  // Chargement initial du document PDF
   useEffect(() => {
-    if (!file) return;
+    if (!pdfjsLib || !file) return; // Ne pas continuer si pdfjsLib ou file n'est pas prêt
 
     const loadingTask = pdfjsLib.getDocument(file);
 
     loadingTask.promise.then(
       (pdf) => {
-        setPdfDocument(pdf); // Enregistrer le PDF chargé dans l'état
-        setNumPages(pdf.numPages);
-        renderPage(pdf, pageNumber); // Rendre la première page du PDF
+        setPdfDocument(pdf);  // Stocker le document PDF
+        setNumPages(pdf.numPages);  // Mettre à jour le nombre total de pages
+        setPageNumber(1);  // Réinitialiser à la première page
       },
       (error) => {
         console.error('Erreur lors du chargement du PDF', error);
       }
     );
-  }, [file]); // Seule la modification du fichier déclenche ce `useEffect`
+  }, [file, pdfjsLib]); // Attendre que pdfjsLib et file soient prêts
 
-  // Effet pour rendre la page lorsque le numéro de page ou le PDF change
   useEffect(() => {
     if (pdfDocument) {
-      renderPage(pdfDocument, pageNumber);
+      renderPage(pdfDocument, pageNumber);  // Rendre la page
     }
-  }, [pageNumber, pdfDocument]); // Réagir seulement quand `pageNumber` ou `pdfDocument` change
-
-  // Fonction pour passer à la page précédente
-  const goToPrevPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
-  // Fonction pour passer à la page suivante
-  const goToNextPage = () => {
-    if (pageNumber < numPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
+  }, [pageNumber, pdfDocument, renderPage]);
 
   return (
     <div>
       <canvas ref={canvasRef}></canvas>
       <div>
-        <button onClick={goToPrevPage} disabled={pageNumber <= 1}>
+        <button onClick={() => setPageNumber(pageNumber - 1)} disabled={pageNumber <= 1}>
           Précédente
         </button>
-        <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
+        <button onClick={() => setPageNumber(pageNumber + 1)} disabled={pageNumber >= numPages}>
           Suivante
         </button>
         <p>

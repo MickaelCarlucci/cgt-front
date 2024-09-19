@@ -66,7 +66,8 @@ export default function Page() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/newPoll`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.accessToken}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 question,
@@ -94,6 +95,9 @@ export default function Page() {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/delete/${pollId}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${session.accessToken}`,
+                  },
             });
 
             if (response.ok) {
