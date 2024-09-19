@@ -56,15 +56,21 @@ export default function Page() {
     <>
       <h1>Bienvenue sur le site de la CGT Teleperformance France</h1>
       {error && <p className="error">{error}</p>}
-    <div>
-      {information && (
-        <div key={information.id}>
-        <h2>{information.title}</h2>
-        <div> {information.contain.split("|").map((paragraph, index) => (
-          <p key={index}> {paragraph.trim()} </p>
-        ))} </div>
-        {information.image_url && (
-          <Image
+      <div>
+  {information && (
+    <div key={information.id}>
+      <h2>{information.title}</h2>
+      <div>
+        {information.contain && typeof information.contain === "string" ? (
+          information.contain.split("|").map((paragraph, index) => (
+            <p key={index}>{paragraph.trim()}</p>
+          ))
+        ) : (
+          <p>Le contenu nest pas disponible</p>
+        )}
+      </div>
+      {information.image_url && (
+        <Image
           src={`${process.env.NEXT_PUBLIC_API_URL}${information.image_url}`}
           alt="Une image syndicaliste"
           width={500}
@@ -72,10 +78,10 @@ export default function Page() {
           layout="intrinsic"
           objectFit="cover"
         />
-        )}
-        </div>
       )}
     </div>
+  )}
+</div>
 
     {hasAccess && pdf && (
   <div key={pdf.id}>

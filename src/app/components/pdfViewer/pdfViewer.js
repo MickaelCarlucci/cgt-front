@@ -10,6 +10,7 @@ export default function PdfViewer({ file }) {
   const [pdfDocument, setPdfDocument] = useState(null);
   const [renderTask, setRenderTask] = useState(null);
   const [pdfjsLib, setPdfjsLib] = useState(null); // Stocker pdfjsLib dans l'état
+  const [isRendering, setIsRendering] = useState(false); // Empêcher le rendu multiple
 
   // Charger pdfjsLib uniquement côté client
   useEffect(() => {
@@ -23,10 +24,15 @@ export default function PdfViewer({ file }) {
 
   // Fonction de rendu des pages
   const renderPage = useCallback((pdf, pageNum) => {
-    if (!pdfjsLib) return; // Ne rien faire si pdfjsLib n'est pas encore chargé
+    if (isRendering) {
+      return; // Empêche plusieurs rendus en même temps
+    }
 
+    setIsRendering(true); // Indique qu'un rendu est en cours
+
+    // Annuler la tâche de rendu précédente, si elle existe
     if (renderTask) {
-      renderTask.cancel(); // Annuler la tâche de rendu précédente
+      renderTask.cancel();  // Annuler la tâche précédente
     }
 
     pdf.getPage(pageNum).then((page) => {
@@ -43,18 +49,21 @@ export default function PdfViewer({ file }) {
         viewport: viewport,
       };
 
+      // Lancer la tâche de rendu de la nouvelle page
       const task = page.render(renderContext);
-      setRenderTask(task);
+      setRenderTask(task);  // Mettre à jour la tâche de rendu dans l'état
 
       task.promise.then(() => {
-        setRenderTask(null);
+        setIsRendering(false); // Rendu terminé
+        setRenderTask(null);  // Tâche terminée, la nettoyer
       }).catch((err) => {
         if (err.name !== 'RenderingCancelledException') {
           console.error('Erreur lors du rendu de la page', err);
         }
+        setIsRendering(false); // Rendu terminé même en cas d'erreur
       });
     });
-  }, [pdfjsLib, renderTask]); // Ajout de pdfjsLib comme dépendance
+  }, [isRendering, renderTask]);
 
   useEffect(() => {
     if (!pdfjsLib || !file) return; // Ne pas continuer si pdfjsLib ou file n'est pas prêt
@@ -73,20 +82,35 @@ export default function PdfViewer({ file }) {
     );
   }, [file, pdfjsLib]); // Attendre que pdfjsLib et file soient prêts
 
+  // Rendre la page lorsque le numéro de page ou le document change
   useEffect(() => {
     if (pdfDocument) {
       renderPage(pdfDocument, pageNumber);  // Rendre la page
     }
   }, [pageNumber, pdfDocument, renderPage]);
 
+  // Fonction pour passer à la page précédente
+  const goToPrevPage = () => {
+    if (pageNumber > 1 && !isRendering) {
+      setPageNumber((prevPage) => prevPage - 1);
+    }
+  };
+
+  // Fonction pour passer à la page suivante
+  const goToNextPage = () => {
+    if (pageNumber < numPages && !isRendering) {
+      setPageNumber((prevPage) => prevPage + 1);
+    }
+  };
+
   return (
     <div>
       <canvas ref={canvasRef}></canvas>
       <div>
-        <button onClick={() => setPageNumber(pageNumber - 1)} disabled={pageNumber <= 1}>
+        <button onClick={goToPrevPage} disabled={pageNumber <= 1 || isRendering}>
           Précédente
         </button>
-        <button onClick={() => setPageNumber(pageNumber + 1)} disabled={pageNumber >= numPages}>
+        <button onClick={goToNextPage} disabled={pageNumber >= numPages || isRendering}>
           Suivante
         </button>
         <p>
