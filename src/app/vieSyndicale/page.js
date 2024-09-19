@@ -241,7 +241,9 @@ export default function Page() {
                           objectFit="cover"
                         />
                       )}
-                      <p>{item.contain}</p>
+                      <p>{item.contain.split("|").map((paragraph, index) => (
+                        <p key={index}>{paragraph.trim()}</p>
+                      ))}</p>
                     </div>
                   )}
                 </li>

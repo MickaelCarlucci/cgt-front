@@ -5,10 +5,9 @@ import Link from "next/link"
 import "./page.css";
 
 export default function Page() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [title, setTitle] = useState("");
-    const [contain, setContain] = useState("");
-    const [imageUrl, setImageUrl] = useState("");
+    const [contents, setContents] = useState([""]); // Tableau de contenus
     const [error, setError] = useState("");
     const [imageFile, setImageFile] = useState(null);
 
@@ -16,75 +15,107 @@ export default function Page() {
     const userId = session?.user?.id;
     const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
         roles.includes(role)
-      );
+    );
 
-      const handleSubmit = async (e) => {
+    // Gestion des contenus multiples
+    const handleContentChange = (index, value) => {
+        const updatedContents = [...contents];
+        updatedContents[index] = value;
+        setContents(updatedContents);
+    };
+
+    const handleAddContent = () => {
+        setContents([...contents, ""]); // Ajouter un nouveau champ de texte
+    };
+
+    const handleRemoveContent = (index) => {
+        const updatedContents = contents.filter((_, i) => i !== index);
+        setContents(updatedContents);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('contain', contain);
+        formData.append('contain', contents.join('|')); // Convertir le tableau en chaîne séparée par des virgules
         formData.append('image', imageFile); // Ajouter l'image
         formData.append('sectionId', 4);
-    console.log(formData)
+
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/new/${userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`, {
                 method: "POST",
                 body: formData, // Envoyer formData
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("API error:", errorData);
                 setError(errorData.error || "Une erreur est survenue.");
                 return;
             }
+
+            setTitle("");
+            setContents([""]); // Remet à zéro le tableau de contenus
+            setImageFile(null); // Réinitialiser l'image sélectionnée
+            setError(""); // Réinitialiser l'erreur en cas de succès
+
         } catch (error) {
             setError("Erreur lors de la soumission.");
             console.error("Submission Error:", error);
         }
     };
 
+    return (
+        <>
+            {hasAccess ? (
+                <div>
+                    <form onSubmit={handleSubmit}>
+                        <label>Titre de la News
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                required
+                            />
+                        </label>
 
-  return (
-    <>
-    {hasAccess ? (
-    <div>
-        <form onSubmit={handleSubmit}>
-       <label>Titre de la News
-        <input 
-            type="text" 
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            />
-       </label>
-       <label>contenu
-        <textarea 
-            value={contain}
-            onChange={(e) => setContain(e.target.value)} />
-       </label>
-       <label>Image (optionnel)
-    <input 
-        type="file"
-        onChange={(e) => setImageFile(e.target.files[0])} // Utiliser un state pour stocker le fichier
-    />
-</label>
-       {error && <p style={{ color: "red" }}>{error}</p>}
-       <button type="submit">
-        Envoyer
-       </button>
+                        <label>Contenu
+                            {contents.map((content, index) => (
+                                <div key={index}>
+                                    <textarea
+                                        value={content}
+                                        onChange={(e) => handleContentChange(index, e.target.value)}
+                                    />
+                                    {contents.length > 1 && (
+                                        <button type="button" onClick={() => handleRemoveContent(index)}>
+                                            Supprimer
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            <button type="button" onClick={handleAddContent}>
+                                Ajouter un paragraphe
+                            </button>
+                        </label>
 
-        </form>
-      
-    </div>
-     ) : (
-        <p>
-        Vous ne devriez pas être ici ! Revenez à la page d&apos;
-        <Link href="/">accueil</Link>
-      </p>
-    )}
+                        <label>Image (optionnel)
+                            <input
+                                type="file"
+                                onChange={(e) => setImageFile(e.target.files[0])}
+                            />
+                        </label>
 
-    </>
-  )
+                        {error && <p style={{ color: "red" }}>{error}</p>}
+                        <button type="submit">Envoyer</button>
+                    </form>
+                </div>
+            ) : (
+                <p>
+                    Vous ne devriez pas être ici ! Revenez à la page d&apos;
+                    <Link href="/">accueil</Link>
+                </p>
+            )}
+        </>
+    );
 }
