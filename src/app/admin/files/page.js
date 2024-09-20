@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { fetchWithToken } from "../../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -16,14 +17,14 @@ export default function Page() {
   const [error, setError] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || [];
-  const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
 );
 
   useEffect(() => {
     const centerFetch = async () => {
       try {
-        const centerResponse = await fetch(
+        const centerResponse = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
         );
         const centerData = await centerResponse.json();
@@ -38,7 +39,7 @@ export default function Page() {
   useEffect(() => {
     const sectionFetch = async () => {
       try {
-        const sectionResponse = await fetch(
+        const sectionResponse = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`
         );
         const sectionData = await sectionResponse.json();
@@ -74,7 +75,7 @@ export default function Page() {
     formData.append("center_id", centerId); // Utilise centerId ici
 
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/upload`,
         {
           method: "POST",

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { fetchWithToken } from "../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -22,7 +23,7 @@ export default function Page() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/search/users`
         );
         const data = await response.json();
@@ -38,7 +39,7 @@ export default function Page() {
   useEffect(() => {
     const fetchCenters = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
         );
         const data = await response.json();
@@ -68,7 +69,7 @@ export default function Page() {
   const listUsersByCenter = async (centerId) => {
     try {
       setSelectedCenter(centerId);
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users/${centerId}`
       );
       const data = await response.json();
@@ -86,7 +87,7 @@ export default function Page() {
 
   const listUsersByActivity = async (centerId, activityId) => {
     try {
-      const responseActivity = await fetch(
+      const responseActivity = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users/${centerId}/${activityId}`
       );
       const data = await responseActivity.json();
@@ -100,7 +101,7 @@ export default function Page() {
     setSelectedCenter(null);
     setActivities([]);
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users`
       );
       const data = await response.json();

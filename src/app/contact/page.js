@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { fetchWithToken } from "../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -20,7 +21,7 @@ export default function Page() {
   useEffect(() => {
     const fetchElected = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`
         );
         const data = await response.json();
@@ -37,7 +38,7 @@ export default function Page() {
   useEffect(() => {
     const fetchCenters = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
         );
         const data = await response.json();
@@ -55,7 +56,7 @@ export default function Page() {
   const listElectedByCenter = async (centerId) => {
     try {
       setSelectedCenter(centerId); // Met à jour l'état pour le centre sélectionné
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected/${centerId}`
       );
       const data = await response.json();
@@ -68,7 +69,7 @@ export default function Page() {
   const resetFilters = async () => {
     setSelectedCenter(null);
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`
       );
       const data = await response.json();

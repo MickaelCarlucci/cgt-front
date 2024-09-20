@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import PdfViewer from "../components/pdfViewer/pdfViewer";
+import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
 
 export default function DocumentPage() {
@@ -22,7 +23,7 @@ export default function DocumentPage() {
   useEffect(() => {
     async function fetchPdfs() {
       try {
-        const res = await fetch(
+        const res = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`
         );
         const data = await res.json();
@@ -40,7 +41,7 @@ export default function DocumentPage() {
   useEffect(() => {
     async function fetchDocs() {
       try {
-        const res = await fetch(
+        const res = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`
         );
         const data = await res.json();
@@ -59,10 +60,10 @@ export default function DocumentPage() {
   useEffect(() => {
     async function fetchDocsCSE() {
       try {
-        const res = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`
         );
-        const data = await res.json();
+        const data = await response.json();
         setCseDocuments(data);
         setError(null); // Réinitialiser l'erreur si la récupération a réussi
       } catch (err) {

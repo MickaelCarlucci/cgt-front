@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {  MdVisibility, MdVisibilityOff } from "react-icons/md";
 import "./page.css";
 
 export default function Page() {
