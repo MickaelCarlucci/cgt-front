@@ -55,7 +55,7 @@ export default function DocumentPage() {
     fetchDocs();
   }, []);
 
-  // Récupérer les fichiers Word (tracts)
+  // Récupérer les tracts
   useEffect(() => {
     async function fetchDocsCSE() {
       try {
