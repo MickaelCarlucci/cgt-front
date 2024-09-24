@@ -72,7 +72,6 @@ function AuthWrapper({ children }) {
             }
 
             const data = await response.json();
-            console.log("Rafraîchissement du token réussi :", data);
           } catch (error) {
             console.error("Erreur lors du rafraîchissement automatique du token :", error);
             signOut({ callbackUrl: "/auth" });

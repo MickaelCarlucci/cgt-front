@@ -16,7 +16,6 @@ export const fetchWithToken = async (url, options = {}) => {
   // Si le token a déjà expiré
   if (now >= tokenExpiration) {
     try {
-      console.log("Token expiré, tentative de rafraîchissement du token.");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh-token`, {
         method: "POST",
         headers: {
@@ -31,12 +30,11 @@ export const fetchWithToken = async (url, options = {}) => {
       }
 
       const data = await response.json();
-      console.log("Rafraîchissement du token réussi, nouveaux tokens :", data);
 
       // Mise à jour des tokens dans la session après le rafraîchissement
       session.accessToken = data.accessToken;
       session.refreshToken = data.refreshToken ?? refreshToken; // Utilise le nouveau refreshToken s'il est disponible
-      session.expires = Date.now() + 30 * 60 * 1000; // Recalcule l'expiration pour 15 minutes
+      session.expires = Date.now() + 30 * 60 * 1000; // Recalcule l'expiration pour 30 minutes
 
     } catch (error) {
       console.error("Erreur lors du rafraîchissement du token :", error);

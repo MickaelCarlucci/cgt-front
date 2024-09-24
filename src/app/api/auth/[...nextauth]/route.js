@@ -26,7 +26,6 @@ const handler = NextAuth({
         const data = await res.json();
 
         if (res.ok && data.accessToken) {
-          console.log("Authentification réussie : ", data);
           return {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
@@ -38,7 +37,6 @@ const handler = NextAuth({
           };
         }
 
-        console.log("Erreur lors de l'authentification :", res.status);
         return null; // En cas d'erreur d'authentification
       },
     }),
@@ -46,11 +44,9 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       const now = Date.now();
-      console.log("JWT callback déclenché avec le token : ", token);
 
       // Si c'est la première connexion
       if (user) {
-        console.log("Nouvel utilisateur connecté, initialisation du token : ", user);
         return {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
@@ -64,11 +60,9 @@ const handler = NextAuth({
 
       // Si le token est encore valide, on le renvoie tel quel
       if (now < token.accessTokenExpires - TOKEN_EXPIRATION_THRESHOLD) {
-        console.log("Token encore valide, pas besoin de rafraîchir.");
         return token;
       }
 
-      console.log("Token expiré, tentative de rafraîchissement.");
       // Si le token a expiré, on essaie de le rafraîchir
       const refreshedToken = await refreshAccessToken(token);
 
@@ -78,11 +72,9 @@ const handler = NextAuth({
         await signOut({ redirect: false });
       }
 
-      console.log("Token rafraîchi avec succès :", refreshedToken);
       return refreshedToken;
     },
     async session({ session, token }) {
-      console.log("Mise à jour de la session avec les nouveaux tokens.");
       // Ajouter les tokens et informations utilisateurs dans la session
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
@@ -112,7 +104,6 @@ const handler = NextAuth({
 // Fonction pour rafraîchir le token d'accès
 async function refreshAccessToken(token) {
   try {
-    console.log("Tentative de rafraîchissement du token.");
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh-token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -125,7 +116,6 @@ async function refreshAccessToken(token) {
     }
 
     const refreshedTokens = await response.json();
-    console.log("Rafraîchissement réussi. Nouveaux tokens : ", refreshedTokens);
 
     // Retourne le nouveau token et réinitialise l'expiration
     return {
