@@ -1,7 +1,8 @@
 "use client"
-import { useState } from "react"
-import { useSession } from "next-auth/react"
-import Link from "next/link"
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { fetchWithToken } from "../../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -13,7 +14,7 @@ export default function Page() {
 
     const roles = session?.user?.roles?.split(", ") || [];
     const userId = session?.user?.id;
-    const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+    const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
         roles.includes(role)
     );
 
@@ -43,7 +44,7 @@ export default function Page() {
         formData.append('sectionId', 4);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`, {
+            const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,

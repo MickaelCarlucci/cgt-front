@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import PdfViewer from "./components/pdfViewer/pdfViewer";
+import { fetchWithToken } from "./utils/fetchWithToken";
 import "./page.module.css";
 
 export default function Page() {
@@ -20,7 +21,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchNews() {
       try{
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news`);
+        const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news`);
         const data = await response.json();
         setInformation(data);
 
@@ -35,7 +36,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchDoc() {
       try {
-        const res = await fetch(
+        const res = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/last`
         );
         const data = await res.json();

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { TfiTrash } from "react-icons/tfi";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
+import { fetchWithToken } from "../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -30,7 +31,7 @@ export default function Page() {
   const checkUserVote = useCallback(
     async (pollId) => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/poll/${pollId}/vote-status/${userId}`
         );
         if (!response.ok)
@@ -57,7 +58,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchPolls() {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/poll/latest`
         );
         if (!response.ok)
@@ -92,7 +93,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchNews() {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/information/latest`
         );
         const data = await response.json();
@@ -110,7 +111,7 @@ export default function Page() {
   // Gestion du vote
   const handleVote = async (pollId, optionId) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/poll/vote/${pollId}/${userId}`,
         {
           method: "POST",
@@ -139,7 +140,7 @@ export default function Page() {
 
   const handleDelete = async (newsId) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/information/delete/${newsId}`,
         {
           method: "DELETE",

@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import imgCGT from "../../../../public/assets/logoCGT.jpg";
-import { FaBars, FaTimes, FaPowerOff  } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPowerOff } from 'react-icons/fa';
 import './header.css';
 
 export default function Header() {
@@ -30,15 +30,15 @@ export default function Header() {
 
             <nav className={`navbar ${menuOpen ? 'open' : ''}`}>
                 <Link href="/">Accueil</Link>
-                <Link href="/vieSyndicale">Vie Syndicale</Link>
+                <Link href="/actualities">Actualités</Link>
                 <Link href="/documents">Documents</Link>
                 <Link href="/contact">Contact</Link>
 
                 {status === "authenticated" ? (
                     <>
                         <Link href="/profil">Profil</Link>
-                        <button className="button-red-off" onClick={() => signOut()}>
-                        <FaPowerOff size={18}/>
+                        <button className="button-red-off" onClick={() => signOut({ callbackUrl: '/' })}>
+                            <FaPowerOff size={18} />
                         </button>
                     </>
                 ) : (

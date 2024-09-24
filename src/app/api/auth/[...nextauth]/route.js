@@ -1,13 +1,9 @@
-// src/pages/api/auth/[...nextauth].js
-
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signOut } from "next-auth/react";
 
-
-
-// Utiliser un délai un peu plus long pour s'assurer qu'on régénère avant l'expiration
-const TOKEN_EXPIRATION_THRESHOLD = 60 * 1000; // 1 minute avant expiration
+// Utiliser un seuil avant expiration pour forcer le rafraîchissement un peu avant l'expiration réelle
+const TOKEN_EXPIRATION_THRESHOLD = 15 * 60 * 1000; // 15 minutes avant expiration
 
 const handler = NextAuth({
   providers: [
@@ -18,7 +14,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch("http://localhost:3003/api/users/signin", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/signin`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -30,7 +26,6 @@ const handler = NextAuth({
         const data = await res.json();
 
         if (res.ok && data.accessToken) {
-          // Ensure the user object contains the necessary properties
           return {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
@@ -38,17 +33,19 @@ const handler = NextAuth({
             pseudo: data.user.pseudo,
             center_id: data.user.center_id,
             roles: data.user.roles,
-            accessTokenExpires: Date.now() + 15 * 60 * 1000, // Access token expiration time (15 minutes)
+            accessTokenExpires: Date.now() + 30 * 60 * 1000, // Expiration dans 30 minutes
           };
         }
 
-        return null;
+        return null; // En cas d'erreur d'authentification
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
+      const now = Date.now();
+
+      // Si c'est la première connexion
       if (user) {
         return {
           accessToken: user.accessToken,
@@ -57,35 +54,28 @@ const handler = NextAuth({
           id: user.id,
           pseudo: user.pseudo,
           center_id: user.center_id,
-          roles: user.roles
+          roles: user.roles,
         };
       }
 
-      // Vérifie si le token a expiré
-      const now = Date.now();
+      // Si le token est encore valide, on le renvoie tel quel
       if (now < token.accessTokenExpires - TOKEN_EXPIRATION_THRESHOLD) {
-        // Token is still valid, return it
         return token;
       }
 
-      // Token has expired, try to refresh it
-      try {
-        const refreshedTokens = await refreshAccessToken(token.refreshToken);
-        return {
-          ...token,
-          accessToken: refreshedTokens.accessToken,
-          accessTokenExpires: Date.now() + 15 * 60 * 1000, // Reset the expiration
-        };
-      } catch (error) {
-        console.error("Error refreshing access token", error);
-        return {
-          ...token,
-          error: "RefreshAccessTokenError",
-        };
+      // Si le token a expiré, on essaie de le rafraîchir
+      const refreshedToken = await refreshAccessToken(token);
+
+      if (refreshedToken.error) {
+        // Déconnecter l'utilisateur si le rafraîchissement échoue
+        console.error("Échec du rafraîchissement du token, déconnexion.");
+        await signOut({ redirect: false });
       }
+
+      return refreshedToken;
     },
     async session({ session, token }) {
-      // Ajouter les tokens dans la session
+      // Ajouter les tokens et informations utilisateurs dans la session
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       session.user = {
@@ -103,31 +93,43 @@ const handler = NextAuth({
       return session;
     },
   },
+  session: {
+    strategy: 'jwt', // Utiliser le JWT pour gérer les sessions
+    maxAge: 30 * 60, // La session expire après 15 minutes (équivalent à la durée du token d'accès)
+    updateAge: 10 * 60, // Mettre à jour la session toutes les 5 minutes
+  },
   secret: process.env.NEXTAUTH_SECRET,
 });
 
 // Fonction pour rafraîchir le token d'accès
-async function refreshAccessToken(refreshToken) {
+async function refreshAccessToken(token) {
   try {
-    const response = await fetch("http://localhost:3003/api/users/refresh-token", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh-token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify({ refreshToken: token.refreshToken }),
     });
+
+    if (!response.ok) {
+      console.error("Erreur lors du rafraîchissement du token. Status : ", response.statusText);
+      throw new Error('Échec du rafraîchissement du token');
+    }
 
     const refreshedTokens = await response.json();
 
-    if (!response.ok) {
-      throw refreshedTokens;
-    }
-
+    // Retourne le nouveau token et réinitialise l'expiration
     return {
+      ...token,
       accessToken: refreshedTokens.accessToken,
+      refreshToken: refreshedTokens.refreshToken ?? token.refreshToken, // Conserve le refreshToken s'il n'est pas renouvelé
+      accessTokenExpires: Date.now() + 30 * 60 * 1000, // 30 minutes supplémentaires
     };
   } catch (error) {
-    console.error("Error refreshing access token", error);
-    await signOut({ callbackUrl: '/auth' });
-    throw error;
+    console.error("Erreur lors du rafraîchissement du token :", error);
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
   }
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Modal from "../../components/modal/modal";
+import { fetchWithToken } from "../../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -20,7 +21,7 @@ export default function Page() {
   const roles = session?.user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
   const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
     roles.includes(role)
-);
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalField, setModalField] = useState("");
@@ -29,7 +30,7 @@ export default function Page() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userResponse = await fetch(
+        const userResponse = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${id}`
         );
         const userData = await userResponse.json();
@@ -47,7 +48,7 @@ export default function Page() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/roles`
         );
         const data = await response.json();
@@ -74,7 +75,7 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete`,
         {
           method: "DELETE",
@@ -102,28 +103,34 @@ export default function Page() {
     try {
       if (action === "add") {
         // Requête POST pour ajouter un rôle
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/link`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ roleId }),
-        });
+        const response = await fetchWithToken(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/link`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ roleId }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Erreur lors de l'ajout du rôle");
         }
       } else if (action === "remove") {
         // Requête DELETE pour supprimer un rôle
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/unlink`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ roleId }),
-        });
+        const response = await fetchWithToken(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/unlink`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${session.accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ roleId }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Erreur lors de la suppression du rôle");
@@ -158,37 +165,59 @@ export default function Page() {
               {user.firstname} {user.lastname}
             </span>
           </h1>
-        <div className="container-management">
-          <div className="user-information">
-            <p>
-              Son pseudo est <span>{user.pseudo}</span>
-            </p>
-            <p>
-              Son adresse mail est <span>{user.mail}</span>
-            </p>
-            <p>
-              <Link href="#" onClick={() => openModal("mail")}>
-                Voulez-vous supprimer son compte ?
-              </Link>
-            </p>
+          <div className="container-management">
+            <div className="user-information">
+              <p>
+                Son pseudo est <span>{user.pseudo}</span>
+              </p>
+              <p>
+                Son nom et prénoms:{" "}
+                <span>
+                  {user.lastname} {user.firstname}
+                </span>
+              </p>
+              <p>
+                Son adresse mail est <span>{user.mail}</span>
+              </p>
+              <p>
+                connecté pour la dernière fois le :{" "}
+                <span>
+                  {new Date(user.last_activity).toLocaleDateString("fr-FR", {
+                    weekday: "long", 
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                  {" "}à{" "}
+                  {new Date(user.last_activity).toLocaleTimeString("fr-FR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </p>
+              <p>
+                <Link href="#" onClick={() => openModal("mail")}>
+                  Voulez-vous supprimer son compte ?
+                </Link>
+              </p>
+            </div>
+            <div className="role">
+              <form>
+                {roleList.map((role) => (
+                  <div key={role.id}>
+                    <input
+                      type="checkbox"
+                      id={role.id}
+                      value={role.id}
+                      checked={selectedRoles.includes(role.name)}
+                      onChange={(e) => handleRoleChange(role.id, role.name)}
+                    />
+                    <label htmlFor={role.id}>{role.name}</label>
+                  </div>
+                ))}
+              </form>
+            </div>
           </div>
-          <div className="role">
-            <form>
-              {roleList.map((role) => (
-                <div key={role.id}>
-                  <input
-                    type="checkbox"
-                    id={role.id}
-                    value={role.id} 
-                    checked={selectedRoles.includes(role.name)} 
-                    onChange={(e) => handleRoleChange(role.id, role.name)} 
-                  />
-                  <label htmlFor={role.id}>{role.name}</label>
-                </div>
-              ))}
-            </form>
-          </div>
-        </div>
         </>
       ) : (
         <p>

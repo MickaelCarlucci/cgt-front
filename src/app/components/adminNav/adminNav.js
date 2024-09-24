@@ -23,7 +23,7 @@ export default function AdminNav() {
             </button>
 
       <nav className={`navbar-admin ${menuOpen ? 'open' : ''}`}>
-        {roles.includes("Admin") || roles.includes("SuperAdmin") ? ( 
+        {roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") ? ( 
             <>
         <Link href="/admin">Gérer les utilisateurs</Link>
         <Link href="/admin/files">Ajouter un document</Link>
@@ -32,7 +32,7 @@ export default function AdminNav() {
         </>
     ) : null }
 
-    {roles.includes("Elus") || roles.includes("Admin") || roles.includes("SuperAdmin") ? ( 
+    {roles.includes("Elus") || roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") ? ( 
             <>
         <Link href="#">Tract</Link>
         </>

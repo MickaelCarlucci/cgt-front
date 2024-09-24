@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import Link from 'next/link';
 import { TfiTrash } from "react-icons/tfi";
+import { fetchWithToken } from "../../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -21,7 +22,7 @@ export default function Page() {
         setOptions([...options, '']);  // Ajoute une nouvelle option vide
     };
 
-    const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+    const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
         roles.includes(role)
     );
 
@@ -29,7 +30,7 @@ export default function Page() {
     useEffect(() => {
         async function fetchPolls() {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/polls`);
+                const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/polls`);
                 if (!response.ok)
                     throw new Error("Erreur lors de la récupération des sondages");
                 const data = await response.json();
@@ -63,7 +64,7 @@ export default function Page() {
         e.preventDefault();  // Empêche la soumission par défaut
 
         // Envoie les données à l'API route
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/newPoll`, {
+        const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/newPoll`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${session.accessToken}`,
@@ -93,7 +94,7 @@ export default function Page() {
     // Fonction pour supprimer un sondage
     const handleDelete = async (pollId) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/delete/${pollId}`, {
+            const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/delete/${pollId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,

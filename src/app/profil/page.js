@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Modal from "../components/modal/modal";
+import { fetchWithToken } from "../utils/fetchWithToken";
 import "./page.css";
 
 export default function Page() {
@@ -34,11 +35,11 @@ export default function Page() {
         if (session) {
           const [userResponse, centersResponse, activitiesResponse] =
             await Promise.all([
-              fetch(
+              fetchWithToken(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${session.user.id}`
               ),
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`),
-              fetch(
+              fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`),
+              fetchWithToken(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${session.user.center_id}/activities`
               ),
             ]);
