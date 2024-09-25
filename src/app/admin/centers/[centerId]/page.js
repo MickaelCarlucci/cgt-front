@@ -13,6 +13,7 @@ export default function Page() {
   const { data: session, status } = useSession();
   const [activities, setActivities] = useState([]);
   const [allActivities, setAllActivities] = useState([]);
+  const [activity, setActivity] = useState("");
   const [activityLink, setActivityLink] = useState("");
   const [activityUnlink, setActivityUnlink] = useState("");
   const [titleCenter, setTitleCenter] = useState("");
@@ -121,10 +122,64 @@ const handleUnlinkActivity = async (activityId) => {
   }
 };
 
+const handleAddActivity= async (e) => {
+  e.preventDefault();
+  
+  if (!activity.trim()) {
+    setError("Le nom de l'activité ne peut pas être vide.");
+    return;
+  }
+
+  const activityData = { 
+    name: activity,
+    centerId
+   };
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/admin/addActivity`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(activityData),
+      }
+    );
+    if (response.ok) {
+      setActivity("");  // Réinitialiser le champ de saisie
+      setError("");
+      fetchActivitiesByCenter();
+        // Recharger les activités
+    } else {
+      setError("Erreur lors de la mise à jour des activités");
+    }
+  } catch (error) {
+    console.error("Erreur:", error);
+    setError("Erreur lors de l'ajout de l'activité");
+  }
+};
+
 
   return (
     <>
+    {hasAccess ? (
       <div className="main-contain">
+
+        <div className="contain-addActivity">
+            <form onSubmit={handleAddActivity}>
+              <input 
+                type="text" 
+                placeholder="Nouvelle activité..."
+                value={activity}
+                onChange={(e) => setActivity(e.target.value)}
+                required
+                />
+                <button type="submit">Ajouter une activité</button>
+            </form>
+          </div>
+
         <div className="activitiesCenter-contain">
           <h1>Activités de {titleCenter} </h1>
           <ul>
@@ -147,7 +202,7 @@ const handleUnlinkActivity = async (activityId) => {
         </div>
 
         <div className="management-activity-contain">
-          <h2>Joindre une activité au centre</h2>
+          <h2>Joindre une activité déjà existante au centre</h2>
           <form>
             <select
               value={activityLink}
@@ -172,6 +227,9 @@ const handleUnlinkActivity = async (activityId) => {
           {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
       </div>
+      ) : (
+        <p>Vous ne devriez pas être ici, merci de revenir à <Link href={"/"}> L&apos;accueil</Link></p>
+      )}
     </>
   );
 }

@@ -9,8 +9,11 @@ import "./page.css";
 export default function Page() {
   const { data: session, status } = useSession();
   const [centers, setCenters] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [center, setCenter] = useState("");
-  const [error, setError] = useState("");
+  const [activity, setActivity] = useState("");
+  const [errorCenter, setErrorCenter] = useState("");
+  const [errorActivity, setErrorActivity] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
@@ -25,22 +28,35 @@ export default function Page() {
       );
       const data = await response.json();
       setCenters(data);
-    } catch (error) {
-      setError("Erreur lors de la récupération des centres");
+    } catch (errorCenter) {
+      setErrorCenter("Erreur lors de la récupération des centres");
     }
   };
+
+  const activitiesFetch = async () => {
+    try {
+      const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/activities`);
+      const data = await response.json();
+      setActivities(data);
+    } catch (errorActivity) {
+      setErrorActivity("Erreur lors de la récupération des activités");
+    }
+  }
 
   useEffect(() => {
     if (status === "authenticated" && userId) {
       centerFetch();
+      activitiesFetch();
     }
   }, [status, userId]);
+
+
 
   const handleAddCenter = async (e) => {
     e.preventDefault();
     
     if (!center.trim()) {
-      setError("Le nom du centre ne peut pas être vide.");
+      setErrorCenter("Le nom du centre ne peut pas être vide.");
       return;
     }
 
@@ -60,16 +76,17 @@ export default function Page() {
       );
       if (response.ok) {
         setCenter("");  // Réinitialiser le champ de saisie
-        setError("");
+        setErrorCenter("");
         centerFetch();  // Recharger les centres
       } else {
-        setError("Erreur lors de la mise à jour des centres");
+        setErrorCenter("Erreur lors de la mise à jour des centres");
       }
-    } catch (error) {
-      console.error("Erreur:", error);
-      setError("Erreur lors de l'ajout du centre");
+    } catch (errorCenter) {
+      console.error("Erreur:", errorCenter);
+      setErrorCenter("Erreur lors de l'ajout du centre");
     }
   };
+
 
   const handleDeleteCenter = async (centerId) => {
     try {
@@ -85,17 +102,41 @@ export default function Page() {
       if (response.ok) {
         setCenters(centers.filter((center) => center.id !== centerId));
       } else {
-        setError("Erreur lors de la suppression du centre");
+        setErrorCenter("Erreur lors de la suppression du centre");
       }
-    } catch (error) {
-      console.error("Erreur:", error);
-      setError("Erreur lors de la suppression du centre");
+    } catch (errorCenter) {
+      console.error("Erreur:", errorCenter);
+      setErrorCenter("Erreur lors de la suppression du centre");
+    }
+  };
+
+  const handleDeleteActivity = async (activityId) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/${activityId}/deleteActivity`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setActivities(activities.filter((activity) => activity.id !== activityId));
+      } else {
+        setErrorActivity("Erreur lors de la suppression de l'activité");
+      }
+    } catch (errorActivity) {
+      console.error("Erreur:", errorActivity);
+      setErrorActivity("Erreur lors de la suppression de l'activité");
     }
   };
 
   return (
     <>
+    {hasAccess ? (
       <div className="main-contain">
+        <div className="left-contain">
         <div className="contain-centers">
           <h1>Liste des centres</h1>
           <ul>
@@ -127,10 +168,31 @@ export default function Page() {
               required
             />
             <button type="submit">Ajouter un centre</button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {errorCenter && <p style={{ color: "red" }}>{errorCenter}</p>}
           </form>
         </div>
+        </div>
+        <div className="right-contain">
+          <div className="contain-activities">
+            <h2>Liste des activités</h2>
+            <ul>
+            {activities.filter((activity) => activity.id !== 47).map((activity) => (
+              <li key={activity.id}>
+                {activity.name}{" "}
+                <span type="button"
+                    onClick={() => handleDeleteActivity(activity.id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <TfiTrash /></span>
+              </li>
+            ))}
+            </ul>
+          </div>
+        </div>
       </div>
+      ) : (
+        <p>Vous ne devriez pas être ici. Merci de revenir à <Link href={"/"}>L&apos;accueil</Link></p>
+      )}
     </>
   );
 }
