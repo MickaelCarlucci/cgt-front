@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
@@ -9,20 +9,23 @@ import Navbar from "./components/header/header";
 import NavAdmin from "./components/adminNav/adminNav";
 import Footer from "./components/footer/footer";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import { useRouter } from 'next/navigation';
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="fr">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+          rel="icon"
+          href="/favicon.ico"
+        />
         <title>Syndicat CGT Teleperformance</title>
       </Head>
-      <body className={`${inter.className} container`}> 
+      <body className={`${inter.className} container`}>
         <SessionProvider>
           <AuthWrapper>
             <ToastContainer
@@ -41,7 +44,7 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
           </AuthWrapper>
-        </SessionProvider> 
+        </SessionProvider>
       </body>
     </html>
   );
@@ -73,7 +76,10 @@ function AuthWrapper({ children }) {
 
             const data = await response.json();
           } catch (error) {
-            console.error("Erreur lors du rafraîchissement automatique du token :", error);
+            console.error(
+              "Erreur lors du rafraîchissement automatique du token :",
+              error
+            );
             signOut({ callbackUrl: "/auth" });
           }
         }

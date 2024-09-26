@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import imgCGT from "../../../../public/assets/logoCGT.jpg";
+import imgCGT from "../../../../public/assets/logoCGT.png";
 import { FaBars, FaTimes, FaPowerOff } from 'react-icons/fa';
 import './header.css';
 

@@ -146,11 +146,11 @@ export default function Page() {
                       />
                     );
                   } else {
-                    return <p>Le contenu n'est pas disponible ou est mal formaté.</p>;
+                    return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
                   }
                 })()
               ) : (
-                <p>Le contenu n'est pas disponible</p>
+                <p>Le contenu n&apos;est pas disponible</p>
               )}
             </div>
 
