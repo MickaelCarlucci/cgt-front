@@ -1,125 +1,285 @@
-"use client"
-import { useState } from "react";
+"use client";
+import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
-import "./page.css";
+import { Editor, EditorState, RichUtils, convertToRaw, Modifier } from "draft-js";
+import "draft-js/dist/Draft.css";
+
+// Fonction utilitaire pour valider une URL et ajouter http si nécessaire
+const isValidUrl = (string) => {
+  try {
+    // Si l'URL ne contient pas de schéma (http ou https), ajouter http:// par défaut
+    if (!/^https?:\/\//i.test(string)) {
+      string = "http://" + string; // Ajouter http:// si l'URL n'a pas de schéma
+    }
+    new URL(string); // Vérifier si c'est une URL valide après ajout du schéma
+    return string; // Retourner l'URL corrigée
+  } catch (_) {
+    return false;
+  }
+};
 
 export default function Page() {
-    const { data: session } = useSession();
-    const [title, setTitle] = useState("");
-    const [contents, setContents] = useState([""]); // Tableau de contenus
-    const [error, setError] = useState("");
-    const [imageFile, setImageFile] = useState(null);
+  const { data: session } = useSession();
+  const [title, setTitle] = useState("");
+  const [editorStates, setEditorStates] = useState([EditorState.createEmpty()]); // tableau d'états d'éditeurs
+  const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [currentColor, setCurrentColor] = useState("#000000"); // Couleur sélectionnée
 
-    const roles = session?.user?.roles?.split(", ") || [];
-    const userId = session?.user?.id;
-    const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
-        roles.includes(role)
+  // Ref pour l'éditeur pour éviter le problème de "focus"
+  const editorRefs = useRef([]);
+
+  const roles = session?.user?.roles?.split(", ") || [];
+  const userId = session?.user?.id;
+  const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
+    roles.includes(role)
+  );
+
+  // Fonction pour appliquer des styles comme gras/italique
+  const handleKeyCommand = (command, index) => {
+    const newState = RichUtils.handleKeyCommand(editorStates[index], command);
+    if (newState) {
+      handleContentChange(index, newState);
+      return "handled";
+    }
+    return "not-handled";
+  };
+
+  // Gestion du changement de contenu pour chaque éditeur
+  const handleContentChange = (index, editorState) => {
+    const updatedEditorStates = [...editorStates];
+    updatedEditorStates[index] = editorState;
+    setEditorStates(updatedEditorStates);
+  };
+
+  // Fonction pour appliquer la couleur sélectionnée au texte
+  const applyColor = (index) => {
+    const selection = editorStates[index].getSelection();
+    const contentState = editorStates[index].getCurrentContent();
+
+    const newContentState = Modifier.applyInlineStyle(
+      contentState,
+      selection,
+      `COLOR_${currentColor}` // On applique un style inline avec la couleur sélectionnée
     );
 
-    // Gestion des contenus multiples
-    const handleContentChange = (index, value) => {
-        const updatedContents = [...contents];
-        updatedContents[index] = value;
-        setContents(updatedContents);
-    };
+    const newEditorState = EditorState.push(editorStates[index], newContentState, "change-inline-style");
+    handleContentChange(index, newEditorState);
+  };
 
-    const handleAddContent = () => {
-        setContents([...contents, ""]); // Ajouter un nouveau champ de texte
-    };
+  // Fonction pour appliquer un lien hypertexte à partir du texte sélectionné
+  const applyLink = (index) => {
+    const selection = editorStates[index].getSelection();
+    
+    // Vérifier qu'une sélection existe
+    if (!selection.isCollapsed()) {
+      const url = prompt("Veuillez entrer l'URL du lien :");
+      
+      // Vérifier si l'URL est valide
+      const validUrl = isValidUrl(url);
+      if (validUrl) {
+        const contentState = editorStates[index].getCurrentContent();
+        
+        // Créer l'entité de lien sur l'URL validée
+        const contentStateWithLink = contentState.createEntity("LINK", "MUTABLE", { href: validUrl });
+        const entityKey = contentStateWithLink.getLastCreatedEntityKey();
+    
+        // Appliquer l'entité au texte sélectionné
+        const newContentState = Modifier.applyEntity(contentState, selection, entityKey);
+    
+        // Mettre à jour l'état de l'éditeur
+        const newEditorState = EditorState.push(editorStates[index], newContentState, "apply-entity");
+        handleContentChange(index, newEditorState);
+      } else {
+        alert("L'URL entrée n'est pas valide.");
+      }
+    } else {
+      alert("Veuillez sélectionner un texte à transformer en lien.");
+    }
+  };
+  
+  
+  
+  
 
-    const handleRemoveContent = (index) => {
-        const updatedContents = contents.filter((_, i) => i !== index);
-        setContents(updatedContents);
-    };
+  // Fonction pour appliquer un soulignement au texte sélectionné
+  const applyUnderline = (index) => {
+    const newEditorState = RichUtils.toggleInlineStyle(editorStates[index], "UNDERLINE");
+    handleContentChange(index, newEditorState);
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  // Fonction pour convertir l'état de l'éditeur en texte brut avant envoi
+  const convertEditorStateToHTML = (editorState) => {
+    const contentState = editorState.getCurrentContent();
+    return JSON.stringify(convertToRaw(contentState)); // Envoi au format JSON
+  };
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('contain', contents.join('|')); // Convertir le tableau en chaîne séparée par des virgules
-        formData.append('image', imageFile); // Ajouter l'image
-        formData.append('sectionId', 4);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
-                  },
-                body: formData, // Envoyer formData
-            });
+    const formData = new FormData();
+    formData.append("title", title);
+    const contentsInHTML = editorStates.map((editorState) =>
+      convertEditorStateToHTML(editorState)
+    );
+    formData.append("contain", contentsInHTML); // Conversion en chaîne
+    formData.append("image", imageFile);
+    formData.append("sectionId", 4);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("API error:", errorData);
-                setError(errorData.error || "Une erreur est survenue.");
-                return;
-            }
-
-            setTitle("");
-            setContents([""]); // Remet à zéro le tableau de contenus
-            setImageFile(null); // Réinitialiser l'image sélectionnée
-            setError(""); // Réinitialiser l'erreur en cas de succès
-
-        } catch (error) {
-            setError("Erreur lors de la soumission.");
-            console.error("Submission Error:", error);
+    try {
+      const response = await fetchWithToken(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+          body: formData,
         }
-    };
+      );
 
-    return (
-        <>
-            {hasAccess ? (
-                <div>
-                    <form onSubmit={handleSubmit}>
-                        <label>Titre de la News
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                required
-                            />
-                        </label>
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error || "Une erreur est survenue.");
+        return;
+      }
 
-                        <label>Contenu
-                            {contents.map((content, index) => (
-                                <div key={index}>
-                                    <textarea
-                                        value={content}
-                                        onChange={(e) => handleContentChange(index, e.target.value)}
-                                    />
-                                    {contents.length > 1 && (
-                                        <button type="button" onClick={() => handleRemoveContent(index)}>
-                                            Supprimer
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                            <button type="button" onClick={handleAddContent}>
-                                Ajouter un paragraphe
-                            </button>
-                        </label>
+      setTitle("");
+      setEditorStates([EditorState.createEmpty()]); // Réinitialiser les éditeurs
+      setImageFile(null);
+      setError("");
+    } catch (error) {
+      setError("Erreur lors de la soumission.");
+    }
+  };
 
-                        <label>Image (optionnel)
-                            <input
-                                type="file"
-                                onChange={(e) => setImageFile(e.target.files[0])}
-                            />
-                        </label>
+  // Style personnalisé pour appliquer la couleur et le style des liens
+  const customStyleMap = {
+    [`COLOR_${currentColor}`]: {
+      color: currentColor, // Applique la couleur sélectionnée
+    },
+    UNDERLINE: {
+      textDecoration: "underline", // Applique le soulignement
+    },
+    LINK_COLOR: {
+      color: "#1e90ff", // Applique une couleur spécifique pour les liens
+    },
+  };
 
-                        {error && <p style={{ color: "red" }}>{error}</p>}
-                        <button type="submit">Envoyer</button>
-                    </form>
+  return (
+    <>
+      {hasAccess ? (
+        <div style={{ margin: "20px" }}>
+          <form onSubmit={handleSubmit}>
+            <label style={{ display: "block", marginBottom: "10px" }}>
+              Titre de la News
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
+              />
+            </label>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+              {editorStates.map((editorState, index) => (
+                <div key={index} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {/* Barre d'outils pour Gras, Italique, Lien, et Souligner */}
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'BOLD'))}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Gras
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'ITALIC'))}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Italique
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyLink(index)}
+                      style={{ padding: "5px 10px" }}
+                    >
+                      Ajouter Lien
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyUnderline(index)}
+                      style={{ padding: "5px 10px", marginLeft: "5px" }}
+                    >
+                      Souligner
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      minHeight: "150px",
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      backgroundColor: "#fff",
+                      cursor: "text",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Empêcher l'interférence avec d'autres clics
+                      editorRefs.current[index]?.focus();
+                    }} // Utilisation de ref pour gérer le focus
+                  >
+                    <Editor
+                      ref={(element) => (editorRefs.current[index] = element)} // Stocker la référence à l'éditeur
+                      editorState={editorState}
+                      onChange={(newState) => handleContentChange(index, newState)}
+                      handleKeyCommand={(command) => handleKeyCommand(command, index)}
+                      customStyleMap={customStyleMap} // Appliquer les styles personnalisés
+                      placeholder="Écrivez votre contenu ici..."
+                    />
+                  </div>
+                  {/* Sélecteur de couleur */}
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="color"
+                      value={currentColor}
+                      onChange={(e) => setCurrentColor(e.target.value)}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => applyColor(index)}
+                      style={{ padding: "5px 10px" }}
+                    >
+                      Appliquer couleur
+                    </button>
+                  </div>
                 </div>
-            ) : (
-                <p>
-                    Vous ne devriez pas être ici ! Revenez à la page d&apos;
-                    <Link href="/">accueil</Link>
-                </p>
-            )}
-        </>
-    );
+              ))}
+            </div>
+
+            <label style={{ display: "block", marginBottom: "10px" }}>
+              Image (optionnel)
+              <input
+                type="file"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                style={{ marginLeft: "10px" }}
+              />
+            </label>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            <button type="submit" style={{ padding: "10px 20px" }}>Envoyer</button>
+          </form>
+        </div>
+      ) : (
+        <p>
+          Vous ne devriez pas être ici ! Revenez à la page d&apos;
+          <Link href="/">accueil</Link>
+        </p>
+      )}
+    </>
+  );
 }

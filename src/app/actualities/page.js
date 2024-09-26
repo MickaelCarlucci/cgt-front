@@ -3,11 +3,64 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { TfiTrash } from "react-icons/tfi";
+import { TfiTrash } from "react-icons/tfi"; // Ajout de l'icône d'édition
+import { RiEditFill } from "react-icons/ri";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
 import { fetchWithToken } from "../utils/fetchWithToken";
+import { convertFromRaw } from "draft-js";
+import { stateToHTML } from "draft-js-export-html"; // Pour convertir le contenu Draft.js en HTML
 import "./page.css";
+
+// Fonction pour convertir le contenu Draft.js brut en HTML
+const convertRawContentToHTML = (rawContent) => {
+  const contentState = convertFromRaw(rawContent);
+
+  const options = {
+    entityStyleFn: (entity) => {
+      const entityType = entity.getType();
+      if (entityType === "LINK") {
+        const data = entity.getData();
+        return {
+          element: "a",
+          attributes: {
+            href: data.href,
+            target: "_blank",
+          },
+          style: {
+            color: "#1e90ff",
+            textDecoration: "underline",
+          },
+        };
+      }
+    },
+    inlineStyleFn: (styles) => {
+      const styleArray = styles.toArray();
+      const customStyles = {};
+
+      styleArray.forEach((style) => {
+        if (style.startsWith("COLOR_")) {
+          customStyles.style = {
+            color: style.replace("COLOR_", ""),
+          };
+        }
+        if (style === "BOLD") {
+          customStyles.style = { ...customStyles.style, fontWeight: "bold" };
+        }
+        if (style === "ITALIC") {
+          customStyles.style = { ...customStyles.style, fontStyle: "italic" };
+        }
+        if (style === "UNDERLINE") {
+          customStyles.style = { ...customStyles.style, textDecoration: "underline" };
+        }
+      });
+
+      return customStyles;
+    },
+  };
+
+  return stateToHTML(contentState, options);
+};
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -148,7 +201,6 @@ export default function Page() {
             Authorization: `Bearer ${session.accessToken}`,
           },
         }
-        
       );
       if (response.ok) {
         // Mettre à jour la liste des news après suppression
@@ -224,6 +276,8 @@ export default function Page() {
                   </Link>
 
                   {roles.includes("Admin") || roles.includes("SuperAdmin") && (
+                    <>
+                      {/* Lien de suppression */}
                       <Link href={"#"}>
                         <span
                           type="button"
@@ -232,7 +286,15 @@ export default function Page() {
                           <TfiTrash />
                         </span>
                       </Link>
-                    )}
+
+                      {/* Lien de modification */}
+                      <Link href={`/actualities/${item.id}`}>
+                        <span>
+                        <RiEditFill />
+                        </span>
+                      </Link>
+                    </>
+                  )}
 
                   {/* Si la news est sélectionnée, afficher son contenu */}
                   {selectedNewsId === item.id && (
@@ -247,9 +309,13 @@ export default function Page() {
                           objectFit="cover"
                         />
                       )}
-                      <p>{item.contain.split("|").map((paragraph, index) => (
-                        <p key={index}>{paragraph.trim()}</p>
-                      ))}</p>
+
+                      {/* Convertir et afficher le contenu Draft.js en HTML */}
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: convertRawContentToHTML(JSON.parse(item.contain)),
+                        }}
+                      />
                     </div>
                   )}
                 </li>
@@ -259,7 +325,8 @@ export default function Page() {
         </div>
       ) : (
         <p>
-          Si vous souhaitez consulter cette page, merci de vous connecter <Link href="/auth"> ici</Link>
+          Si vous souhaitez consulter cette page, merci de vous connecter{" "}
+          <Link href="/auth"> ici</Link>
         </p>
       )}
     </>
