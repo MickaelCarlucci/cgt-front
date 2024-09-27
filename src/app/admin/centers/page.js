@@ -11,7 +11,6 @@ export default function Page() {
   const [centers, setCenters] = useState([]);
   const [activities, setActivities] = useState([]);
   const [center, setCenter] = useState("");
-  const [activity, setActivity] = useState("");
   const [errorCenter, setErrorCenter] = useState("");
   const [errorActivity, setErrorActivity] = useState("");
 
@@ -187,6 +186,7 @@ export default function Page() {
               </li>
             ))}
             </ul>
+            {errorActivity && <p style={{ color: "red" }}>{errorActivity}</p>}
           </div>
         </div>
       </div>
