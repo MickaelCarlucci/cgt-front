@@ -3,19 +3,24 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
+import SectionRP from "../components/sectionRP/sectionRP";
+import SectionCSE from "../components/sectionCSE/sectionCSE";
+import SectionCSSCT from "../components/sectionCSSCT/sectionCSSCT";
 import "./page.css";
 
 export default function Page() {
   const { data: session, status } = useSession();
   const [appointment, setAppointment] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // État pour la modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visibleSection, setVisibleSection] = useState(null); // État pour suivre quelle section est visible
   const [formData, setFormData] = useState({
     subject: "",
     date: "",
     linkMeeting: ""
   });
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
 
+  // Gestion des rôles : si la session est chargée et qu'il y a un utilisateur
   const roles = session?.user?.roles?.split(", ") || [];
   const userId = session?.user?.id;
 
@@ -40,11 +45,9 @@ export default function Page() {
     }
   }, [status, userId]);
 
-  // Gérer l'ouverture et la fermeture de la modal
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  // Gérer les changements dans les champs du formulaire
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -53,58 +56,64 @@ export default function Page() {
     }));
   };
 
-  // Gérer la soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment/update`,
-            {
-                method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),        
-            }
-        );
-        if (response.ok) {
-            setFormData("");
-            setError("");
-            appointmentFetch();
-            closeModal();
-        } else {
-            setError("Une erreur est survenu lors de la mise en place du nouveau rendez-vous")
-        }
-    } catch(error) {
-        console.error("Erreur:", error)
-        setError("Une erreur s'est produite pendant la mise en place du nouveau rendez-vous")
+      const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment/update`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setFormData("");
+        setError("");
+        appointmentFetch();
+        closeModal();
+      } else {
+        setError("Une erreur est survenue lors de la mise en place du nouveau rendez-vous");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      setError("Une erreur s'est produite pendant la mise en place du nouveau rendez-vous");
     }
-    // Tu pourrais envoyer les données modifiées au backend ici via fetch ou axios
+  };
+
+  // Si la session est encore en train de se charger
+  if (status === "loading") {
+    return <p>Chargement de la session...</p>;
+  }
+
+  // Si les rôles ne sont pas définis
+  if (!roles.length) {
+    return <p>Aucun rôle défini pour l&apos;utilisateur.</p>;
+  }
+
+  // Fonction pour basculer l'affichage des sections
+  const toggleSection = (section) => {
+    setVisibleSection((prevSection) => (prevSection === section ? null : section));
   };
 
   return (
     <>
-    <div className="navbar-elected">
-        {roles.includes("DS") ||
-          roles.includes("CSE") ||
-          roles.includes("SuperAdmin") ||
-          (roles.includes("Admin") && <Link href={"#"}>CSE</Link>)}
-
-        {roles.includes("DS") ||
-          roles.includes("CSSCT") ||
-          roles.includes("SuperAdmin") ||
-          (roles.includes("Admin") && <Link href={"#"}>CSSCT</Link>)}
-
-        {roles.includes("DS") ||
-          roles.includes("RP") ||
-          roles.includes("SuperAdmin") ||
-          (roles.includes("Admin") && <Link href={"#"}>RP</Link>)}
+      <div className="navbar-elected">
+        {(roles.includes("DS") || roles.includes("CSE") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("CSE")}>CSE</Link>
+        )}
+        {(roles.includes("DS") || roles.includes("CSSCT") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("CSSCT")}>CSSCT</Link>
+        )}
+        {(roles.includes("DS") || roles.includes("RP") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("RP")}>RP</Link>
+        )}
       </div>
 
-      {roles.includes("DS") || roles.includes("SuperAdmin") || roles.includes("Admin") || roles.includes("RP") || roles.includes("CSSCT") || roles.includes("CSE") ? (
+      {(roles.includes("DS") || roles.includes("SuperAdmin") || roles.includes("Admin") || roles.includes("RP") || roles.includes("CSSCT") || roles.includes("CSE")) ? (
         <div>
           <h1>Prochain rendez-vous:</h1>
-          {error && <p style={{color: "red"}}>{error} </p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
           <p>Sujet de la réunion: {appointment.subject}</p>
           <p>Date: {appointment.date}</p>
           <p>
@@ -115,11 +124,10 @@ export default function Page() {
           </p>
           <p>{appointment.linkMeeting}</p>
 
-        {roles.includes("Admin") || roles.includes("SuperAdmin") && (
-          <button onClick={openModal}>Modifier le rendez-vous</button>
-        )}
+          {(roles.includes("Admin") || roles.includes("SuperAdmin")) && (
+            <button onClick={openModal}>Modifier le rendez-vous</button>
+          )}
 
-          {/* Modal pour modifier le rendez-vous */}
           {isModalOpen && (
             <div className="modal">
               <div className="modal-content">
@@ -158,7 +166,7 @@ export default function Page() {
                       required
                     />
                   </div>
-                  {error && <p style={{color: "red"}}>{error} </p>}
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                   <button type="submit">Enregistrer les modifications</button>
                   <button type="button" onClick={closeModal}>
                     Annuler
@@ -167,13 +175,17 @@ export default function Page() {
               </div>
             </div>
           )}
+
+          {/* Affichage conditionnel basé sur l'état visibleSection */}
+          {visibleSection === "RP" && <SectionRP />}
+          {visibleSection === "CSE" && <SectionCSE />}
+          {visibleSection === "CSSCT" && <SectionCSSCT />}
         </div>
       ) : (
         <p>
           Vous vous êtes perdu ? Revenez à l&apos;<Link href="/">accueil</Link>
         </p>
       )}
-
     </>
   );
 }

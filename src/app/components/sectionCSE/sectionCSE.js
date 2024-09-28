@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { fetchWithToken } from "../../utils/fetchWithToken";
 import Link from 'next/link';
-import './sectionRP.css';
+import './sectionCSE.css';
 
-export default function SectionRP() {
+export default function SectionCSE() {
     const [documents, setDocuments] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // État pour gérer le chargement
@@ -13,7 +13,7 @@ export default function SectionRP() {
     useEffect(() => {
         async function fetchDoc() {
             try {
-                const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/8`);
+                const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/7`);
                 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des documents');
@@ -35,7 +35,7 @@ export default function SectionRP() {
 
     return (
         <div>
-            <h2>Documents RP</h2>
+            <h2>Documents CSE</h2>
 
             {isLoading && <p>Chargement des documents...</p>}
             {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
