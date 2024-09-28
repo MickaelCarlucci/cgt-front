@@ -84,7 +84,24 @@ export default function Page() {
 
   return (
     <>
-      {roles.includes("Elus") || roles.includes("SuperAdmin") ? (
+    <div className="navbar-elected">
+        {roles.includes("DS") ||
+          roles.includes("CSE") ||
+          roles.includes("SuperAdmin") ||
+          (roles.includes("Admin") && <Link href={"#"}>CSE</Link>)}
+
+        {roles.includes("DS") ||
+          roles.includes("CSSCT") ||
+          roles.includes("SuperAdmin") ||
+          (roles.includes("Admin") && <Link href={"#"}>CSSCT</Link>)}
+
+        {roles.includes("DS") ||
+          roles.includes("RP") ||
+          roles.includes("SuperAdmin") ||
+          (roles.includes("Admin") && <Link href={"#"}>RP</Link>)}
+      </div>
+
+      {roles.includes("DS") || roles.includes("SuperAdmin") || roles.includes("Admin") || roles.includes("RP") || roles.includes("CSSCT") || roles.includes("CSE") ? (
         <div>
           <h1>Prochain rendez-vous:</h1>
           {error && <p style={{color: "red"}}>{error} </p>}

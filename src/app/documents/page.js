@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import PdfViewer from "../components/pdfViewer/pdfViewer";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
+import './page.css'
 
 export default function DocumentPage() {
   const [pdfs, setPdfs] = useState([]); // Pour les fichiers PDF
