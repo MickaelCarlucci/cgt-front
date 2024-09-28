@@ -16,7 +16,7 @@ export default function DocumentPage() {
   const { data: session, status } = useSession();
 
   const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
-  const hasAccess = ["Admin", "SuperAdmin", "Membre"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
     roles.includes(role)
   );
 

@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react";
 import { Editor, EditorState, RichUtils, convertFromRaw, convertToRaw, Modifier } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { fetchWithToken } from "../../utils/fetchWithToken";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import './page.css';
 
 // Fonction utilitaire pour valider une URL et ajouter http si nécessaire
@@ -21,7 +22,6 @@ const isValidUrl = (string) => {
 };
 
 export default function EditNewsPage() {
-  const router = useRouter();
   const params = useParams();
   const { newsId } = params;
   const { data: session } = useSession();
@@ -32,6 +32,10 @@ export default function EditNewsPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [currentColor, setCurrentColor] = useState("#000000");
   const editorRef = useRef();
+
+  const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
+    roles.includes(role)
+  );
 
   useEffect(() => {
     if (newsId && session) {
@@ -184,6 +188,8 @@ export default function EditNewsPage() {
   }
 
   return (
+    <>
+    {hasAccess ? (
     <div style={{ margin: "20px" }}>
       <h1>Modifier la news</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -262,5 +268,9 @@ export default function EditNewsPage() {
         </button>
       </form>
     </div>
+    ):(
+      <p>Vous ne devriez pas être ici, merci de retourner à l&apos;<Link href={"/"}>accueil</Link></p>
+  )}
+    </>
   );
 }

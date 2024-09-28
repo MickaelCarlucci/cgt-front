@@ -76,7 +76,7 @@ export default function Page() {
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Vérification des rôles
-  const hasAccess = ["Admin", "SuperAdmin", "Membre"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
     roles.includes(role)
   );
 
@@ -275,7 +275,7 @@ export default function Page() {
                     {item.title}
                   </Link>
 
-                  {roles.includes("Admin") || roles.includes("SuperAdmin") && (
+                  {roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") && (
                     <>
                       {/* Lien de suppression */}
                       <Link href={"#"}>

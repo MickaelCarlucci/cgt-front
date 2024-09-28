@@ -34,7 +34,7 @@ export default function AdminNav() {
         </>
     ) : null }
 
-    {roles.includes("Elus") || roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") ? ( 
+    {roles.includes("DS") || roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") || roles.includes("CSE") || roles.includes("CSSCT") || roles.includes("RP") ? ( 
             <>
         <Link href="#">Tract</Link>
         <Link href="/elected">Elu(e)s et Mandaté(e)s</Link>

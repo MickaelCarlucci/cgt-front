@@ -14,7 +14,7 @@ export default function Page() {
 
   const roles = session?.user?.roles?.split(", ") || [];
 
-  const hasAccess = ["Admin", "SuperAdmin", "Membre"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
     roles.includes(role)
   );
 

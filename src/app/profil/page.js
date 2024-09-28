@@ -18,7 +18,7 @@ export default function Page() {
   const router = useRouter();
 
   const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
-  const hasAccess = ["Admin", "SuperAdmin", "Elus"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
     roles.includes(role)
 );
 

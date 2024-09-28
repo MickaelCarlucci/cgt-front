@@ -20,7 +20,7 @@ export default function Page() {
   const [error, setError] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
-  const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
+  const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );
   const userId = session?.user?.id;
