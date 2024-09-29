@@ -8,8 +8,10 @@ import "./page.css";
 export default function Page() {
   const { data: session, status } = useSession();
   const [centers, setCenters] = useState([]);
-  const [selectedCenter, setSelectedCenter] = useState(null);
   const [filteredElected, setFilteredElected] = useState([]);
+  const [rolesData, setRolesData] = useState([]);
+  const [selectedCenter, setSelectedCenter] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
   const [error, setError] = useState("");
 
   const roles = session?.user?.roles?.split(", ") || [];
@@ -18,65 +20,39 @@ export default function Page() {
     roles.includes(role)
   );
 
-  useEffect(() => {
-    const fetchElected = async () => {
-      try {
-        const response = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`
-        );
-        const data = await response.json();
-        setFilteredElected(data); // Initialise les élus filtrés avec toutes les données
-      } catch (error) {
-        setError("Erreur lors de la récupération des utilisateurs");
-      }
-    };
-    if (status === "authenticated") {
-      fetchElected();
+  // Fonction générique pour fetch les données
+  const fetchData = async (url, setter, errorMsg) => {
+    try {
+      const response = await fetchWithToken(url);
+      const data = await response.json();
+      setter(data);
+    } catch (error) {
+      setError(errorMsg);
     }
-  }, [status]);
+  };
 
   useEffect(() => {
-    const fetchCenters = async () => {
-      try {
-        const response = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
-        );
-        const data = await response.json();
-        setCenters(data);
-      } catch (error) {
-        setError("Erreur lors de la récupération des centres.");
-      }
-    };
-
     if (status === "authenticated") {
-      fetchCenters();
+      fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`, setFilteredElected, "Erreur lors de la récupération des utilisateurs");
+      fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/roles`, setRolesData, "Erreur lors de la récupération des rôles");
+      fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`, setCenters, "Erreur lors de la récupération des centres");
     }
   }, [status]);
 
   const listElectedByCenter = async (centerId) => {
-    try {
-      setSelectedCenter(centerId); // Met à jour l'état pour le centre sélectionné
-      const response = await fetchWithToken(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected/${centerId}`
-      );
-      const data = await response.json();
-      setFilteredElected(data); // Mets à jour les élus filtrés
-    } catch (error) {
-      setError("Erreur lors de la récupération des utilisateurs.");
-    }
+    setSelectedCenter(centerId);
+    fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected/${centerId}`, setFilteredElected, "Erreur lors de la récupération des utilisateurs par centre.");
+  };
+
+  const listElectedByRole = async (roleId) => {
+    setSelectedRole(roleId);
+    fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/electedRole/${roleId}`, setFilteredElected, "Erreur lors de la récupération des utilisateurs par rôle.");
   };
 
   const resetFilters = async () => {
     setSelectedCenter(null);
-    try {
-      const response = await fetchWithToken(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`
-      );
-      const data = await response.json();
-      setFilteredElected(data);
-    } catch (error) {
-      setError("Erreur lors de la récupération des utilisateurs.");
-    }
+    setSelectedRole(null);
+    fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`, setFilteredElected, "Erreur lors de la récupération des utilisateurs.");
   };
 
   return (
@@ -88,7 +64,10 @@ export default function Page() {
             <button onClick={resetFilters}>Afficher tous vos élus</button>
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
+          
+          {/* Filtres par centres et rôles */}
           <div>
+            <h4>Filtres</h4>
             {/* Boucle sur les centres en excluant ceux avec l'id 14 et 15 */}
             {centers
               .filter((center) => center.id !== 14 && center.id !== 15)
@@ -101,22 +80,28 @@ export default function Page() {
                   <Link href={"#"}>{center.name}</Link>
                 </div>
               ))}
+            
+            {/* Boucle sur les rôles avec l'ID 4, 5, 6, ou 7 */}
+            {rolesData
+              .filter((role) => [4, 5, 6, 7].includes(role.id))
+              .map((role) => (
+                <div key={role.id} value={role.id} onClick={() => listElectedByRole(role.id)}>
+                  <Link href={"#"}>{role.name}</Link>
+                </div>
+              ))}
           </div>
+          
+          {/* Liste des élus filtrés */}
           <div>
-            {/* Boucle sur les élus filtrés */}
             {filteredElected.map((elected) => (
               <div key={elected.id}>
-                <h3>
-                  {elected.firstname} {elected.lastname}
-                </h3>
+                <h3>{elected.lastname} {elected.firstname}</h3>
                 {elected.phone && (
-                  <p>
-                    Numéro de téléphone <span>{elected.phone}</span>
-                  </p>
+                  <p>Numéro de téléphone: <span>{elected.phone}</span></p>
                 )}
-                <p>
-                  Adresse mail: <span>{elected.mail}</span>
-                </p>
+                <p>Adresse mail: <span>{elected.mail}</span></p>
+                <p>Mandat(s): {elected.roles}</p>
+                <p>Centre: {elected.center_name}</p>
               </div>
             ))}
           </div>
