@@ -12,6 +12,7 @@ export default function DocumentPage() {
   const [cseDocuments, setCseDocuments] = useState([]);
   const [RPDocuments, setRPDocuments] = useState([]);
   const [CSSCTDocuments, setCSSCTDocuments] = useState([]);
+  const [utilDocuments, setUtilDocuments] = useState([]);
   const [error, setError] = useState(null);
   const { data: session, status } = useSession();
 
@@ -30,15 +31,17 @@ export default function DocumentPage() {
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`),
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`),
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/4`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/5`)
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/5`),
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/10`)
           ]);
 
-          const [pdfData, docData, cseData, rpData, cssctData] = await Promise.all([
+          const [pdfData, docData, cseData, rpData, cssctData, utilsData] = await Promise.all([
             pdfRes.json(),
             docRes.json(),
             cseRes.json(),
             rpRes.json(),
-            cssctRes.json()
+            cssctRes.json(),
+            utilsRes.json()
           ]);
 
           setPdfs(pdfData);
@@ -46,6 +49,7 @@ export default function DocumentPage() {
           setCseDocuments(cseData);
           setRPDocuments(rpData);
           setCSSCTDocuments(cssctData);
+          setUtilDocuments(utilsData);
           setError(null);
         } catch (err) {
           setError("Erreur lors de la récupération des documents");
@@ -65,6 +69,26 @@ export default function DocumentPage() {
           <p>(Cliquez sur le document de votre choix pour le télécharger)</p>
           {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
           
+          <div>
+            <h3>Documents utiles</h3>
+            <ul>
+              {utilDocuments.map((doc) => (
+                <li key={doc.id}>
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    {doc.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div>
             <h3>Liste des accords d&apos;entreprise</h3>
             <ul>
