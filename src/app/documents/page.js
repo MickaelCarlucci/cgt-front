@@ -12,7 +12,7 @@ export default function DocumentPage() {
   const [cseDocuments, setCseDocuments] = useState([]);
   const [RPDocuments, setRPDocuments] = useState([]);
   const [CSSCTDocuments, setCSSCTDocuments] = useState([]);
-  const [utilDocuments, setUtilDocuments] = useState([]);
+  const [utilsDocuments, setUtilsDocuments] = useState([]);
   const [error, setError] = useState(null);
   const { data: session, status } = useSession();
 
@@ -26,7 +26,7 @@ export default function DocumentPage() {
     if (status === 'authenticated') {
       const fetchAllDocuments = async () => {
         try {
-          const [pdfRes, docRes, cseRes, rpRes, cssctRes] = await Promise.all([
+          const [pdfRes, docRes, cseRes, rpRes, cssctRes, utilsRes] = await Promise.all([
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`),
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`),
             fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`),
@@ -49,7 +49,7 @@ export default function DocumentPage() {
           setCseDocuments(cseData);
           setRPDocuments(rpData);
           setCSSCTDocuments(cssctData);
-          setUtilDocuments(utilsData);
+          setUtilsDocuments(utilsData);
           setError(null);
         } catch (err) {
           setError("Erreur lors de la récupération des documents");
@@ -72,7 +72,7 @@ export default function DocumentPage() {
           <div>
             <h3>Documents utiles</h3>
             <ul>
-              {utilDocuments.map((doc) => (
+              {utilsDocuments.map((doc) => (
                 <li key={doc.id}>
                   <a
                     href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
