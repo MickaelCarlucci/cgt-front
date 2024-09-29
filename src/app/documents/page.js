@@ -2,169 +2,168 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import PdfViewer from "../components/pdfViewer/pdfViewer";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
 import './page.css'
 
 export default function DocumentPage() {
-  const [pdfs, setPdfs] = useState([]); // Pour les fichiers PDF
-  const [documents, setDocuments] = useState([]); // Pour les fichiers Word
+  const [pdfs, setPdfs] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [cseDocuments, setCseDocuments] = useState([]);
-  const [selectedPdf, setSelectedPdf] = useState(null);
-  const [error, setError] = useState(null); // Initialisation à null
+  const [RPDocuments, setRPDocuments] = useState([]);
+  const [CSSCTDocuments, setCSSCTDocuments] = useState([]);
+  const [error, setError] = useState(null);
   const { data: session, status } = useSession();
 
-  const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = session?.user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
     roles.includes(role)
   );
 
-  // Récupérer les PDF (accords)
+  // Regrouper tous les fetch dans un seul useEffect et vérifier l'authentification
   useEffect(() => {
-    async function fetchPdfs() {
-      try {
-        const res = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`
-        );
-        const data = await res.json();
-        setPdfs(data);
-        setError(null); // Réinitialiser l'erreur si la récupération a réussi
-      } catch (err) {
-        setError("Erreur lors de la récupération des documents");
-        console.error("Erreur lors de la récupération des documents:", err);
-      }
+    if (status === 'authenticated') {
+      const fetchAllDocuments = async () => {
+        try {
+          const [pdfRes, docRes, cseRes, rpRes, cssctRes] = await Promise.all([
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`),
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`),
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`),
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/4`),
+            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/5`)
+          ]);
+
+          const [pdfData, docData, cseData, rpData, cssctData] = await Promise.all([
+            pdfRes.json(),
+            docRes.json(),
+            cseRes.json(),
+            rpRes.json(),
+            cssctRes.json()
+          ]);
+
+          setPdfs(pdfData);
+          setDocuments(docData);
+          setCseDocuments(cseData);
+          setRPDocuments(rpData);
+          setCSSCTDocuments(cssctData);
+          setError(null);
+        } catch (err) {
+          setError("Erreur lors de la récupération des documents");
+          console.error("Erreur lors de la récupération des documents:", err);
+        }
+      };
+
+      fetchAllDocuments();
     }
-
-    fetchPdfs();
-  }, []);
-
-  useEffect(() => {
-    async function fetchDocs() {
-      try {
-        const res = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`
-        );
-        const data = await res.json();
-        setDocuments(data);
-        setError(null); // Réinitialiser l'erreur si la récupération a réussi
-      } catch (err) {
-        setError("Erreur lors de la récupération des documents");
-        console.error("Erreur lors de la récupération des documents:", err);
-      }
-    }
-
-    fetchDocs();
-  }, []);
-
-  // Récupérer les tracts
-  useEffect(() => {
-    async function fetchDocsCSE() {
-      try {
-        const response = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`
-        );
-        const data = await response.json();
-        setCseDocuments(data);
-        setError(null); // Réinitialiser l'erreur si la récupération a réussi
-      } catch (err) {
-        setError("Erreur lors de la récupération des documents");
-        console.error("Erreur lors de la récupération des documents:", err);
-      }
-    }
-
-    fetchDocsCSE();
-  }, []);
-
-  const handlePdfSelection = (pdfUrl) => {
-    // Si le PDF sélectionné est le même que celui cliqué, le désélectionner
-    if (selectedPdf === pdfUrl) {
-      setSelectedPdf(null);
-    } else {
-      setSelectedPdf(pdfUrl);
-    }
-  };
+  }, [status]);
 
   return (
     <>
       {hasAccess ? (
         <div>
+          <h1>Documents relatifs à l&apos;entreprise</h1>
+          <p>(Cliquez sur le document de votre choix pour le télécharger)</p>
+          {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
+          
           <div>
-            <h1>Liste des accords</h1>
+            <h3>Liste des accords d&apos;entreprise</h3>
             <ul>
               {pdfs.map((pdf) => (
                 <li key={pdf.id}>
-                  <button
-                    onClick={() =>
-                      handlePdfSelection(
-                        `${process.env.NEXT_PUBLIC_API_URL}${pdf.pdf_url}`
-                      )
-                    }
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${pdf.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
                   >
                     {pdf.title}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h1>Liste des tracts</h1>
+            <h3>Liste des tracts</h3>
             <ul>
               {documents.map((doc) => (
                 <li key={doc.id}>
-                  <button
-                    onClick={() =>
-                      handlePdfSelection(
-                        `${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`
-                      )
-                    }
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
                   >
                     {doc.title}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h1>Liste des Documents relatifs au CSE</h1>
+            <h3>Liste des Documents relatifs au Comité Social et Economique</h3>
             <ul>
               {cseDocuments.map((cse) => (
                 <li key={cse.id}>
-                  <button
-                    onClick={() =>
-                      handlePdfSelection(
-                        `${process.env.NEXT_PUBLIC_API_URL}${cse.pdf_url}`
-                      )
-                    }
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${cse.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
                   >
                     {cse.title}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {selectedPdf && (
-            <div>
-              {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
-              <h3>Visualisation du PDF</h3>
-              <PdfViewer file={selectedPdf} />
-              <div>
-                {/* Lien pour télécharger le PDF via la nouvelle route du backend */}
-                <Link
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${selectedPdf
-                    .split("/")
-                    .pop()}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button>Télécharger le PDF</button>
-                </Link>
-              </div>
-            </div>
-          )}
+          <div>
+            <h3>Liste des Documents relatifs aux Représentants de Proximité</h3>
+            <ul>
+              {RPDocuments.map((RP) => (
+                <li key={RP.id}>
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${RP.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    {RP.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3>Liste des Documents relatifs à la Commission Santé, Sécurité et Conditions de Travail</h3>
+            <ul>
+              {CSSCTDocuments.map((doc) => (
+                <li key={doc.id}>
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                      .split("/")
+                      .pop()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    {doc.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       ) : (
         <p>
