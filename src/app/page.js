@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import PdfViewer from "./components/pdfViewer/pdfViewer";
 import { fetchWithToken } from "./utils/fetchWithToken";
 import { convertFromRaw } from "draft-js";
-import { stateToHTML } from "draft-js-export-html"; // Import pour la conversion du contenu Draft.js en HTML
+import { stateToHTML } from "draft-js-export-html"; // Pour la conversion du contenu Draft.js en HTML
 import "./page.module.css";
 
 // Fonction pour convertir le contenu Draft.js brut en HTML
@@ -26,8 +25,8 @@ const convertRawContentToHTML = (rawContent) => {
             target: "_blank",
           },
           style: {
-            color: "#1e90ff", // Couleur spécifique pour les liens
-            textDecoration: "underline", // Pour souligner les liens
+            color: "#1e90ff",
+            textDecoration: "underline",
           },
         };
       }
@@ -40,7 +39,7 @@ const convertRawContentToHTML = (rawContent) => {
       styleArray.forEach((style) => {
         if (style.startsWith("COLOR_")) {
           customStyles.style = {
-            color: style.replace("COLOR_", ""), // Extrait la couleur hexadécimale
+            color: style.replace("COLOR_", ""),
           };
         }
         if (style === "BOLD") {
@@ -58,41 +57,36 @@ const convertRawContentToHTML = (rawContent) => {
     },
   };
 
-  // Convertir le ContentState en HTML avec les options personnalisées
   return stateToHTML(contentState, options);
 };
 
 export default function Page() {
-  const { data: session } = useSession();
-  const [information, setInformation] = useState(null);
-  const [pdf, setPdf] = useState();
-  const [error, setError] = useState();
+  const [documents, setDocuments] = useState([]); // Pour stocker les résultats combinés de la requête
+  const [error, setError] = useState(null);
 
-  const roles = session?.user?.roles?.split(", ") || [];
-  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
-    roles.includes(role)
-  );
 
   useEffect(() => {
-    async function fetchNews() {
+    // Fonction pour récupérer les documents combinés
+    async function fetchDocuments() {
       try {
         const response = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/information/news`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/information/news` // L'API qui exécute la requête UNION
         );
         const data = await response.json();
-        setInformation(data);
-      } catch (error) {
-        setError("Erreur lors de la soumission.");
-        console.error("Submission Error:", error);
+        setDocuments(data); // Stocke les résultats de la requête combinée
+        setError(null); // Réinitialise l'erreur
+      } catch (err) {
+        setError("Erreur lors de la récupération des documents");
+        console.error("Erreur lors de la récupération des documents:", err);
       }
     }
-    fetchNews();
+    fetchDocuments();
   }, []);
 
   const parseContent = (content) => {
     if (typeof content === "string") {
       try {
-        // Essayons de parser la chaîne JSON
+        // Essaie de parser la chaîne JSON
         const parsedContent = JSON.parse(content);
         return parsedContent;
       } catch (error) {
@@ -100,26 +94,8 @@ export default function Page() {
         return null;
       }
     }
-    // Si c'est déjà un objet, on le retourne tel quel
-    return content;
+    return content; // Si c'est déjà un objet, on le retourne
   };
-
-  useEffect(() => {
-    async function fetchDoc() {
-      try {
-        const res = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/last`
-        );
-        const data = await res.json();
-        setPdf(data);
-        setError(null); // Réinitialiser l'erreur si la récupération a réussi
-      } catch (err) {
-        setError("Erreur lors de la récupération des documents");
-        console.error("Erreur lors de la récupération des documents:", err);
-      }
-    }
-    fetchDoc();
-  }, []);
 
   return (
     <>
@@ -127,74 +103,72 @@ export default function Page() {
       {error && <p className="error">{error}</p>}
 
       <div>
-        {information && (
-          <div key={information.id}>
-            <h2>{information.title}</h2>
+        {/* Boucle sur les documents combinés provenant de la table information et leaflet_stored */}
+        {documents.map((doc) => (
+          <div key={doc.id}>
+            <h2>{doc.title}</h2>
 
-            <div>
-              {/* Vérifier si le contenu est une chaîne ou du contenu Draft.js */}
-              {information.contain ? (
-                // D'abord parser le contenu s'il s'agit d'une chaîne JSON
-                (() => {
-                  const parsedContent = parseContent(information.contain);
-                  if (parsedContent && parsedContent.blocks) {
-                    return (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: convertRawContentToHTML(parsedContent),
-                        }}
-                      />
-                    );
-                  } else {
-                    return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
-                  }
-                })()
-              ) : (
-                <p>Le contenu n&apos;est pas disponible</p>
-              )}
-            </div>
+            {/* Vérifie si le document provient de la table `information` ou `leaflet_stored` */}
+            {doc.source === "information" ? (
+              <div>
+                {/* Gère le contenu Draft.js pour la table information */}
+                {doc.contain ? (
+                  (() => {
+                    const parsedContent = parseContent(doc.contain);
+                    if (parsedContent && parsedContent.blocks) {
+                      return (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: convertRawContentToHTML(parsedContent),
+                          }}
+                        />
+                      );
+                    } else {
+                      return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
+                    }
+                  })()
+                ) : (
+                  <p>Le contenu n&apos;est pas disponible</p>
+                )}
 
-            {information.image_url && (
-              <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}${information.image_url}`}
-                alt="Une image syndicaliste"
-                width={500}
-                height={300}
-                layout="intrinsic"
-                objectFit="cover"
-              />
+                {/* Affiche l'image si disponible */}
+                {doc.image_url && (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
+                    alt="Une image syndicaliste"
+                    width={500}
+                    height={300}
+                    layout="intrinsic"
+                    objectFit="cover"
+                  />
+                )}
+              </div>
+            ) : (
+              <div>
+                {/* Gère le lecteur PDF pour la table leaflet_stored */}
+                {doc.pdf_url ? (
+                  <>
+                    <PdfViewer file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`} />
+                    <div>
+                      <Link
+                        href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                          .split("/")
+                          .pop()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <button>Télécharger le PDF</button>
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <p>PDF non disponible</p>
+                )}
+              </div>
             )}
           </div>
-        )}
+        ))}
       </div>
-
-      {hasAccess && pdf && (
-        <div key={pdf.id}>
-          <h2>{pdf.title}</h2>
-
-          {/* Construction de l'URL complète du PDF et vérification que `pdf.pdf_url` est défini */}
-          {pdf.pdf_url ? (
-            <PdfViewer file={`${process.env.NEXT_PUBLIC_API_URL}${pdf.pdf_url}`} />
-          ) : (
-            <p>PDF non disponible</p>
-          )}
-
-          <div>
-            {/* Vérification que pdf.pdf_url est bien défini avant de générer le lien de téléchargement */}
-            {pdf.pdf_url && (
-              <Link
-                href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${pdf.pdf_url
-                  .split("/")
-                  .pop()}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <button>Télécharger le PDF</button>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
     </>
   );
 }
