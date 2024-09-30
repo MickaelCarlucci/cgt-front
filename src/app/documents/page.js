@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
-import './page.css'
+import './page.css';
 
 export default function DocumentPage() {
   const [pdfs, setPdfs] = useState([]);
@@ -14,6 +14,7 @@ export default function DocumentPage() {
   const [CSSCTDocuments, setCSSCTDocuments] = useState([]);
   const [utilsDocuments, setUtilsDocuments] = useState([]);
   const [error, setError] = useState(null);
+  const [activeSection, setActiveSection] = useState(null); // Nouvelle variable pour gérer la section active
   const { data: session, status } = useSession();
 
   const roles = session?.user?.roles?.split(", ") || [];
@@ -23,7 +24,7 @@ export default function DocumentPage() {
 
   // Regrouper tous les fetch dans un seul useEffect et vérifier l'authentification
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === "authenticated") {
       const fetchAllDocuments = async () => {
         try {
           const [pdfRes, docRes, cseRes, rpRes, cssctRes, utilsRes] = await Promise.all([
@@ -61,6 +62,11 @@ export default function DocumentPage() {
     }
   }, [status]);
 
+  // Fonction pour basculer entre l'affichage et la fermeture des sections
+  const toggleSection = (sectionName) => {
+    setActiveSection(activeSection === sectionName ? null : sectionName);
+  };
+
   return (
     <>
       {hasAccess ? (
@@ -68,125 +74,149 @@ export default function DocumentPage() {
           <h1>Documents relatifs à l&apos;entreprise</h1>
           <p>(Cliquez sur le document de votre choix pour le télécharger)</p>
           {error && <p style={{ color: "red" }}>Erreur : {error}</p>}
-          
-          <div>
-            <h3>Documents utiles</h3>
-            <ul>
-              {utilsDocuments.map((doc) => (
-                <li key={doc.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {doc.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("utils")}>
+              Documents utiles {activeSection === "utils" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "utils" && (
+              <ul>
+                {utilsDocuments.map((doc) => (
+                  <li key={doc.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {doc.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <div>
-            <h3>Liste des accords d&apos;entreprise</h3>
-            <ul>
-              {pdfs.map((pdf) => (
-                <li key={pdf.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${pdf.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {pdf.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("accords")}>
+              Liste des accords d&apos;entreprise {activeSection === "accords" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "accords" && (
+              <ul>
+                {pdfs.map((pdf) => (
+                  <li key={pdf.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${pdf.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {pdf.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <div>
-            <h3>Liste des tracts</h3>
-            <ul>
-              {documents.map((doc) => (
-                <li key={doc.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {doc.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("tracts")}>
+              Liste des tracts {activeSection === "tracts" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "tracts" && (
+              <ul>
+                {documents.map((doc) => (
+                  <li key={doc.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {doc.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <div>
-            <h3>Liste des Documents relatifs au Comité Social et Economique</h3>
-            <ul>
-              {cseDocuments.map((cse) => (
-                <li key={cse.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${cse.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {cse.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("cse")}>
+              Documents relatifs au Comité Social et Economique {activeSection === "cse" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "cse" && (
+              <ul>
+                {cseDocuments.map((cse) => (
+                  <li key={cse.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${cse.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {cse.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <div>
-            <h3>Liste des Documents relatifs aux Représentants de Proximité</h3>
-            <ul>
-              {RPDocuments.map((RP) => (
-                <li key={RP.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${RP.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {RP.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("rp")}>
+              Documents relatifs aux Représentants de Proximité {activeSection === "rp" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "rp" && (
+              <ul>
+                {RPDocuments.map((RP) => (
+                  <li key={RP.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${RP.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {RP.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          <div>
-            <h3>Liste des Documents relatifs à la Commission Santé, Sécurité et Conditions de Travail</h3>
-            <ul>
-              {CSSCTDocuments.map((doc) => (
-                <li key={doc.id}>
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                      .split("/")
-                      .pop()}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    {doc.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="navigation">
+            <h3 onClick={() => toggleSection("cssct")}>
+              Documents relatifs à la Commission Santé, Sécurité et Conditions de Travail {activeSection === "cssct" ? "▲" : "▼"}
+            </h3>
+            {activeSection === "cssct" && (
+              <ul>
+                {CSSCTDocuments.map((doc) => (
+                  <li key={doc.id}>
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
+                        .split("/")
+                        .pop()}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      {doc.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       ) : (
