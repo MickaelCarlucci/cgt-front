@@ -33,6 +33,7 @@ export default function EditNewsPage() {
   const [currentColor, setCurrentColor] = useState("#000000");
   const editorRef = useRef();
 
+  const roles = session?.user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );

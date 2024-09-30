@@ -31,6 +31,7 @@ export default function Header() {
             <nav className={`navbar ${menuOpen ? 'open' : ''}`}>
                 <Link href="/">Accueil</Link>
                 <Link href="/actualities">Actualités</Link>
+                <Link href="/polls">Sondages</Link>
                 <Link href="/documents">Documents</Link>
                 <Link href="/contact">Contact</Link>
 

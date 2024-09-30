@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
@@ -21,8 +21,10 @@ const isValidUrl = (string) => {
 };
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
+  const [sections, setSections] = useState([]);
+  const [selectedSection, setSelectedSection] = useState("")
   const [editorStates, setEditorStates] = useState([EditorState.createEmpty()]); // tableau d'états d'éditeurs
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -116,6 +118,26 @@ export default function Page() {
     return JSON.stringify(convertToRaw(contentState)); // Envoi au format JSON
   };
 
+  useEffect(() => {
+    async function fetchSection() {
+      try {
+        const response = await fetchWithToken(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`
+        )
+        if (!response.ok)
+          throw new Error("Erreur lors de la récupération des sections");
+        const data = await response.json();
+        setSections(data)
+      } catch (error) {
+        console.error("Erreur lors de la récupération des sections:", error);
+        setError("Erreur lors de la récupération des sections.");
+      }
+    }
+    if (status === "authenticated" && userId) {
+      fetchSection();
+    }
+  }, [status, userId])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -126,7 +148,7 @@ export default function Page() {
     );
     formData.append("contain", contentsInHTML); // Conversion en chaîne
     formData.append("image", imageFile);
-    formData.append("sectionId", 4);
+    formData.append("sectionId", selectedSection);
 
     try {
       const response = await fetchWithToken(
@@ -260,7 +282,18 @@ export default function Page() {
                 </div>
               ))}
             </div>
-
+              <div>
+                <select
+                value={selectedSection}
+                onChange={(e) => setSelectedSection(e.target.value)}
+                required >
+                  <option value="" disabled>Selectionnez une section</option>
+                  {sections.filter((section) => section.id === 6 || section.id === 11).map((section) => (
+                    <option key={section.id} value={section.id} >
+                      {section.name}
+                    </option>
+                  ))}
+                </select>
             <label style={{ display: "block", marginBottom: "10px" }}>
               Image (optionnel)
               <input
@@ -269,6 +302,7 @@ export default function Page() {
                 style={{ marginLeft: "10px" }}
               />
             </label>
+            </div>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
             <button type="submit" style={{ padding: "10px 20px" }}>Envoyer</button>
