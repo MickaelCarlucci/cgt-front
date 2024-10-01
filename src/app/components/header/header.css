@@ -1,77 +1,103 @@
 .navbar-with-img {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 3%;
-    margin: 3%;
-    border: 2px solid black;
-    border-radius: 1.5rem;
-    box-shadow: 10px 10px 12px;
-    background-color: #d30013;
-    position: relative;
-}
-
-.image-navbar {
-width: 5%;
-padding-right: 3%;
-position: absolute;
-left: 5%;
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  flex-wrap: nowrap;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  transition: box-shadow 0.3s ease;
+  justify-content: space-between;
+  padding: 10px; /* Ajoute du padding pour mieux positionner les éléments */
 }
 
 .navbar {
-    display: flex;
-    gap: 20px;
-}
-
-.navbar a {
-    text-decoration: none;
-    color: white;
-    font-size: 1.3rem;
-    transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
-}
-
-.navbar a:hover {
-    color: white;
-    font-weight: bold;
-    transform: scale(1.1);
-}
-
-.menu-toggle {
-    display: none; /* Par défaut, l'icône de menu est masquée sur grand écran */
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .button-red-off {
-    background:#d30013;
-    border: 1px solid #d30013;
-    border-radius: 1.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  .button-red-off:hover {
-    transform: scale(1.2);
-  }
-
-
-@media (max-width: 900px) {
-.navbar-with-img {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
 }
 
 .image-navbar {
+  width: 4%;
+  padding-left: 3%;
+}
+
+.navbar a {
+  padding: 10px;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, font-weight 0.3s ease-in-out;
+  color: black;
+}
+
+.navbar a:nth-last-child(2) {
+  margin-left: 60px;
+}
+
+.navbar a:hover {
+  color: #d30013;
+  font-weight: bold;
+}
+
+.navbar-with-img.scrolled {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  padding-top: 70px; /* Ajuste cette valeur selon la hauteur de ta navbar */
+}
+
+.button-red-off {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 1%;
+  margin-right: 30px;
+  background-color: #d30013;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.button-red-off:hover {
+  background-color: #91010d;
+  color: rgb(224, 214, 214);
+}
+
+.disconnect-text {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100; /* Assure que l'icône reste toujours au-dessus du menu */
+}
+
+/* Responsive styles pour les écrans de moins de 900px */
+@media (max-width: 900px) {
+  .navbar-with-img {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px; /* Ajoute un peu de padding pour positionner correctement le contenu */
+  }
+
+  .image-navbar {
     display: flex;
     position: inherit;
     width: 10%;
-}
+  }
 
-.navbar{
+  .navbar {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 200px;
+    width: 250px; /* Ajuste la largeur du menu pour le mobile */
     background-color: white;
     flex-direction: column;
     align-items: flex-start;
@@ -79,21 +105,29 @@ left: 5%;
     gap: 15px;
     transition: right 0.3s ease-in-out;
     z-index: 1000;
-    border: 1px solid #d30013;
-    border-radius: 1.5rem;
-    background-color: #d30013;
-}
+    border: 1px solid black;
+    border-radius: 10px;
+  }
 
-.navbar.open {
-    right: 15%; /* Le menu s'affiche sur le côté lorsque ouvert */
+  .navbar.open {
+    right: 0; /* Le menu se déplace à droite lors de l'ouverture */
   }
 
   .menu-toggle {
-    display: block; /* Affiche l'icône de menu sur mobile */
+    display: block;
+    position: fixed;
+    top: 10px;
+    right: 20px; /* Positionne l'icône dans le coin supérieur droit */
+    z-index: 1100; /* Assure que le bouton de menu est toujours visible */
   }
 
-  .navbar a,
-  .navbar button {
+  .navbar a
+   {
     font-size: 1.4rem;
+    color: black; /* Change la couleur du texte des liens en blanc pour mobile */
+  }
+
+  .navbar button {
+    padding: 2%;
   }
 }

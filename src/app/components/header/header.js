@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,16 +10,30 @@ import './header.css';
 export default function Header() {
     const { data: session, status } = useSession();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false); // State pour suivre le scroll
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 50) { // Ajouter la classe après un scroll de 50px
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
-        <div className="navbar-with-img">
+        <div className={`navbar-with-img ${isScrolled ? 'scrolled' : ''}`}> {/* Ajoute la classe scrolled en fonction du scroll */}
             <div className="image-navbar">
                 <Link href="/"><Image
                     layout="responsive"
                     placeholder="blur"
                     src={imgCGT}
-                    width="200"
-                    height="200"
+                    width="10px"
+                    height="10px"
                     alt="logo blanc du syndicat CGT sur fond rouge"
                 /></Link>
             </div>
@@ -39,11 +53,11 @@ export default function Header() {
                     <>
                         <Link href="/profil">Profil</Link>
                         <button className="button-red-off" onClick={() => signOut({ callbackUrl: '/' })}>
-                            <FaPowerOff size={18} />
+                            <FaPowerOff size={18} /> <span className="disconnect-text">Déconnexion</span>
                         </button>
                     </>
                 ) : (
-                    <Link href="/auth">Connectez-vous</Link>
+                    <Link href="/auth">Connexion</Link>
                 )}
             </nav>
         </div>
