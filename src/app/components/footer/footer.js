@@ -15,7 +15,7 @@ export default function Footer() {
           Si vous souhaitez contacter l&apos;un de vos représentants n&apos;hésitez pas à
           vous diriger vers la rubrique <Link href="/contact">contact</Link>
         </p>
-        <p><Link href={"/legalMentions"}>Mentions légales</Link></p>
+        <p className="legalMentions"><Link  href={"/legalMentions"}>Mentions légales</Link></p>
       </div>
       <div className="target">
         Suivez-nous également sur nos autres réseaux

@@ -11,13 +11,16 @@
 .footer a {
     text-decoration: none;
     color: rgb(255, 254, 254);
-
-    transition: transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
 .footer a:hover {
     font-weight: bold;
     transform: scale(1.1);
+}
+
+.legalMentions {
+    text-decoration: underline;
 }
 
 .footer div {
