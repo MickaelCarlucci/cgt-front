@@ -1,15 +1,23 @@
 .navAdmin {
+    border-top: 1px solid black;
     border-bottom: 1px solid;
-    padding: 1%;
-    width: 80%;
+    width: 90%;
+    display: flex;
     margin: 0 auto;
+    margin-top: 2%;
+}
+
+.navbar-admin {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .navbar-admin a {
     text-decoration: none;
     color: #333;
     padding: 2%;
-    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
 .navbar-admin a:hover {
@@ -28,26 +36,24 @@
 
 @media (max-width: 900px) {
     .navbar-admin {
-        display: none; /* Masquer par défaut */
         position: fixed;
         top: 100px;
-        left: 15%; /* Positionnez selon votre besoin */
-        width: 200px;
+        left: -100%; /* Positionnez selon votre besoin */
+        width: 250px;
+        transition: left 0.3s ease-in-out;
         flex-direction: column;
         align-items: flex-start;
         padding: 20px;
         gap: 15px;
-        transition: transform 0.3s ease-in-out;
+        transition: left 0.3s ease-in-out;
         z-index: 1000;
-        border: 1px solid #d30013;
+        border: 1px solid black;
         border-radius: 1.5rem;
-        background-color: #d30013;
-        transform: translateX(-100%); /* Cache le menu hors de l'écran à gauche */
+        background-color: white;
     }
 
     .navbar-admin.open {
-        display: flex; /* Affiche le menu lorsqu'il est ouvert */
-        transform: translateX(0); /* Ramène le menu dans la vue */
+        left: 100px;
     }
 
     .menu-toggle-admin {
@@ -55,11 +61,12 @@
     }
 
     .navbar-admin a {
-        color: white;
+        color: black;
+
     }
 
     .navbar-admin a:hover {
-        color: black;
+        color: d30013;
     }
 
     .navbar-admin a,
