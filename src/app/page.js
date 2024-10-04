@@ -1,18 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PdfViewer from "./components/pdfViewer/pdfViewer";
-import { fetchWithToken } from "./utils/fetchWithToken";
 import { convertFromRaw } from "draft-js";
-import { stateToHTML } from "draft-js-export-html"; // Pour la conversion du contenu Draft.js en HTML
+import { stateToHTML } from "draft-js-export-html";
 import "./page.css";
 
 // Fonction pour convertir le contenu Draft.js brut en HTML
 const convertRawContentToHTML = (rawContent) => {
   const contentState = convertFromRaw(rawContent);
 
-  // Configuration pour les entités (comme les liens)
   const options = {
     entityStyleFn: (entity) => {
       const entityType = entity.getType();
@@ -35,7 +33,6 @@ const convertRawContentToHTML = (rawContent) => {
       const styleArray = styles.toArray();
       const customStyles = {};
 
-      // Gérer les couleurs (exemple : COLOR_#cb3434)
       styleArray.forEach((style) => {
         if (style.startsWith("COLOR_")) {
           customStyles.style = {
@@ -66,13 +63,14 @@ const convertRawContentToHTML = (rawContent) => {
 export default function Page() {
   const [documents, setDocuments] = useState([]); // Pour stocker les résultats combinés de la requête
   const [error, setError] = useState(null);
+  const containerRef = useRef(null); // Référence pour observer les div-homepage
 
   useEffect(() => {
     // Fonction pour récupérer les documents combinés
     async function fetchDocuments() {
       try {
-        const response = await fetchWithToken(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/information/news` // L'API qui exécute la requête UNION
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/information/news`
         );
         const data = await response.json();
         setDocuments(data); // Stocke les résultats de la requête combinée
@@ -85,10 +83,40 @@ export default function Page() {
     fetchDocuments();
   }, []);
 
+  // Observer pour l'animation d'apparition
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Ajoute la classe 'appear' si l'élément entre dans le viewport
+            entry.target.classList.add("appear");
+          } else {
+            // Retire la classe 'appear' si l'élément sort du viewport
+            entry.target.classList.remove("appear");
+          }
+        });
+      },
+      {
+        threshold: Array.from(Array(101).keys(), (x) => x / 100), // Gamme de 0% à 100%
+      }
+    );
+
+    const items = containerRef.current.querySelectorAll(".div-homepage");
+    items.forEach((item) => {
+      observer.observe(item);
+    });
+
+    return () => {
+      items.forEach((item) => {
+        observer.unobserve(item);
+      });
+    };
+  }, [documents]);
+
   const parseContent = (content) => {
     if (typeof content === "string") {
       try {
-        // Essaie de parser la chaîne JSON
         const parsedContent = JSON.parse(content);
         return parsedContent;
       } catch (error) {
@@ -96,7 +124,7 @@ export default function Page() {
         return null;
       }
     }
-    return content; // Si c'est déjà un objet, on le retourne
+    return content;
   };
 
   return (
@@ -106,16 +134,14 @@ export default function Page() {
       </h1>
       {error && <p className="error">{error}</p>}
 
-      <div className="container">
+      <div className="container" ref={containerRef}>
         {/* Boucle sur les documents combinés provenant de la table information et leaflet_stored */}
         {documents.map((doc) => (
           <div className="div-homepage" key={doc.id}>
             <h2>{doc.title}</h2>
 
-            {/* Vérifie si le document provient de la table `information` ou `leaflet_stored` */}
             {doc.source === "information" ? (
               <div className="div-information">
-                {/* Gère le contenu Draft.js pour la table information */}
                 {doc.contain ? (
                   (() => {
                     const parsedContent = parseContent(doc.contain);
@@ -129,47 +155,38 @@ export default function Page() {
                         />
                       );
                     } else {
-                      return (
-                        <p>
-                          Le contenu n&apos;est pas disponible ou est mal
-                          formaté.
-                        </p>
-                      );
+                      return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
                     }
                   })()
                 ) : (
                   <p>Le contenu n&apos;est pas disponible</p>
                 )}
 
-                {/* Affiche l'image si disponible */}
                 {doc.image_url && (
-  <div className="image-container">
-    <div className="image-wrapper">
-      <Image
-        src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
-        alt="Une image syndicaliste"
-        layout="fill"  // Remplit tout l'espace du conteneur
-        objectFit="contain"  // Recadre l'image pour couvrir le conteneur sans déformation
-      />
-    </div>
-  </div>
-)}
+                  <div className="image-container">
+                    <div className="image-wrapper">
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
+                        alt="Une image syndicaliste"
+                        layout="fill"
+                        objectFit="contain"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div>
-                {/* Gère le lecteur PDF pour la table leaflet_stored */}
                 {doc.pdf_url ? (
                   <>
-                  <div className="pdf-container">
-                    <PdfViewer
-                      file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`}
-                    />
+                    <div className="pdf-container">
+                      <PdfViewer
+                        file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`}
+                      />
                     </div>
                     <div>
                       <Link
-                        href={`${
-                          process.env.NEXT_PUBLIC_API_URL
-                        }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
+                        href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

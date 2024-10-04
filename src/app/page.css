@@ -4,18 +4,25 @@
 }
 
 .div-homepage {
-    border: 2px solid #2f2f2f;
+    border: 4px solid #d30013;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-radius: 30px;
-    background-color: #2f2f2f;
     margin: 2%;
     margin-left: 10%;
     margin-right: 10%;
     padding: 1%;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateX(-100%); /* Départ à gauche hors de l'écran */
+    transition: transform 1s ease-out, opacity 1s ease-out;
 }
+
+.div-homepage.appear {
+    opacity: 1;
+    transform: translateX(0); /* Position normale */
+  }
 
 .div-homepage h2 {
     color: #d30013;

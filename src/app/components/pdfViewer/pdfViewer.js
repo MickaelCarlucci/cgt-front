@@ -5,12 +5,16 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 
 export default function PdfViewer({ file }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null); // Référence pour le conteneur
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfDocument, setPdfDocument] = useState(null);
   const [renderTask, setRenderTask] = useState(null);
   const [pdfjsLib, setPdfjsLib] = useState(null); // Stocker pdfjsLib dans l'état
   const [isRendering, setIsRendering] = useState(false); // Empêcher le rendu multiple
+
+  const minScale = 1.3; // Échelle minimale pour la lisibilité
+  const defaultScale = 1.5; // Échelle par défaut si la taille le permet
 
   // Charger pdfjsLib uniquement côté client
   useEffect(() => {
@@ -36,17 +40,21 @@ export default function PdfViewer({ file }) {
     }
 
     pdf.getPage(pageNum).then((page) => {
-      const scale = 1.3;
-      const viewport = page.getViewport({ scale });
+      const containerWidth = containerRef.current.offsetWidth; // Obtenir la largeur du conteneur
+      const viewport = page.getViewport({ scale: defaultScale });
+
+      // Calculer l'échelle dynamique en fonction de la taille du conteneur
+      const scale = Math.max(containerWidth / viewport.width, minScale); // Limiter l'échelle à minScale pour éviter que le texte ne devienne trop petit
+      const scaledViewport = page.getViewport({ scale });
 
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+      canvas.height = scaledViewport.height;
+      canvas.width = scaledViewport.width;
 
       const renderContext = {
         canvasContext: context,
-        viewport: viewport,
+        viewport: scaledViewport,
       };
 
       // Lancer la tâche de rendu de la nouvelle page
@@ -104,9 +112,9 @@ export default function PdfViewer({ file }) {
   };
 
   return (
-    <div>
-      <canvas ref={canvasRef}></canvas>
-      <div>
+    <div ref={containerRef} style={{ width: '100%' }}>
+      <canvas ref={canvasRef} style={{ width: '100%', height: 'auto' }}></canvas>
+      <div style={{ textAlign: 'center', marginTop: '10px' }}>
         <button onClick={goToPrevPage} disabled={pageNumber <= 1 || isRendering}>
           Précédente
         </button>

@@ -1,0 +1,15 @@
+canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+  }
+  
+  p {
+    font-size: 16px;
+  }
