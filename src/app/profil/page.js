@@ -371,10 +371,10 @@ export default function Page() {
                 </p>
               </div>
 
-              <div className="information-profile">
                 <h2>Mes informations:</h2>
-                <ul>
-                  <li>
+              <div className="information-profile">
+                
+                  <div className="element-profil">
                     Mon pseudonyme:{" "}
                     <span>
                       {userData.pseudo}{" "}
@@ -383,8 +383,8 @@ export default function Page() {
                         onClick={() => openModal("pseudo")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Mon Prénom:{" "}
                     <span>
                       {userData.firstname}{" "}
@@ -393,8 +393,8 @@ export default function Page() {
                         onClick={() => openModal("firstname")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Mon Nom:{" "}
                     <span>
                       {userData.lastname}{" "}
@@ -403,8 +403,8 @@ export default function Page() {
                         onClick={() => openModal("lastname")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Mon adresse mail:{" "}
                     <span>
                       {userData.mail}{" "}
@@ -413,9 +413,9 @@ export default function Page() {
                         onClick={() => openModal("mail")}
                       />
                     </span>
-                  </li>
+                  </div>
                   {hasAccess ? (
-                    <li>
+                    <div className="element-profil">
                       Mon numéro de téléphone:{" "}
                       <span>
                         {userData.phone}{" "}
@@ -424,9 +424,9 @@ export default function Page() {
                           onClick={() => openModal("phone")}
                         />
                       </span>
-                    </li>
+                    </div>
                   ) : null}
-                  <li>
+                  <div className="element-profil">
                     Changer mon mot de passe{" "}
                     <span>
                       <MdMode
@@ -434,8 +434,8 @@ export default function Page() {
                         onClick={() => openModal("password")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Ma première question secrète:{" "}
                     <span>
                       {userData.first_question}{" "}
@@ -444,8 +444,8 @@ export default function Page() {
                         onClick={() => openModal("first_question")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Ma deuxième question secrète:{" "}
                     <span>
                       {userData.second_question}{" "}
@@ -454,8 +454,8 @@ export default function Page() {
                         onClick={() => openModal("second_question")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Centre de rattachement:{" "}
                     <span>
                       {getCenterName(userData.center_id)}{" "}
@@ -464,8 +464,8 @@ export default function Page() {
                         onClick={() => openModal("center_id")}
                       />
                     </span>
-                  </li>
-                  <li>
+                  </div>
+                  <div className="element-profil">
                     Activité principale:{" "}
                     <span>
                       {getActivityName(userData.activity_id)}{" "}
@@ -474,17 +474,11 @@ export default function Page() {
                         onClick={() => openModal("activity_id")}
                       />
                     </span>
-                  </li>
-                  <li>
-                    Supprimer mon compte:{" "}
-                    <span>
-                     <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("delete")}
-                      />
-                    </span>
-                  </li>
-                </ul>
+                  </div>
+                  <div className="element-profil delete-profil" onClick={() => openModal("delete")} >
+                    Supprimer mon compte{" "}
+                  </div>
+                
               </div>
 
               {/* Modal pour modifier un champ */}
