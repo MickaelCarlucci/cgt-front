@@ -1,6 +1,6 @@
 .navAdmin.hidden {
-    display: none;
-  }
+  display: none;
+}
 
 .navAdmin {
     border-top: 1px solid black;
@@ -10,8 +10,6 @@
     margin: 0 auto;
     margin-top: 4%;
 }
-
-
 
 .navbar-admin {
     display: flex;

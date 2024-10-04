@@ -24,7 +24,7 @@
 .information-profile {
     background-color: #e1d1d148;
     border-radius: 20px;
-    width: 98%;
+    width: 92%;
     padding-top: 0.8%;
     padding-bottom: 2%;
     margin: 1% auto;
@@ -71,8 +71,9 @@
 
   @media (max-width: 900px) {
     .information-profile {
-
+      grid-template-columns: repeat(1, 1fr); /* 3 colonnes égales */
     }
+    
     .information-profile li {
       flex-direction: column;
       align-items: center;
