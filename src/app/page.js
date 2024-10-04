@@ -6,7 +6,7 @@ import PdfViewer from "./components/pdfViewer/pdfViewer";
 import { fetchWithToken } from "./utils/fetchWithToken";
 import { convertFromRaw } from "draft-js";
 import { stateToHTML } from "draft-js-export-html"; // Pour la conversion du contenu Draft.js en HTML
-import "./page.module.css";
+import "./page.css";
 
 // Fonction pour convertir le contenu Draft.js brut en HTML
 const convertRawContentToHTML = (rawContent) => {
@@ -49,7 +49,10 @@ const convertRawContentToHTML = (rawContent) => {
           customStyles.style = { ...customStyles.style, fontStyle: "italic" };
         }
         if (style === "UNDERLINE") {
-          customStyles.style = { ...customStyles.style, textDecoration: "underline" };
+          customStyles.style = {
+            ...customStyles.style,
+            textDecoration: "underline",
+          };
         }
       });
 
@@ -63,7 +66,6 @@ const convertRawContentToHTML = (rawContent) => {
 export default function Page() {
   const [documents, setDocuments] = useState([]); // Pour stocker les résultats combinés de la requête
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     // Fonction pour récupérer les documents combinés
@@ -99,18 +101,20 @@ export default function Page() {
 
   return (
     <>
-      <h1>Bienvenue sur le site de la CGT Teleperformance France</h1>
+      <h1 className="title-homepage">
+        Bienvenue sur le site de la CGT Teleperformance France
+      </h1>
       {error && <p className="error">{error}</p>}
 
-      <div>
+      <div className="container">
         {/* Boucle sur les documents combinés provenant de la table information et leaflet_stored */}
         {documents.map((doc) => (
-          <div key={doc.id}>
+          <div className="div-homepage" key={doc.id}>
             <h2>{doc.title}</h2>
 
             {/* Vérifie si le document provient de la table `information` ou `leaflet_stored` */}
             {doc.source === "information" ? (
-              <div>
+              <div className="div-information">
                 {/* Gère le contenu Draft.js pour la table information */}
                 {doc.contain ? (
                   (() => {
@@ -118,13 +122,19 @@ export default function Page() {
                     if (parsedContent && parsedContent.blocks) {
                       return (
                         <div
+                          className="content-text"
                           dangerouslySetInnerHTML={{
                             __html: convertRawContentToHTML(parsedContent),
                           }}
                         />
                       );
                     } else {
-                      return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
+                      return (
+                        <p>
+                          Le contenu n&apos;est pas disponible ou est mal
+                          formaté.
+                        </p>
+                      );
                     }
                   })()
                 ) : (
@@ -133,27 +143,33 @@ export default function Page() {
 
                 {/* Affiche l'image si disponible */}
                 {doc.image_url && (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
-                    alt="Une image syndicaliste"
-                    width={500}
-                    height={300}
-                    layout="intrinsic"
-                    objectFit="cover"
-                  />
-                )}
+  <div className="image-container">
+    <div className="image-wrapper">
+      <Image
+        src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
+        alt="Une image syndicaliste"
+        layout="fill"  // Remplit tout l'espace du conteneur
+        objectFit="contain"  // Recadre l'image pour couvrir le conteneur sans déformation
+      />
+    </div>
+  </div>
+)}
               </div>
             ) : (
               <div>
                 {/* Gère le lecteur PDF pour la table leaflet_stored */}
                 {doc.pdf_url ? (
                   <>
-                    <PdfViewer file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`} />
+                  <div className="pdf-container">
+                    <PdfViewer
+                      file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`}
+                    />
+                    </div>
                     <div>
                       <Link
-                        href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                          .split("/")
-                          .pop()}`}
+                        href={`${
+                          process.env.NEXT_PUBLIC_API_URL
+                        }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
