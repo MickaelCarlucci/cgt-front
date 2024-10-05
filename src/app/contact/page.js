@@ -61,13 +61,13 @@ export default function Page() {
         <div>
           <h1>Liste des élus CGT</h1>
           <div>
-            <button onClick={resetFilters}>Afficher tous vos élus</button>
+            <button className="contact-button" onClick={resetFilters}>Tous vos élu(e)s</button>
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           
+            <h4>Filtres:</h4>
           {/* Filtres par centres et rôles */}
-          <div>
-            <h4>Filtres</h4>
+          <div className="list-center" >
             {/* Boucle sur les centres en excluant ceux avec l'id 14 et 15 */}
             {centers
               .filter((center) => center.id !== 14 && center.id !== 15)
@@ -92,16 +92,16 @@ export default function Page() {
           </div>
           
           {/* Liste des élus filtrés */}
-          <div>
+          <div className="contact-information">
             {filteredElected.map((elected) => (
-              <div key={elected.id}>
+              <div className="information-elected" key={elected.id}>
                 <h3>{elected.lastname} {elected.firstname}</h3>
                 {elected.phone && (
                   <p>Numéro de téléphone: <span>{elected.phone}</span></p>
                 )}
                 <p>Adresse mail: <span>{elected.mail}</span></p>
-                <p>Mandat(s): {elected.roles}</p>
-                <p>Centre: {elected.center_name}</p>
+                <p>Mandat(s): <span>{elected.roles}</span></p>
+                <p>Centre: <span>{elected.center_name}</span></p>
               </div>
             ))}
           </div>
