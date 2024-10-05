@@ -1,0 +1,16 @@
+.container-legalMentions {
+    padding: 2%;
+}
+
+.mention-h1 {
+    font-style: italic;
+    text-shadow: 2px 2px 3px black;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.underline {
+    text-decoration: underline;
+}

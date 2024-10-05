@@ -118,7 +118,7 @@ export default function Page() {
     <>
       {hasAccess ? (
         <div>
-          <div >
+          <div className="poll">
             <h1>Derniers Sondages</h1>
             {errorMessage && <p className="error">{errorMessage}</p>}
               {polls.map((poll) => (

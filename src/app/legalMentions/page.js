@@ -1,9 +1,9 @@
 import "./page.css";
 export default function Page() {
   return (
+    <div className="container-legalMentions">
     <div>
-    <div>
-      <h1>Mentions légales du site.</h1>
+      <h1 className="mention-h1">Mentions légales du site.</h1>
       <p>
         Cette application a pour but d&apos;informer et d&apos;entretenir un
         lien entre les élus CGT de l&apos;entreprise Teleperformance France et les salariés de l&apos;entreprise.
@@ -37,7 +37,7 @@ export default function Page() {
           le site ou contacter Didier Thiebauld à l&apos;adresse suivante : [email de
           contact].
         </p>
-        <p>Ce site n&apos;utilise pas de cookie qui exploite vos données.</p>
+        <p>Ce site n&apos;utilise pas de cookies qui exploite vos données.</p>
       </div>
     </div>
   );
