@@ -1,0 +1,56 @@
+.results-container {
+    padding: 20px;
+    background-color: #fae0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 2% auto;
+  }
+  
+  .results-container h2 {
+    text-align: center;
+    color: #d30013;
+    margin-bottom: 20px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .result-item {
+    margin-bottom: 15px;
+  }
+  
+  .bar-container {
+    background-color: #dfb2b2;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 5px;
+    width: 100%;
+    position: relative;
+  }
+  
+  .bar {
+    background-color: #d30013;
+    height: 100%;
+    width: 0; /* La largeur commence à 0 pour l'animation */
+    animation: growBar 1.5s forwards ease-in-out; /* Animation qui grandit la barre */
+  }
+  
+  @keyframes growBar {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(--bar-width); /* Utilisation de la variable CSS pour la largeur */
+    }
+  }
+  
+  .result-item span {
+    font-size: 14px;
+    font-weight: bold;
+    color: #4d0000;
+  }
+  

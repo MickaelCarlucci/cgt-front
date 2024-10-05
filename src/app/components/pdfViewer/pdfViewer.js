@@ -26,6 +26,24 @@ export default function PdfViewer({ file }) {
     loadPdfJsLib();
   }, []);
 
+  useEffect(() => {
+    if (!pdfjsLib || !file || !containerRef.current) return; // Ne pas continuer si pdfjsLib, file, ou containerRef n'est pas prêt
+  
+    const loadingTask = pdfjsLib.getDocument(file);
+  
+    loadingTask.promise.then(
+      (pdf) => {
+        setPdfDocument(pdf);  // Stocker le document PDF
+        setNumPages(pdf.numPages);  // Mettre à jour le nombre total de pages
+        setPageNumber(1);  // Réinitialiser à la première page
+      },
+      (error) => {
+        console.error('Erreur lors du chargement du PDF', error);
+      }
+    );
+  }, [file, pdfjsLib, containerRef]); // Attendre que pdfjsLib, file et containerRef soient prêts
+  
+
   // Fonction de rendu des pages
   const renderPage = useCallback((pdf, pageNum) => {
     if (isRendering) {

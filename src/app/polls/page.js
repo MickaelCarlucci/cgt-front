@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
+import './page.css';
 
 export default function Page() {
     const { data: session, status } = useSession()
@@ -117,12 +118,11 @@ export default function Page() {
     <>
       {hasAccess ? (
         <div>
-          <div>
+          <div >
             <h1>Derniers Sondages</h1>
             {errorMessage && <p className="error">{errorMessage}</p>}
-            <ul>
               {polls.map((poll) => (
-                <li key={poll.id}>
+                <div className="poll-container" key={poll.id}>
                   <Link
                     href={"#"}
                     onClick={() =>
@@ -150,9 +150,8 @@ export default function Page() {
                         />
                       </div>
                     )}
-                </li>
+                </div>
               ))}
-            </ul>
           </div>
         </div>
       ) : (

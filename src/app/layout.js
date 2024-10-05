@@ -94,10 +94,7 @@ function AuthWrapper({ children }) {
   }, [session, status]);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth");
-    }
-
+    
     if (session?.error === "RefreshAccessTokenError") {
       signOut({ callbackUrl: "/auth" });
     }

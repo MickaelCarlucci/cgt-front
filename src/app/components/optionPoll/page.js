@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react";
-
+import './page.css'
 
 const PollDetails = ({ pollId, onVote }) => {
     const [options, setOptions] = useState([]);
@@ -20,7 +20,7 @@ const PollDetails = ({ pollId, onVote }) => {
     }, [pollId]);
   
     return (
-      <div>
+      <div className="option-container">
         <h2>Options de vote</h2>
         <ul>
           {options.map((option) => (

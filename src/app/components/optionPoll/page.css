@@ -1,0 +1,49 @@
+.option-container h2 {
+    font-style: italic;
+    animation: fadeIn 2s ease-in-out;
+}
+
+
+.option-container {
+    margin: 20px;
+}
+
+.option-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.option-container li {
+    margin-bottom: 10px;
+}
+
+.option-container button {
+    width: 200px; /* Largeur fixe pour les boutons */
+    height: 50px; /* Hauteur fixe pour les boutons */
+    box-sizing: border-box; /* S'assure que le padding est inclus dans la largeur/hauteur */
+    padding: 10px;
+    font-size: 16px; /* Taille de la police */
+    text-align: center; /* Centrer le texte dans le bouton */
+    border: 1px solid #ccc; /* Ajoute une bordure légère */
+    border-radius: 5px;
+    background-color: #f0f0f0; /* Couleur de fond */
+    cursor: pointer; /* Change le curseur pour un bouton */
+    transition: background-color 0.3s ease; /* Animation douce pour changement de couleur */
+    animation: fadeIn 3s ease-in-out;
+}
+
+.option-container button:hover {
+    background-color: #e0e0e0; /* Changement de couleur au survol */
+}
+
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
