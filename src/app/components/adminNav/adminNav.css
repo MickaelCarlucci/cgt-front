@@ -27,7 +27,7 @@
 .navbar-admin a:hover {
     color: #d30013;
     font-weight: bold;
-    transform: scale(1.2);
+    transform: scale(1.1);
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 }
 

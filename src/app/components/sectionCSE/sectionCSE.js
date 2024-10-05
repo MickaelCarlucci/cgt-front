@@ -34,7 +34,7 @@ export default function SectionCSE() {
     }, []);
 
     return (
-        <div>
+        <div className='selected-section'>
             <h2>Documents CSE</h2>
 
             {isLoading && <p>Chargement des documents...</p>}
@@ -54,7 +54,7 @@ export default function SectionCSE() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    <button>Télécharger le PDF</button>
+                                    <button className='download-button'>Télécharger</button>
                                 </Link>
                             ) : (
                                 <span>PDF non disponible</span>

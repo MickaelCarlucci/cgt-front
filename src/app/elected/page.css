@@ -1,3 +1,48 @@
+.navbar-elected {
+  margin: 3%;
+}
+
+.navbar-elected a {
+  text-decoration: none;
+  padding: 1%;
+  color: #d30013;
+  transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
+}
+
+.navbar-elected a:hover {
+  color: #a90b18;
+  font-weight: bold;
+}
+
+.appointment-div {
+  border: #d30013 solid 2px;
+  border-radius: 30px;
+  margin: 2% auto;
+  width: 600px;
+  box-shadow: 0 0 5px #d30013, 0 0 10px #d30013, 0 0 20px #d30013;
+}
+
+.appointment-div p a {
+  text-decoration: none;
+  color: #d30013;
+  transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
+}
+
+.appointment-div p a:hover {
+  color: #a90b18;
+  font-weight: bold;
+}
+
+.button-appointment {
+  padding: 1%;
+  border-radius: 10px;
+  background-color: #d3001216;
+  cursor: pointer;
+  font-weight: bold;
+  border: 1px solid #d3001216;
+}
+
+
 .modal {
     position: fixed;
     top: 0;
@@ -9,25 +54,41 @@
     justify-content: center;
     align-items: center;
   }
+
   .modal-content {
     background: white;
     padding: 20px;
     border-radius: 4px;
     width: 50%;
   }
-  form div {
+
+  .modal-content h3 {
+    color: #d30013;
+  }
+
+  .modal-form-elected div {
     margin-bottom: 15px;
     margin-right: 3%;
   }
-  label {
+
+  .modal-label-elected {
     display: block;
     font-weight: bold;
   }
-  input {
+
+  .modal-input-elected {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
   }
-  button {
+
+  .modal-button-elected {
     margin-right: 10px;
+  }
+
+  @media (max-width: 650px) {
+    .appointment-div {
+      width: 100%;
+    }
+
   }

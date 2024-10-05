@@ -111,31 +111,33 @@ export default function Page() {
       </div>
 
       {(roles.includes("DS") || roles.includes("SuperAdmin") || roles.includes("Admin") || roles.includes("RP") || roles.includes("CSSCT") || roles.includes("CSE")) ? (
-        <div>
+        <div className="content-elected">
           <h1>Prochain rendez-vous:</h1>
           {error && <p style={{ color: "red" }}>{error}</p>}
+          <div className="appointment-div">
           <p>Sujet de la réunion: {appointment.subject}</p>
           <p>Date: {appointment.date}</p>
           <p>
             <Link target="_blank" rel="noopener noreferrer" href={`${appointment.linkMeeting}`}>
               Cliquez ici
-            </Link>
+            </Link> {" "}
             pour accéder à la réunion ou copiez le lien ci-dessous.
           </p>
           <p>{appointment.linkMeeting}</p>
-
+          </div>
           {(roles.includes("Admin") || roles.includes("SuperAdmin")) && (
-            <button onClick={openModal}>Modifier le rendez-vous</button>
+            <button className="button-appointment" onClick={openModal}>Modifier le rendez-vous</button>
           )}
 
           {isModalOpen && (
             <div className="modal">
               <div className="modal-content">
                 <h3>Modifier le rendez-vous</h3>
-                <form onSubmit={handleSubmit}>
+                <form className="modal-form-elected" onSubmit={handleSubmit}>
                   <div>
-                    <label htmlFor="subject">Sujet :</label>
-                    <input
+                    <label className="modal-label-elected" htmlFor="subject">Sujet :</label>
+                    <input 
+                    className="modal-input-elected"
                       type="text"
                       id="subject"
                       name="subject"
@@ -145,8 +147,9 @@ export default function Page() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="date">Date :</label>
+                    <label className="modal-label-elected" htmlFor="date">Date :</label>
                     <input
+                    className="modal-input-elected"
                       type="text"
                       id="date"
                       name="date"
@@ -156,8 +159,9 @@ export default function Page() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="linkMeeting">Lien de la réunion :</label>
+                    <label className="modal-label-elected" htmlFor="linkMeeting">Lien de la réunion :</label>
                     <input
+                    className="modal-input-elected"
                       type="text"
                       id="linkMeeting"
                       name="linkMeeting"
@@ -167,8 +171,8 @@ export default function Page() {
                     />
                   </div>
                   {error && <p style={{ color: "red" }}>{error}</p>}
-                  <button type="submit">Enregistrer les modifications</button>
-                  <button type="button" onClick={closeModal}>
+                  <button className="modal-button-elected" type="submit">Enregistrer les modifications</button>
+                  <button className="modal-button-elected" type="button" onClick={closeModal}>
                     Annuler
                   </button>
                 </form>
