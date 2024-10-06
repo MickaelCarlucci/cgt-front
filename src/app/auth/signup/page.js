@@ -136,7 +136,7 @@ export default function Page() {
             />
           </label>
         </div>
-        <div className="input-group">
+        <div className="input-group email-case">
           <label>
             Mail:
             <input
@@ -147,6 +147,7 @@ export default function Page() {
             />
           </label>
         </div>
+        <div className="password-group" >
         <div className="input-group">
 
         <label style={{ position: "relative", display: "inline-block" }}>
@@ -155,7 +156,6 @@ export default function Page() {
         type={passwordType}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        style={{  width: "88%",  }} // Ajuster la taille du champ de saisie
         required
       />
       <span
@@ -174,7 +174,7 @@ export default function Page() {
     </label>
 
         </div>
-        <div className="input-group">
+        <div className="input-group password-confirm">
           <label>
             Confirmez votre mot de passe:
             <input
@@ -185,10 +185,10 @@ export default function Page() {
             />
           </label>
         </div>
+        </div>
         <div className="input-group">
           <label>
-            Ecrivez une question de sécurité pour récupérer votre mot de passe
-            en cas d&apos;oublie:
+            Question 1
             <input
               type="text"
               value={firstQuestion}
@@ -199,7 +199,7 @@ export default function Page() {
         </div>
         <div className="input-group">
           <label>
-            Ecrivez la réponse à votre question (attention les Majuscules et
+            Ecrivez la réponse à votre question pour récupérer votre mot de passe (attention les Majuscules et
             miniscules ont de l&apos;importance):
             <input
               type="text"
@@ -211,8 +211,7 @@ export default function Page() {
         </div>
         <div className="input-group">
           <label>
-            Ecrivez une seconde question de sécurité pour récupérer votre mot de
-            passe en cas d&apos;oublie:
+            Question 2
             <input
               type="text"
               value={secondQuestion}
