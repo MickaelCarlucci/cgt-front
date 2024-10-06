@@ -270,7 +270,7 @@ export default function EditNewsPage() {
       </form>
     </div>
     ):(
-      <p>Vous ne devriez pas être ici, merci de retourner à l&apos;<Link href={"/"}>accueil</Link></p>
+      <p className="connected">Vous ne devriez pas être ici, merci de retourner à l&apos;<Link href={"/"}>accueil</Link></p>
   )}
     </>
   );

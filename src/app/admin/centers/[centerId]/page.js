@@ -228,7 +228,7 @@ const handleAddActivity= async (e) => {
         </div>
       </div>
       ) : (
-        <p>Vous ne devriez pas être ici, merci de revenir à <Link href={"/"}> L&apos;accueil</Link></p>
+        <p className="connected">Vous ne devriez pas être ici, merci de revenir à <Link href={"/"}> L&apos;accueil</Link></p>
       )}
     </>
   );

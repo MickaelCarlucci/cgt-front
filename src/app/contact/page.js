@@ -107,7 +107,7 @@ export default function Page() {
           </div>
         </div>
       ) : (
-        <p>
+        <p className="connected">
           Vous devez vous inscrire pour avoir accès à la liste des élus, cliquez{" "}
           <Link href="/auth/signup">ici</Link>
         </p>

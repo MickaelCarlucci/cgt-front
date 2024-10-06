@@ -195,7 +195,7 @@ export default function Page() {
                     </div>
                   </>
                 ) : (
-                  <p>PDF non disponible</p>
+                  <p className="connected">PDF non disponible</p>
                 )}
               </div>
             )}

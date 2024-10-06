@@ -309,7 +309,7 @@ export default function Page() {
           </form>
         </div>
       ) : (
-        <p>
+        <p className="connected">
           Vous ne devriez pas être ici ! Revenez à la page d&apos;
           <Link href="/">accueil</Link>
         </p>

@@ -706,11 +706,11 @@ export default function Page() {
               )}
             </div>
           ) : (
-            <p>Erreur lors de la récupération des données utilisateur.</p>
+            <p className="connected">Erreur lors de la récupération des données utilisateur.</p>
           )}
         </>
       ) : (
-        <p>
+        <p className="connected">
           Veuillez-vous connecter à votre compte <Link href="/auth">ici</Link>
         </p>
       )}

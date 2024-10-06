@@ -191,7 +191,7 @@ export default function Page() {
         </div>
       </div>
       ) : (
-        <p>Vous ne devriez pas être ici. Merci de revenir à <Link href={"/"}>L&apos;accueil</Link></p>
+        <p className="connected">Vous ne devriez pas être ici. Merci de revenir à <Link href={"/"}>L&apos;accueil</Link></p>
       )}
     </>
   );

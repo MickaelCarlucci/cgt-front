@@ -220,7 +220,7 @@ export default function DocumentPage() {
           </div>
         </div>
       ) : (
-        <p>
+        <p className="connected">
           Si vous souhaitez consulter cette page, merci de vous connecter{" "}
           <Link href="/auth">ici</Link>
         </p>

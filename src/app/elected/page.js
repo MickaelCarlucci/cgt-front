@@ -186,7 +186,7 @@ export default function Page() {
           {visibleSection === "CSSCT" && <SectionCSSCT />}
         </div>
       ) : (
-        <p>
+        <p className="connected">
           Vous vous êtes perdu ? Revenez à l&apos;<Link href="/">accueil</Link>
         </p>
       )}
