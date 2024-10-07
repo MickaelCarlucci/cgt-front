@@ -162,9 +162,10 @@ export default function Page() {
       {hasAccess ? (
         <div className="container">
           <div className="container-add-file">
-            <h1>Uploader un PDF</h1>
+            <h1>Uploader un fichier</h1>
             <form onSubmit={handleSubmit}>
-              <input type="file" onChange={handleFileChange} />
+              <input
+              type="file" onChange={handleFileChange} />
               <label>
                 Centre lié au document:
                 <select

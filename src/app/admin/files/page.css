@@ -1,7 +1,35 @@
 .container-add-file {
     background-color: #f0f0f0;
-    margin: 2%;
+    margin: 2% auto;
+    padding: 1%;
     width: 88%;
+}
+
+.container-add-file h1 {
+    text-decoration: underline;
+}
+
+.container-add-file form button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #d30013;
+    color: white;
+    font-weight: bold;
+    width: 167px;
+    cursor: pointer;
+    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.container-add-file button:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.container-add-file button:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
 }
 
 .container-add-file form {
@@ -20,6 +48,14 @@ form label {
 
 select {
     margin-left: 1%;
+}
+
+.container-managePdf h2 {
+    text-decoration: underline;
+}
+
+.container-managePdf ul li a {
+    color: #d30013;
 }
 
 
