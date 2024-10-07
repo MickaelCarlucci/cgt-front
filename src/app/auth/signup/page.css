@@ -94,14 +94,10 @@
   }
 
   .password-confirm {
-    width: 96%;
+    width: 100%;
     margin: 0 auto;
   }
   
-  .email-case input[type="email"] {
-    background-color: #d30013;
-  }
-
   .button-signin {
     padding: 15px;
     border: none;
@@ -123,24 +119,4 @@
     background-color: #d30013;
   }
 
-  
-  .bottom-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 400;
-  }
-  
-  .bottom-text a {
-    color: #d30013;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .bottom-text a:hover {
-    color: #d300125a;
-  }
   

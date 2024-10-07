@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import {  MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import "./page.css";
 
 export default function Page() {
@@ -16,15 +16,16 @@ export default function Page() {
   const [secondQuestion, setSecondQuestion] = useState("");
   const [secondAnswer, setSecondAnswer] = useState("");
   const [centerId, setCenterId] = useState("");
+  const [activityId, setActivityId] = useState(""); // Pour stocker l'activité choisie
   const [centers, setCenters] = useState([]);
+  const [activities, setActivities] = useState([]); // Pour stocker les activités
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [passwordType, setPasswordType] = useState("password");
   const router = useRouter();
 
-
+  // Récupérer la liste des centres
   useEffect(() => {
-    // Fonction pour récupérer les centres depuis l'API
     const fetchCenters = async () => {
       try {
         const response = await fetch(
@@ -39,6 +40,25 @@ export default function Page() {
 
     fetchCenters();
   }, []);
+
+  // Récupérer les activités une fois qu'un centre est sélectionné
+  useEffect(() => {
+    const fetchActivities = async () => {
+      if (centerId) {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${centerId}/activities`
+          );
+          const data = await response.json();
+          setActivities(data); // Mettre à jour les activités liées au centre
+        } catch (error) {
+          setError("Erreur lors de la récupération des activités.");
+        }
+      }
+    };
+
+    fetchActivities();
+  }, [centerId]); // Re-fetch des activités chaque fois que le centre change
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +79,7 @@ export default function Page() {
       secondQuestion,
       secondAnswer,
       centerId,
+      activityId, // Envoyer l'ID de l'activité avec les autres données
     };
 
     try {
@@ -73,26 +94,24 @@ export default function Page() {
         }
       );
 
-      // Vérifier le statut de la réponse et le message
-    if (!response.ok) {
+      if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || "Une erreur est survenue.");
         setMessage("");
         return;
       }
-  
+
       const data = await response.json();
       setMessage(data.message || "Mail d'inscription envoyé !");
       setError("");
-  
+
       // Redirection après succès
       setTimeout(() => {
-        router.push('/auth');  // Redirige vers une page de succès ou autre
-      }, 3000); // 3 secondes de délai
+        router.push('/auth');
+      }, 3000); 
     } catch (error) {
       setError("Erreur lors de la soumission.");
       setMessage("");
-      console.error("Submission Error:", error); // Ajoutez cette ligne pour déboguer
     }
   };
 
@@ -147,48 +166,40 @@ export default function Page() {
             />
           </label>
         </div>
-        <div className="password-group" >
-        <div className="input-group">
 
-        <label style={{ position: "relative", display: "inline-block" }}>
-      Mot de passe:
-      <input
-        type={passwordType}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <span
-        style={{
-          position: "absolute",
-          right: "10px",
-          top: "65%",
-          transform: "translateY(-50%)",
-          cursor: "pointer",
-          color: "black"
-        }}
-        onClick={togglePasswordVisibility}
-      >
-        {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
-      </span>
-    </label>
+        {/* Section Mot de passe */}
+        <div className="password-group">
+          <div className="input-group">
+            <label>
+              Mot de passe:
+              <input
+                type={passwordType}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span onClick={togglePasswordVisibility}>
+                {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
+              </span>
+            </label>
+          </div>
+          <div className="input-group password-confirm">
+            <label>
+              Confirmez votre mot de passe:
+              <input
+                type={passwordType}
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+        </div>
 
-        </div>
-        <div className="input-group password-confirm">
-          <label>
-            Confirmez votre mot de passe:
-            <input
-              type={passwordType}
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        </div>
+        {/* Section Question secrète */}
         <div className="input-group">
           <label>
-            Question 1
+            Question 1:
             <input
               type="text"
               value={firstQuestion}
@@ -199,8 +210,7 @@ export default function Page() {
         </div>
         <div className="input-group">
           <label>
-            Ecrivez la réponse à votre question pour récupérer votre mot de passe (attention les Majuscules et
-            miniscules ont de l&apos;importance):
+            Réponse 1 (Les majuscules et minuscules ont une importances):
             <input
               type="text"
               value={firstAnswer}
@@ -211,7 +221,7 @@ export default function Page() {
         </div>
         <div className="input-group">
           <label>
-            Question 2
+            Question 2:
             <input
               type="text"
               value={secondQuestion}
@@ -222,8 +232,7 @@ export default function Page() {
         </div>
         <div className="input-group">
           <label>
-            Ecrivez la réponse à votre question (attention les Majuscules et
-              miniscules ont de l&apos;importance):
+            Réponse 2 (Les majuscules et minuscules ont une importances):
             <input
               type="text"
               value={secondAnswer}
@@ -232,9 +241,11 @@ export default function Page() {
             />
           </label>
         </div>
+
+        {/* Sélection du centre */}
         <div className="input-group">
           <label>
-            Veuillez selectionner votre centre de rattachement:
+            Sélectionnez votre centre:
             <select
               value={centerId}
               onChange={(e) => setCenterId(e.target.value)}
@@ -251,6 +262,30 @@ export default function Page() {
             </select>
           </label>
         </div>
+
+        {/* Sélection de l'activité - Affiché uniquement si un centre est sélectionné */}
+        {centerId && (
+          <div className="input-group">
+            <label>
+              Sélectionnez votre activité:
+              <select
+                value={activityId}
+                onChange={(e) => setActivityId(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Sélectionnez une activité
+                </option>
+                {activities.map((activity) => (
+                  <option key={activity.id} value={activity.id}>
+                    {activity.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+
         <button className="button-signin" type="submit">
           S&apos;inscrire
         </button>
