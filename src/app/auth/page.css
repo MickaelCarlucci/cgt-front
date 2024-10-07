@@ -1,42 +1,37 @@
-.login-container {
-    background-color: #2f2f2f;
+.login-container-signin {
+    background-color: white;
     border-radius: 8px;
     box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
       rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
-      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
-      rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
-      rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+      rgba(0, 0, 0, 0.1) 2px 5px 40px 0px inset, rgba(0, 0, 0, 0.06) 2px 2px 1px,
+      rgba(0, 0, 0, 0.09) 2px 4px 2px, rgba(0, 0, 0, 0.09) 2px 8px 4px,
+      rgba(0, 0, 0, 0.09) 2px 16px 8px, rgba(0, 0, 0, 0.09) 2px 32px 16px;
     padding: 40px;
     max-width: 400px;
     width: 100%;
     text-align: center;
     margin: 0 auto;
+    margin-top: 5% ;
   }
   
-  .login-form {
+  .login-form-signin {
     display: flex;
     flex-direction: column;
   }
   
-  .heading {
-    color: #ffffff;
+  .heading-signin {
+    color: black;
     font-weight: 500;
     font-size: 40px;
-    margin-bottom: 5px;
-  }
-  
-  .paragraph {
-    color: #ffffff;
-    font-weight: 400;
-    font-size: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .input-group {
     margin-bottom: 20px;
   }
   
-  .input-group input {
+  .input-group-signin {
+    margin-bottom: 20px;
+    position: relative; /* Permet de positionner l'icône à l'intérieur de l'input */
+  }
+  
+  .input-group-signin input {
     background: none;
     border: 1px solid #353535;
     padding: 15px 23px;
@@ -51,9 +46,22 @@
       rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
   }
   
-  .input-group input:focus {
+  .input-group-signin input:focus {
     border-color: #d30013;
     outline: none;
+  }
+
+  .icon-visibility {
+    position: absolute;
+    right: 10px; /* Place l'icône à droite de l'input */
+    top: 50%;
+    transform: translateY(-50%); /* Centre verticalement l'icône */
+    cursor: pointer;
+    color: black; /* La couleur de l'icône */
+  }
+
+  .input-group-signin span {
+    color: black;
   }
   
   .button-signin {
@@ -66,7 +74,7 @@
       rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
       rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
       rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
-    color: #ffffff;
+    color: black;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
@@ -82,18 +90,19 @@
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
-    color: #ffffff;
+    color: black;
     font-size: 15px;
     font-weight: 400;
   }
   
-  .bottom-text a {
+  .bottom-text-signin a {
     color: #d30013;
+    font-weight: bold;
     text-decoration: none;
     transition: color 0.3s ease;
   }
   
-  .bottom-text a:hover {
-    color: #d300125a;
+  .bottom-text-signin a:hover {
+    color: #9a000d;
   }
   

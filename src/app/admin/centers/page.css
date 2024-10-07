@@ -1,0 +1,148 @@
+.main-contain {
+    display: flex;
+    justify-content:space-around;
+    margin: 5%;
+}
+
+.left-contain {
+    border: solid 3px #d30013;
+    border-radius: 8px;
+    box-shadow: 0 0 5px #d30013, 0 0 10px #d30013 , 0 0 15px #d30013,
+    rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
+      rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
+      rgba(0, 0, 0, 0.1) 0px 3px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+      rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+      rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+    
+    padding: 6%;
+
+}
+
+.right-contain {
+    border: solid 3px #d30013;
+    border-radius: 8px;
+    box-shadow: 0 0 5px #d30013, 0 0 10px #d30013 , 0 0 15px #d30013,
+    rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
+      rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
+      rgba(0, 0, 0, 0.1) 0px 3px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+      rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+      rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+    padding: 6%;
+}
+
+.contain-centers h2 {
+    text-decoration: underline;
+    margin-bottom: 20%;
+}
+
+.contain-centers ul li {
+    display: flex; /* Utilisation de Flexbox pour aligner le texte et l'icône */
+    align-items: center; /* Centre verticalement les éléments dans le li */
+    justify-content: center;
+    margin: 2%;
+}
+
+.contain-centers ul li a {
+    text-decoration: none;
+    color: #d30013;
+    margin-right: 3%;
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    font-weight: bold;
+    text-decoration: none;
+    overflow: hidden; /* Pour que l'effet de remplissage ne dépasse pas les bords */
+    transition: color 0.4s ease;
+}
+
+.contain-centers ul li a::before {
+    content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #d30013;
+  z-index: -1; /* Derrière le texte */
+  transition: top 0.4s ease; /* Transition de la position top pour l'effet dynamique */
+}
+
+.contain-centers ul li a:hover::before {
+    top: 0;
+}
+
+.contain-centers ul li a:hover {
+    color: white; /* Change la couleur du texte au survol */
+}
+
+.contain-centers ul li span {
+    display: inline-block;
+  vertical-align: middle; /* Aligne l'icône au milieu du texte */
+  font-size: 1.2em; /* Ajuste la taille de l'icône */
+  margin-left: 10px; /* Optionnel : espacement entre le lien et l'icône */
+}
+
+.contain-addCenter input {
+    padding: 2%;
+    margin: 1%;
+    width: 150px;
+    border-radius: 5px;
+}
+
+.contain-addCenter button {
+    padding: 2%;
+    margin: 1%;
+    border-radius: 5px;
+    background-color: #d30013;
+    color: white;
+    font-weight: bold;
+    width: 167px;
+    cursor: pointer;
+    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.contain-addCenter button:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.contain-addCenter button:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+.contain-activities h2 {
+    text-decoration: underline;
+    padding-bottom: 10%;
+}
+
+.contain-activities li {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+}
+
+.contain-activities span {
+    display: inline-block;
+  vertical-align: middle; /* Aligne l'icône au milieu du texte */
+  font-size: 1.2em; /* Ajuste la taille de l'icône */
+  margin-left: 10px; /* Optionnel : espacement entre le lien et l'icône */
+  color: #d30013;
+}
+
+
+
+@media (max-width: 900px) {
+    .main-contain {
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        width: 80%;
+    }
+
+    .left-contain {
+        margin-bottom: 60px ;
+    }
+
+}

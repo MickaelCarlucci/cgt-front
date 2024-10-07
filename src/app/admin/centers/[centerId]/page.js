@@ -165,23 +165,12 @@ const handleAddActivity= async (e) => {
   return (
     <>
     {hasAccess ? (
-      <div className="main-contain">
-
-        <div className="contain-addActivity">
-            <form onSubmit={handleAddActivity}>
-              <input 
-                type="text" 
-                placeholder="Nouvelle activité..."
-                value={activity}
-                onChange={(e) => setActivity(e.target.value)}
-                required
-                />
-                <button type="submit">Ajouter une activité</button>
-            </form>
-          </div>
+      <div className="main-contain-center">
+        <div className="title-activity">
+              <h1>Activités de {titleCenter} </h1>
+              </div>
 
         <div className="activitiesCenter-contain">
-          <h1>Activités de {titleCenter} </h1>
           <ul>
             {activities
               .filter((activity) => activity.id !== 47)
@@ -200,6 +189,19 @@ const handleAddActivity= async (e) => {
               ))}
           </ul>
         </div>
+
+        <div className="contain-addActivity">
+            <form onSubmit={handleAddActivity}>
+              <input 
+                type="text" 
+                placeholder="Nouvelle activité..."
+                value={activity}
+                onChange={(e) => setActivity(e.target.value)}
+                required
+                />
+                <button type="submit">Ajouter une activité</button>
+            </form>
+          </div>
 
         <div className="management-activity-contain">
           <h2>Joindre une activité déjà existante au centre</h2>

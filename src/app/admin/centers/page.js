@@ -134,10 +134,12 @@ export default function Page() {
   return (
     <>
     {hasAccess ? (
+      <div>
+        <h1>Gestion des centres et activités</h1>
       <div className="main-contain">
         <div className="left-contain">
         <div className="contain-centers">
-          <h1>Liste des centres</h1>
+          <h2>Liste des centres</h2>
           <ul>
             {centers
               .filter((center) => center.id !== 14 && center.id !== 15)
@@ -189,6 +191,7 @@ export default function Page() {
             {errorActivity && <p style={{ color: "red" }}>{errorActivity}</p>}
           </div>
         </div>
+      </div>
       </div>
       ) : (
         <p className="connected">Vous ne devriez pas être ici. Merci de revenir à <Link href={"/"}>L&apos;accueil</Link></p>
