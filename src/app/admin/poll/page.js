@@ -118,7 +118,7 @@ export default function Page() {
     return (
         <>
         {hasAccess ? (
-        <div>
+        <div className='main-part-contain'>
             <div className='part-left'>
             <h2>Créer un sondage</h2>
             <form onSubmit={handleSubmit}>
@@ -135,7 +135,7 @@ export default function Page() {
 
                 <div id="optionsContainer">
                     {options.map((option, index) => (
-                        <div key={index}>
+                        <div className='option-parameter' key={index}>
                             <label htmlFor={`option${index + 1}`}>Option {index + 1}:</label><br/>
                             <input
                                 type="text"
@@ -144,24 +144,23 @@ export default function Page() {
                                 onChange={(e) => handleOptionChange(index, e.target.value)}
                                 required
                             />
-                            <button type="button" onClick={() => removeOption(index)} disabled={options.length === 1}>
+                            <button className='button-left-part'  type="button" onClick={() => removeOption(index)} disabled={options.length === 1}>
                                 Supprimer
                             </button>
-                            <br/><br/>
                         </div>
                     ))}
+
+                <button className='button-left-part' type="button" onClick={addOption}>
+                    Ajouter une option
+                </button>
                 </div>
 
-                <button type="button" onClick={addOption}>
-                    Ajouter une option
-                </button><br/><br/>
-
-                <button type="submit">Créer le sondage</button>
+                <button className='button-left-part create-poll' type="submit">Créer le sondage</button>
             </form>
             </div>
 
             <div className='part-right'>
-            <h3>Liste des sondages</h3>
+            <h2>Liste des sondages</h2>
             {errorMessage && <p className="error">{errorMessage}</p>}
             <ul>
                 {polls.map((poll) => (

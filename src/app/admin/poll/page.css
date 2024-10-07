@@ -1,0 +1,92 @@
+.main-part-contain {
+    display: flex;
+    justify-content: space-around;
+}
+
+.part-left {
+    background-color: rgb(251, 243, 243);
+    padding: 2%;
+    margin: 1%;
+}
+
+.part-left h2 {
+    text-decoration: underline;
+}
+
+.part-left form input {
+    width: 100%;
+    padding: 2%;
+    margin: 0 auto
+}
+
+.option-parameter {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    padding: 4%;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.button-left-part {
+    margin-top: 6%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #d30013;
+    color: white;
+    font-weight: bold;
+    width: 167px;
+    cursor: pointer;
+    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    text-align: center;
+}
+
+.button-left-part:hover {
+    transform: translateY(-4px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.button-left-part:active {
+    transform: translateY(4px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+.create-poll {
+    margin-top: 15%;
+    
+}
+
+.part-right {
+    background-color: rgb(251, 243, 243);
+    padding: 2%;
+    margin: 1%;
+}
+
+.part-right h2 {
+    text-decoration: underline;
+}
+
+.part-right ul li {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+
+.part-right ul li span {
+    color: #d30013;
+    font-size: 1.2rem;
+    margin-left: 10px ;
+}
+
+
+
+@media (max-width: 900px) {
+    .main-part-contain {
+        display: flex;
+        flex-direction: column;
+    }
+
+}
