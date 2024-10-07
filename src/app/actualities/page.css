@@ -1,0 +1,77 @@
+.image-actualities {
+    background-image: url('/assets/Image20240920122947.png'); /* Chemin relatif depuis le dossier public */
+    background-size: contain; /* L'image couvrira toute la largeur et s'ajustera à la hauteur */
+    background-position: center; /* Centrer l'image horizontalement et verticalement */
+    width: 100vw; /* Largeur de l'image à 100% de l'écran */
+    height: 300px; /* Hauteur fixe pour la banderole, tu peux ajuster selon le besoin */
+    max-height: 400px; /* Hauteur maximale pour éviter que l'image devienne trop grande sur de grands écrans */
+}
+
+.container-left-and-right {
+    display: flex;
+    justify-content: space-around;
+    margin: 3%;
+}
+
+.actualities-content h2 {
+    text-decoration: underline;
+}
+
+/* Container pour aligner les titres et les icônes correctement */
+.actualities-content ul li {
+    list-style-type: none;
+    display: flex;
+    margin: 4%;
+    
+}
+
+/* Gérer l'affichage en colonne du contenu (quand la news est ouverte) */
+.actualities-content ul li.opened {
+    flex-direction: column; /* Change l'alignement en colonne quand la news est ouverte */
+    align-items: flex-start; /* Aligne les éléments de contenu à gauche */
+}
+
+/* Styles pour le lien (titre) */
+.actualities-content ul li a {
+    text-decoration: none;
+    color: #d30013;
+    transition: all 0.3s ease-in-out;
+}
+
+.actualities-content ul li a:hover {
+    font-weight: bold;
+}
+
+/* Icônes */
+.delete-icon-actualities, .modify-icon-actualities {
+    font-size: 1.1rem;
+    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+}
+
+.delete-icon-actualities:hover, .modify-icon-actualities:hover {
+    font-size: 1.3rem;
+}
+
+/* Styles pour l'image et le contenu quand une news est ouverte */
+.actualities-content ul li .news-content {
+    margin-top: 10px;
+}
+
+.actualities-content ul li img {
+    margin-top: 10px;
+}
+
+
+@media (max-width: 900px) {
+    .image-actualities {
+        background-image: url('/assets/Image20240920122947.png'); /* Chemin relatif depuis le dossier public */
+        background-size: cover; /* L'image couvrira toute la largeur et s'ajustera à la hauteur */
+        background-position: center; /* Centrer l'image horizontalement et verticalement */
+        background-repeat: no-repeat; /* Empêche la répétition de l'image */
+        width: 100%; /* Largeur de l'image à 100% de l'écran */
+        height: 300px; /* Hauteur fixe pour la banderole, tu peux ajuster selon le besoin */
+        max-height: 400px; /* Hauteur maximale pour éviter que l'image devienne trop grande sur de grands écrans */
+    }
+    
+}

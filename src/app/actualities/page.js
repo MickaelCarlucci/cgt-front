@@ -49,7 +49,10 @@ const convertRawContentToHTML = (rawContent) => {
           customStyles.style = { ...customStyles.style, fontStyle: "italic" };
         }
         if (style === "UNDERLINE") {
-          customStyles.style = { ...customStyles.style, textDecoration: "underline" };
+          customStyles.style = {
+            ...customStyles.style,
+            textDecoration: "underline",
+          };
         }
       });
 
@@ -60,66 +63,81 @@ const convertRawContentToHTML = (rawContent) => {
   return stateToHTML(contentState, options);
 };
 
-const NewsList = ({ items, roles, handleDelete, selectedNewsId, setSelectedNewsId, title, type }) => {
+const NewsList = ({
+  items,
+  roles,
+  handleDelete,
+  selectedNewsId,
+  setSelectedNewsId,
+  title,
+  type,
+}) => {
   return (
-    <div>
+    <div className="actualities-content">
       <h2>{title}</h2>
       <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link
-              href="#"
-              onClick={() =>
-                setSelectedNewsId(item.id === selectedNewsId ? null : item.id)
-              }
+  {items.map((item) => (
+    <li
+      key={item.id}
+      className={selectedNewsId === item.id ? "opened" : ""} /* Ajoute la classe 'opened' si l'élément est sélectionné */
+    >
+      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <Link
+          href="#"
+          onClick={() =>
+            setSelectedNewsId(item.id === selectedNewsId ? null : item.id)
+          }
+        >
+          {item.title}
+        </Link>
+
+        {(roles.includes("Admin") ||
+          roles.includes("SuperAdmin") ||
+          roles.includes("Moderateur")) && (
+          <>
+            <span
+              className="delete-icon-actualities"
+              type="button"
+              onClick={() => handleDelete(item.id, type)} 
+              style={{ cursor: "pointer" }}
             >
-              {item.title}
+              <TfiTrash />
+            </span>
+
+            <Link href={`/actualities/${item.id}`}>
+              <span className="modify-icon-actualities" style={{ cursor: "pointer" }}>
+                <RiEditFill />
+              </span>
             </Link>
+          </>
+        )}
+      </div>
 
-            {(roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur")) && (
-              <>
-                <span
-                  type="button"
-                  onClick={() => handleDelete(item.id, type)} // Passez le type (news ou saviez-vous)
-                  style={{ cursor: 'pointer', marginLeft: '10px' }}
-                >
-                  <TfiTrash />
-                </span>
-
-                <Link href={`/actualities/${item.id}`}>
-                  <span style={{ cursor: 'pointer', marginLeft: '10px' }}>
-                    <RiEditFill />
-                  </span>
-                </Link>
-              </>
-            )}
-
-            {selectedNewsId === item.id && (
-              <div>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: convertRawContentToHTML(JSON.parse(item.contain)),
-                  }}
-                />
-                {item.image_url && (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
-                    alt="Une image syndicaliste"
-                    width={500}
-                    height={300}
-                    layout="intrinsic"
-                    objectFit="cover"
-                  />
-                )}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {selectedNewsId === item.id && (
+        <div className="news-content">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: convertRawContentToHTML(JSON.parse(item.contain)),
+            }}
+          />
+          {item.image_url && (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
+              alt="Une image syndicaliste"
+              width={500}
+              height={300}
+              layout="intrinsic"
+              objectFit="cover"
+            />
+          )}
+        </div>
+      )}
+    </li>
+  ))}
+</ul>
     </div>
   );
 };
-
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -131,14 +149,23 @@ export default function Page() {
   const [didYouKnow, setDidYouKnow] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
-    roles.includes(role)
-  );
+  const hasAccess = [
+    "Admin",
+    "SuperAdmin",
+    "Membre",
+    "Moderateur",
+    "DS",
+    "CSE",
+    "CSSCT",
+    "RP",
+  ].some((role) => roles.includes(role));
 
   useEffect(() => {
     async function fetchData(apiPath, setData) {
       try {
-        const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/information/${apiPath}`);
+        const response = await fetchWithToken(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/information/${apiPath}`
+        );
         const data = await response.json();
         setData(data);
       } catch (error) {
@@ -175,7 +202,9 @@ export default function Page() {
         console.error("Erreur lors de la suppression de l'élément");
       }
     } catch (error) {
-      setErrorMessage("Une erreur est survenue lors de la suppression. Veuillez réessayer.");
+      setErrorMessage(
+        "Une erreur est survenue lors de la suppression. Veuillez réessayer."
+      );
       console.error("Erreur lors de la suppression:", error);
     }
   };
@@ -183,27 +212,36 @@ export default function Page() {
   return (
     <>
       {hasAccess ? (
-        <div>
+        <div className="main-container-actualities">
           {errorMessage && <p className="error">{errorMessage}</p>}
-          <NewsList
-  items={news}
-  roles={roles}
-  handleDelete={handleDelete}
-  selectedNewsId={selectedNewsId}
-  setSelectedNewsId={setSelectedNewsId}
-  title="Dernières news"
-  type="news" // Passez le type "news"
-/>
-<NewsList
-  items={didYouKnow}
-  roles={roles}
-  handleDelete={handleDelete}
-  selectedNewsId={selectedNewsId}
-  setSelectedNewsId={setSelectedNewsId}
-  title="Le saviez-vous ?"
-  type="didYouKnow" // Passez le type "didYouKnow"
-/>
+          <div className="image-actualities"> 
+            <h1>{" "}</h1>
+            </div>
+          <div className="container-left-and-right">
+            <div className="left-part-actualities">
+              <NewsList
+                items={news}
+                roles={roles}
+                handleDelete={handleDelete}
+                selectedNewsId={selectedNewsId}
+                setSelectedNewsId={setSelectedNewsId}
+                title="Dernières news"
+                type="news" // Passez le type "news"
+              />
+            </div>
 
+            <div className="right-part-actualities">
+              <NewsList
+                items={didYouKnow}
+                roles={roles}
+                handleDelete={handleDelete}
+                selectedNewsId={selectedNewsId}
+                setSelectedNewsId={setSelectedNewsId}
+                title="Le saviez-vous ?"
+                type="didYouKnow" // Passez le type "didYouKnow"
+              />
+            </div>
+          </div>
         </div>
       ) : (
         <p className="connected">
