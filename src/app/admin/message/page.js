@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
 import { Editor, EditorState, RichUtils, convertToRaw, Modifier } from "draft-js";
 import "draft-js/dist/Draft.css";
+import "./page.css";
 
 // Fonction utilitaire pour valider une URL et ajouter http si nécessaire
 const isValidUrl = (string) => {
@@ -194,120 +195,123 @@ export default function Page() {
     <>
       {hasAccess ? (
         <div style={{ margin: "20px" }}>
-          <form onSubmit={handleSubmit}>
-            <label style={{ display: "block", marginBottom: "10px" }}>
-              Titre de la News
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
-              />
-            </label>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
-              {editorStates.map((editorState, index) => (
-                <div key={index} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {/* Barre d'outils pour Gras, Italique, Lien, et Souligner */}
-                  <div>
-                    <button
-                      type="button"
-                      onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'BOLD'))}
-                      style={{ padding: "5px 10px", marginRight: "5px" }}
-                    >
-                      Gras
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'ITALIC'))}
-                      style={{ padding: "5px 10px", marginRight: "5px" }}
-                    >
-                      Italique
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyLink(index)}
-                      style={{ padding: "5px 10px" }}
-                    >
-                      Ajouter Lien
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyUnderline(index)}
-                      style={{ padding: "5px 10px", marginLeft: "5px" }}
-                    >
-                      Souligner
-                    </button>
-                  </div>
-
-                  <div
-                    style={{
-                      minHeight: "150px",
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      backgroundColor: "#fff",
-                      cursor: "text",
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Empêcher l'interférence avec d'autres clics
-                      editorRefs.current[index]?.focus();
-                    }} // Utilisation de ref pour gérer le focus
+        <form onSubmit={handleSubmit}>
+          <div className="form-message" style={{ display: "flex", flexDirection: "column", marginBottom: "20px" }}>
+            <label style={{ marginBottom: "5px" }}>Titre de la News:</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Votre titre..."
+              required
+              style={{ padding: "5px", width: "300px" }}
+            />
+          </div>
+      
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+            {editorStates.map((editorState, index) => (
+              <div key={index} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {/* Boutons pour Gras, Italique, etc. */}
+                <div className="editor-text">
+                  <button
+                    type="button"
+                    onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'BOLD'))}
+                    style={{ padding: "5px 10px", marginRight: "5px" }}
                   >
-                    <Editor
-                      ref={(element) => (editorRefs.current[index] = element)} // Stocker la référence à l'éditeur
-                      editorState={editorState}
-                      onChange={(newState) => handleContentChange(index, newState)}
-                      handleKeyCommand={(command) => handleKeyCommand(command, index)}
-                      customStyleMap={customStyleMap} // Appliquer les styles personnalisés
-                      placeholder="Écrivez votre contenu ici..."
-                    />
-                  </div>
-                  {/* Sélecteur de couleur */}
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <input
-                      type="color"
-                      value={currentColor}
-                      onChange={(e) => setCurrentColor(e.target.value)}
-                      style={{ marginRight: "10px" }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => applyColor(index)}
-                      style={{ padding: "5px 10px" }}
-                    >
-                      Appliquer couleur
-                    </button>
-                  </div>
+                    Gras
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'ITALIC'))}
+                    style={{ padding: "5px 10px", marginRight: "5px" }}
+                  >
+                    Italique
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyLink(index)}
+                    style={{ padding: "5px 10px" }}
+                  >
+                    Ajouter Lien
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => applyUnderline(index)}
+                    style={{ padding: "5px 10px", marginLeft: "5px" }}
+                  >
+                    Souligner
+                  </button>
                 </div>
+      
+                <div
+                  style={{
+                    minHeight: "150px",
+                    border: "1px solid #ccc",
+                    padding: "10px",
+                    backgroundColor: "#fff",
+                    cursor: "text",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Empêche l'interférence avec d'autres clics
+                    editorRefs.current[index]?.focus();
+                  }} // Utilisation de ref pour gérer le focus
+                >
+                  <Editor
+                    ref={(element) => (editorRefs.current[index] = element)} // Stocke la référence à l'éditeur
+                    editorState={editorState}
+                    onChange={(newState) => handleContentChange(index, newState)}
+                    handleKeyCommand={(command) => handleKeyCommand(command, index)}
+                    customStyleMap={customStyleMap} // Appliquer les styles personnalisés
+                    placeholder="Écrivez votre contenu ici..."
+                  />
+                </div>
+                {/* Sélecteur de couleur */}
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="color"
+                    value={currentColor}
+                    onChange={(e) => setCurrentColor(e.target.value)}
+                    style={{ marginRight: "10px" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => applyColor(index)}
+                    style={{ padding: "5px 10px" }}
+                  >
+                    Appliquer couleur
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="selector-message">
+            <select
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              required
+            >
+              <option value="" disabled>Selectionnez une section</option>
+              {sections.filter((section) => section.id === 6 || section.id === 11).map((section) => (
+                <option key={section.id} value={section.id}>
+                  {section.name}
+                </option>
               ))}
-            </div>
-              <div>
-                <select
-                value={selectedSection}
-                onChange={(e) => setSelectedSection(e.target.value)}
-                required >
-                  <option value="" disabled>Selectionnez une section</option>
-                  {sections.filter((section) => section.id === 6 || section.id === 11).map((section) => (
-                    <option key={section.id} value={section.id} >
-                      {section.name}
-                    </option>
-                  ))}
-                </select>
+            </select>
             <label style={{ display: "block", marginBottom: "10px" }}>
-              Image (optionnel)
+              Image (optionnel):
+              </label>
               <input
                 type="file"
                 onChange={(e) => setImageFile(e.target.files[0])}
                 style={{ marginLeft: "10px" }}
               />
-            </label>
-            </div>
-
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <button type="submit" style={{ padding: "10px 20px" }}>Envoyer</button>
-          </form>
-        </div>
+          </div>
+      
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button className="button-message" type="submit">Envoyer</button>
+        </form>
+      </div>
+      
       ) : (
         <p className="connected">
           Vous ne devriez pas être ici ! Revenez à la page d&apos;

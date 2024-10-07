@@ -1,0 +1,66 @@
+.form-message label {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.form-message input {
+    margin: 0 auto;
+}
+
+.editor-text button {
+    border: 2px solid #d30013;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.editor-text button:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    background-color: #d30013;
+    color: rgb(255, 255, 255);
+}
+
+.editor-text button:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+.selector-message select {
+    padding: 1% 0 1% 1%;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 1%;
+}
+
+.selector-message label {
+    font-weight: bold;
+    margin-top: 1%;
+}
+
+.button-message {
+    border: 2px solid black;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 2%;
+    cursor: pointer;
+    padding: 10px;
+    background-color: #d30013;
+    color: rgb(255, 255, 255);
+    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.button-message:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.button-message:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+
