@@ -4,11 +4,16 @@
 
 .navAdmin {
     border-top: 1px solid black;
-    border-bottom: 1px solid;
+    border-bottom: 1px solid black;
     width: 90%;
     display: flex;
     margin: 0 auto;
     margin-top: 4%;
+}
+
+.dark-mode .navAdmin {
+    border-top: 1px solid rgb(246, 244, 236);
+    border-bottom: 1px solid rgb(246, 244, 236);
 }
 
 .navbar-admin {
@@ -24,11 +29,19 @@
     transition: color 0.3s ease-in-out, transform 0.3s ease-in-out, text-shadow 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
+.dark-mode .navbar-admin a {
+  color:  rgb(246, 244, 236);
+}
+
 .navbar-admin a:hover {
     color: #d30013;
     font-weight: bold;
     transform: scale(1.1);
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .navbar-admin a:hover {
+    text-shadow: 2px 2px 8px rgba(250, 0, 0, 0.347);
 }
 
 .menu-toggle-admin {

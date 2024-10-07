@@ -8,6 +8,10 @@
     background-color: #d30013;
 }
 
+.dark-mode .footer {
+    background-color: #d30012ae;
+}
+
 .footer a {
     text-decoration: none;
     color: rgb(255, 254, 254);

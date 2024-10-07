@@ -58,7 +58,7 @@ export default function Page() {
   return (
     <>
       {hasAccess ? (
-        <div>
+        <div className="main-contain-contact">
           <h1>Liste des élus CGT</h1>
           <div>
             <button className="contact-button" onClick={resetFilters}>Tous vos élu(e)s</button>

@@ -70,7 +70,7 @@ export default function DocumentPage() {
   return (
     <>
       {hasAccess ? (
-        <div>
+        <div className="contain-documents-page">
           <h1>Documents relatifs à l&apos;entreprise</h1>
           <p>(Cliquez sur le document de votre choix pour le télécharger)</p>
           {error && <p style={{ color: "red" }}>Erreur : {error}</p>}

@@ -1,9 +1,23 @@
+.dark-mode .main-contain-contact h1 {
+    color: rgb(246, 244, 236);
+}
+
 .contact-button {
     padding: 5px;
     border: #d50e25;
     border-radius: 8px;
     background-color: #f4e2e4;
     cursor: pointer;
+}
+
+.dark-mode .contact-button {
+    border: #e1d1d148;
+    background-color: #e1d1d148;
+    font-weight: bold;
+}
+
+.dark-mode .main-contain-contact h4 {
+    color: rgb(246, 244, 236);
 }
 
 .list-center {
@@ -20,12 +34,17 @@
 .list-center div a {
     text-decoration: none;
     color: #d30013;
-    transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
+
 
 .list-center div a:hover {
     color: #a90b18;
-  font-weight: bold;
+    font-weight: bold;
+}
+
+.dark-mode .list-center div a:hover {
+    text-shadow: 0 0 1px white, 0 0 5px white, 0 0 10px white
 }
 
 .contact-information {
@@ -42,7 +61,6 @@
     width: 80%;
     height: auto;
     margin: auto;
-    border: #d30013 4px solid;
     border-radius: 30px;
     padding: 20px;
     background-color: #fefefe;
@@ -53,6 +71,12 @@
     min-height: 300px; /* Hauteur minimale pour chaque div */
     text-align: center; /* Centrer le contenu textuel */
     
+}
+
+.dark-mode .information-elected {
+    border: #d30012ae 4px solid;
+    background-color: #e1d1d148;
+    color: rgb(246, 244, 236);
 }
 
 .information-elected p span {

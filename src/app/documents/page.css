@@ -1,3 +1,12 @@
+.dark-mode .contain-documents-page h1 {
+  color: rgb(246, 244, 236);
+}
+
+.dark-mode .contain-documents-page p {
+  color: rgb(246, 244, 236);
+}
+
+
 .navigation h3 {
     cursor: pointer;
     background-color: #f4f4f4;
@@ -7,9 +16,18 @@
     transition: background-color 0.3s ease;
     width: 70%;
   }
+
+  .dark-mode .navigation h3 {
+    background-color: #1a1919;
+    color: rgb(246, 244, 236);
+  }
   
   .navigation h3:hover {
     background-color: #eaeaea;
+  }
+
+  .dark-mode .navigation h3:hover {
+    color: #1a1919;
   }
   
   .navigation ul {

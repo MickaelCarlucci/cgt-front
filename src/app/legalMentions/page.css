@@ -7,10 +7,18 @@
     text-shadow: 2px 2px 3px black;
 }
 
+.dark-mode .mention-h1 {
+    color: rgb(246, 244, 236);
+}
+
 .bold {
     font-weight: bold;
 }
 
 .underline {
     text-decoration: underline;
+}
+
+.dark-mode .container-legalMentions div {
+    color: rgb(246, 244, 236);
 }

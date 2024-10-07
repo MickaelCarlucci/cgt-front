@@ -2,9 +2,17 @@
     text-decoration: underline;
     }
     
+    .dark-mode .selected-section h2 {
+        color: rgb(246, 244, 236);
+    }
+    
     .selected-section ul {
         list-style-type: none;
         padding: 0;
+    }
+    
+    .dark-mode .selected-section ul li {
+        color: rgb(246, 244, 236);
     }
     
     .download-button {

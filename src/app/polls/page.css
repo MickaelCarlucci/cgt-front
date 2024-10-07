@@ -3,6 +3,10 @@
     text-shadow: 2px 2px 3px black;
 }
 
+.dark-mode .poll h1 {
+    color: rgb(246, 244, 236);
+}
+
 .poll-container {
     border: solid 3px #d30013;
     border-radius: 30px;
@@ -12,12 +16,21 @@
     width: 500px;
 }
 
+.dark-mode .poll-container {
+    background-color: #e1d1d148;
+    border: solid 3px #d30012ae
+}
+
 .poll-container a {
 text-decoration: none;
 color: #d30013;
 font-size: 1.5rem;
 font-weight: bold;
-text-shadow: 2px 3px 5px #d30013 ;
+text-shadow: 5px 5px 8px black ;
+}
+
+.dark-mode .poll-container a {
+    color: #d30012ae;
 }
 
 @media (max-width: 550px) {

@@ -3,6 +3,11 @@
     text-shadow: 1px 3px 6px rgb(82, 42, 42);
 }
 
+.dark-mode .title-homepage {
+    color: rgb(246, 244, 236);
+    text-shadow: 1px 3px 6px rgb(251, 251, 251);
+}
+
 .div-homepage {
     border: 4px solid #d30013;
     display: flex;
@@ -16,6 +21,12 @@
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
     opacity: 0;
     transition: transform 1.5s ease-out, opacity 1.5s ease-out;
+}
+
+.dark-mode .div-homepage {
+    border: 2px solid #d30013;
+    background-color: #1a1919 ;
+    box-shadow: 4px 4px 10px rgba(107, 103, 103, 0.5);
 }
 
 .div-homepage.appear {
@@ -37,6 +48,11 @@
     border-radius: 30px;
     width: 90%;
     margin: 1%;
+}
+
+.dark-mode .div-information {
+    background-color: #1a1919;
+    color: rgb(246, 244, 236) ;
 }
 
 .content-text {

@@ -7,6 +7,11 @@
     padding: 1%;
     margin: 2% auto;
 }
+
+.dark-mode .container-profile {
+  border: 3px solid #d30012ae
+}
+
 .title-profile {
     background-color: #e1d1d148;
     border-radius: 20px;
@@ -17,8 +22,17 @@
     margin: 1% auto;
 }
 
+.dark-mode .title-profile {
+  background-color: #1a1919 ;
+  color: #d30012ae;
+}
+
 .title-profile p {
   color: black;
+}
+
+.dark-mode .title-profile p {
+  color: rgb(246, 244, 236);
 }
 
 .information-profile {
@@ -34,12 +48,24 @@
   padding: 20px; /* Ajouter un padding autour de la grille */
 }
 
-.element-profil {
+.dark-mode .information-profile {
+  background-color: #1a1919;
+}
 
+.dark-mode .container-profile h2 {
+  color: rgb(246, 244, 236);
+}
+
+.element-profil {
   background-color: #f0f0f0;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+}
+
+.dark-mode .element-profil {
+  background-color: #e1d1d148;
+  color: rgb(246, 244, 236);
 }
   
   .pen-icon {

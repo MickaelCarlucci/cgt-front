@@ -14,12 +14,20 @@
   font-weight: bold;
 }
 
+.dark-mode .content-elected h1 {
+  color: rgb(246, 244, 236);
+}
+
 .appointment-div {
   border: #d30013 solid 2px;
   border-radius: 30px;
   margin: 2% auto;
   width: 600px;
   box-shadow: 0 0 5px #d30013, 0 0 10px #d30013, 0 0 20px #d30013;
+}
+
+.dark-mode .appointment-div {
+  background-color: #e1d1d148;
 }
 
 .appointment-div p a {
@@ -42,6 +50,11 @@
   border: 1px solid #d3001216;
 }
 
+.dark-mode .button-appointment {
+  background-color: #1a1919;
+  color: rgb(246, 244, 236) ;
+  border: 1px solid #1a1919;;
+}
 
 .modal {
     position: fixed;
