@@ -191,15 +191,16 @@ export default function EditNewsPage() {
   return (
     <>
     {hasAccess ? (
-    <div style={{ margin: "20px" }}>
+    <div className="main-content-newsId" style={{ margin: "20px" }}>
       <h1>Modifier la news</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
       {/* Formulaire pour le titre */}
-      <form onSubmit={handleTitleSubmit}>
+      <form className="form-update-header" onSubmit={handleTitleSubmit}>
         <label>
           Titre de la news:
+          </label>
           <input
             type="text"
             value={title}
@@ -207,7 +208,6 @@ export default function EditNewsPage() {
             required
             style={{ marginLeft: "10px", padding: "5px", width: "300px" }}
           />
-        </label>
 
         <button type="submit" style={{ marginTop: "20px", padding: "10px 20px" }}>
           Sauvegarder le titre
@@ -217,19 +217,19 @@ export default function EditNewsPage() {
       {/* Formulaire pour le contenu */}
       <form onSubmit={handleContentSubmit} style={{ marginTop: "20px" }}>
         <div style={{ margin: "20px 0" }}>
-          <h3>Contenu de la news:</h3>
+          <h3 className="h3-contain-update">Contenu de la news:</h3>
           {/* Barre d'outils */}
-          <div>
-            <button type="button" onClick={() => applyInlineStyle("BOLD")} style={{ padding: "5px 10px", marginRight: "5px" }}>
+          <div className="editor-buttons">
+            <button className="editor-text-id" type="button" onClick={() => applyInlineStyle("BOLD")} style={{ padding: "5px 10px", marginRight: "5px" }}>
               Gras
             </button>
-            <button type="button" onClick={() => applyInlineStyle("ITALIC")} style={{ padding: "5px 10px", marginRight: "5px" }}>
+            <button className="editor-text-id" type="button" onClick={() => applyInlineStyle("ITALIC")} style={{ padding: "5px 10px", marginRight: "5px" }}>
               Italique
             </button>
-            <button type="button" onClick={applyLink} style={{ padding: "5px 10px", marginRight: "5px" }}>
+            <button className="editor-text-id" type="button" onClick={applyLink} style={{ padding: "5px 10px", marginRight: "5px" }}>
               Ajouter lien
             </button>
-            <button type="button" onClick={() => applyInlineStyle("UNDERLINE")} style={{ padding: "5px 10px", marginRight: "5px" }}>
+            <button className="editor-text-id" type="button" onClick={() => applyInlineStyle("UNDERLINE")} style={{ padding: "5px 10px", marginRight: "5px" }}>
               Souligner
             </button>
             <input
@@ -238,13 +238,13 @@ export default function EditNewsPage() {
               onChange={(e) => setCurrentColor(e.target.value)}
               style={{ marginRight: "10px" }}
             />
-            <button type="button" onClick={applyColor} style={{ padding: "5px 10px" }}>
+            <button className="editor-text-id" type="button" onClick={applyColor} style={{ padding: "5px 10px" }}>
               Appliquer couleur
             </button>
           </div>
 
           {/* Éditeur de contenu */}
-          <div
+          <div className="text-news-contain"
             style={{
               minHeight: "150px",
               border: "1px solid #ccc",
@@ -264,7 +264,7 @@ export default function EditNewsPage() {
           </div>
         </div>
 
-        <button type="submit" style={{ marginTop: "20px", padding: "10px 20px" }}>
+        <button className="button-save-update" type="submit" style={{ marginTop: "20px", padding: "10px 20px" }}>
           Sauvegarder le contenu
         </button>
       </form>

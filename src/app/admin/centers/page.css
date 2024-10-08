@@ -4,6 +4,10 @@
     margin: 5%;
 }
 
+.dark-mode .main-contain-center-admin h1 {
+    color: rgb(246, 244, 236);
+}
+
 .left-contain {
     border: solid 3px #d30013;
     border-radius: 8px;
@@ -13,9 +17,11 @@
       rgba(0, 0, 0, 0.1) 0px 3px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
       rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
       rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
-    
     padding: 6%;
+}
 
+.dark-mode .left-contain {
+    background-color: #1a1919;
 }
 
 .right-contain {
@@ -30,6 +36,10 @@
     padding: 6%;
 }
 
+.dark-mode .right-contain {
+    background-color: #1a1919;
+}
+
 .contain-centers h2 {
     text-decoration: underline;
     margin-bottom: 20%;
@@ -40,6 +50,10 @@
     align-items: center; /* Centre verticalement les éléments dans le li */
     justify-content: center;
     margin: 2%;
+}
+
+.dark-mode .contain-centers h2 {
+    color: rgb(246, 244, 236);
 }
 
 .contain-centers ul li a {
@@ -82,6 +96,10 @@
   margin-left: 10px; /* Optionnel : espacement entre le lien et l'icône */
 }
 
+.dark-mode .contain-centers ul li span {
+    color: rgb(246, 244, 236);
+}
+
 .contain-addCenter input {
     padding: 2%;
     margin: 1%;
@@ -117,10 +135,18 @@
     padding-bottom: 10%;
 }
 
+.dark-mode .contain-activities h2 {
+    color: rgb(246, 244, 236);
+}
+
 .contain-activities li {
     list-style-type: none;
     display: flex;
     justify-content: center;
+}
+
+.dark-mode .contain-activities li {
+    color: rgb(246, 244, 236);
 }
 
 .contain-activities span {

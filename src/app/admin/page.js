@@ -116,7 +116,7 @@ export default function Page() {
     <>
       {hasAccess ? (
         <>
-          <h1>Liste des utilisateurs</h1>
+          <h1 className="h1-admin-page">Liste des utilisateurs</h1>
 
           {error && <p style={{ color: "red" }}>{error}</p>}
           <div>

@@ -41,7 +41,7 @@
 }
 
 .dark-mode .navbar-admin a:hover {
-    text-shadow: 2px 2px 8px rgba(250, 0, 0, 0.347);
+    color: rgba(250, 0, 0, 0.54);
 }
 
 .menu-toggle-admin {
@@ -67,6 +67,18 @@
         border: 1px solid black;
         border-radius: 1.5rem;
         background-color: white;
+    }
+
+    .dark-mode .navbar-admin {
+        background-color: #2f2f2f;
+    }
+
+    .navAdmin button {
+        margin: 1%;
+    }
+
+    .dark-mode .navAdmin button {
+        color: rgb(246, 244, 236);
     }
 
     .navbar-admin.open {

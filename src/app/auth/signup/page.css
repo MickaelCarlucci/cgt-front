@@ -14,8 +14,16 @@
     margin-top: 4%;
   }
 
+  .dark-mode .login-container {
+    background-color: #e1d1d148;
+  }
+
   .login-container label {
     color: black
+  }
+
+  .dark-mode .login-container label {
+    color: rgb(246, 244, 236);
   }
   
   .login-form {
@@ -57,6 +65,10 @@
       rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
       rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
   }
+
+  .dark-mode .input-group input {
+    background-color: rgb(246, 244, 236);
+  }
   
   .input-group input:focus {
     border-color: #d30013;
@@ -78,6 +90,10 @@
       rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
       rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
       rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  }
+
+  .dark-mode .input-group select {
+    background-color: rgb(246, 244, 236);
   }
 
   .input-group select:focus {
@@ -113,6 +129,10 @@
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s ease;
+  }
+
+  .dark-mode .button-signin {
+    background-color: #1a1919;
   }
   
   .button-signin:hover {

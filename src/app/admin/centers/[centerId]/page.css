@@ -7,6 +7,10 @@
     text-decoration: underline;
 }
 
+.dark-mode .title-activity {
+    color: rgb(246, 244, 236);
+}
+
 .activitiesCenter-contain {
     background-color: rgb(249, 242, 242);
     border-radius: 10px;
@@ -15,12 +19,21 @@
     margin-bottom: 2%;
 }
 
+.dark-mode .activitiesCenter-contain {
+    background-color: #e1d1d148;
+    color: rgb(246, 244, 236);
+}
+
 .activitiesCenter-contain ul li {
     list-style-type: none;
 }
 
 .activitiesCenter-contain ul li span {
     color: #d30013;
+}
+
+.dark-mode .activitiesCenter-contain ul li span {
+   color: #d30012ae;
 }
 
 .contain-addActivity input {
@@ -43,6 +56,11 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
 }
 
+.dark-mode .contain-addActivity button {
+    background-color: #d30012ae;
+    color: rgb(246, 244, 236);
+}
+
 .contain-addActivity button:hover {
     transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
@@ -55,6 +73,10 @@
 
 .management-activity-contain h2 {
     font-style: italic;
+}
+
+.dark-mode .management-activity-contain h2 {
+    color: rgb(246, 244, 236);
 }
 
 .management-activity-contain select {
@@ -75,6 +97,11 @@
     cursor: pointer;
     transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.dark-mode .management-activity-contain button {
+    background-color: #d30012ae;
+    color: rgb(246, 244, 236);
 }
 
 .management-activity-contain button:hover {

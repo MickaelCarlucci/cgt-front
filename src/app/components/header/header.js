@@ -37,6 +37,10 @@ export default function Header() {
         setDarkMode(!darkMode);
     };
 
+    const handleLinkClick = () => {
+        setMenuOpen(false); // Fermer le menu après clic
+      };
+
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 50) {
@@ -73,18 +77,25 @@ export default function Header() {
                 {/* Ajout du bouton pour basculer le mode sombre */}
                 <div className="theme_switcher">
                     <label id="switch" className="switch">
-                    <input className="dark-mode-toggle" onClick={toggleDarkMode} type="checkbox" /><span class="slider round" ></span>
+                        {/* Synchroniser la position initiale du bouton */}
+                        <input
+                            className="dark-mode-toggle"
+                            type="checkbox"
+                            onChange={toggleDarkMode}
+                            checked={darkMode}  // Lier l'état à la checkbox
+                        />
+                        <span className="slider round"></span>
                     </label>
                 </div>
-                <Link href="/">Accueil</Link>
-                <Link href="/actualities">Actualités</Link>
-                <Link href="/polls">Sondages</Link>
-                <Link href="/documents">Documents</Link>
-                <Link href="/contact">Contact</Link>
+                <Link href="/" onClick={handleLinkClick}>Accueil</Link>
+                <Link href="/actualities" onClick={handleLinkClick}>Actualités</Link>
+                <Link href="/polls" onClick={handleLinkClick}>Sondages</Link>
+                <Link href="/documents" onClick={handleLinkClick}>Documents</Link>
+                <Link href="/contact" onClick={handleLinkClick}>Contact</Link>
 
                 {status === "authenticated" ? (
                     <>
-                        <Link href="/profil">Profil</Link>
+                        <Link href="/profil" onClick={handleLinkClick}>Profil</Link>
                         <button
                             className="button-red-off"
                             onClick={() => signOut({ callbackUrl: "/" })}
@@ -93,7 +104,7 @@ export default function Header() {
                         </button>
                     </>
                 ) : (
-                    <Link href="/auth">Connexion</Link>
+                    <Link href="/auth" >Connexion</Link>
                 )}
 
             </nav>

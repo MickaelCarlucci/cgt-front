@@ -1,4 +1,3 @@
-// pages/create-poll.js
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -144,7 +143,7 @@ export default function Page() {
                                 onChange={(e) => handleOptionChange(index, e.target.value)}
                                 required
                             />
-                            <button className='button-left-part'  type="button" onClick={() => removeOption(index)} disabled={options.length === 1}>
+                            <button className='button-left-part delete-button-poll'  type="button" onClick={() => removeOption(index)} disabled={options.length === 1}>
                                 Supprimer
                             </button>
                         </div>

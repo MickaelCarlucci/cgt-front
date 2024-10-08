@@ -1,3 +1,7 @@
+.dark-mode .h1-id-admin-page {
+    color: rgb(246, 244, 236);
+}
+
 .container-management {
     display: flex;
     flex-wrap: wrap;

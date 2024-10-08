@@ -17,12 +17,19 @@
     text-decoration: underline;
 }
 
+.dark-mode .actualities-content h2 {
+    color: rgb(246, 244, 236);
+}
+
 /* Container pour aligner les titres et les icônes correctement */
 .actualities-content ul li {
     list-style-type: none;
     display: flex;
     margin: 4%;
-    
+}
+
+.dark-mode .actualities-content ul li {
+    color: rgb(246, 244, 236);
 }
 
 /* Gérer l'affichage en colonne du contenu (quand la news est ouverte) */

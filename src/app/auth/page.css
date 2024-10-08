@@ -13,6 +13,10 @@
     margin: 0 auto;
     margin-top: 5% ;
   }
+
+  .dark-mode .login-container-signin {
+    background-color: #1a1919;
+  }
   
   .login-form-signin {
     display: flex;
@@ -24,6 +28,10 @@
     font-weight: 500;
     font-size: 40px;
     margin-bottom: 20px;
+  }
+
+  .dark-mode .heading-signin {
+    color: rgb(246, 244, 236);
   }
   
   .input-group-signin {
@@ -93,6 +101,10 @@
     color: black;
     font-size: 15px;
     font-weight: 400;
+  }
+
+  .dark-mode .bottom-text-signin p {
+    color: rgb(246, 244, 236);
   }
   
   .bottom-text-signin a {

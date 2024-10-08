@@ -1,0 +1,115 @@
+.main-content-newsId  h1 {
+    text-decoration: underline;
+}
+
+.dark-mode .main-content-newsId  h1 {
+    color: rgb(246, 244, 236);
+}
+
+.form-update-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-update-header label {
+    margin-bottom: 1%;
+}
+
+.dark-mode .form-update-header label {
+    color: rgb(246, 244, 236);
+}
+
+.form-update-header button {
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    background-color: #d30013;
+    cursor: pointer;
+    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.dark-mode .form-update-header button {
+    background-color: #d30012ae;
+    color: rgb(246, 244, 236) ;
+}
+
+.form-update-header button:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.form-update-header button:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+.dark-mode .h3-contain-update {
+    color: rgb(246, 244, 236);
+}
+
+.editor-buttons {
+    margin-bottom: 1%;
+}
+
+.editor-text-id {
+    border: 2px solid #d30013;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.dark-mode .editor-text-id {
+    border: 2px solid #d30012ae;
+}
+
+.editor-text-id:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    background-color: #d30013;
+    color: rgb(255, 255, 255);
+}
+
+.dark-mode .editor-text-id:hover {
+    background-color: #d30012ae;
+}
+
+.editor-text-id:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}
+
+.text-news-contain {
+    text-align: center;
+}
+
+.centered-block {
+    text-align: center; /* Centre le texte dans les blocs Draft.js */
+  }
+
+.button-save-update {
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    background-color: #d30013;
+    cursor: pointer;
+    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+}
+
+.dark-mode .button-save-update {
+    background-color: #d30012ae;
+}
+
+.button-save-update:hover {
+    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+}
+
+.button-save-update:active {
+    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+}

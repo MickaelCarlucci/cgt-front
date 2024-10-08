@@ -1,3 +1,7 @@
+.dark-mode .h1-admin-page {
+  color: rgb(246, 244, 236);
+}
+
 .user-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 colonnes de taille égale */
@@ -11,6 +15,10 @@
     padding: 8px; /* Espacement interne des éléments */
     border-radius: 4px; /* Coins arrondis */
     text-align: center; /* Centrer le texte dans chaque élément */
+  }
+
+  .dark-mode .user-grid li {
+    background-color: rgb(246, 244, 236);
   }
   
   .user-grid li a {
@@ -33,18 +41,22 @@
     margin-right: 0.9%;
     font-size: 0.8rem;
   }
-
+  
   .center-filtered a {
     text-decoration: none;
     color: #333;
     transition: font-size 0.3s ease; 
+  }
+  
+  .dark-mode .center-filtered a {
+    color: rgb(246, 244, 236);
   }
 
   .center-filtered a:hover {
     font-size: 1rem; 
     color: #d30013;
   }
-
+  
   .activities-list {
     display: flex;
     flex-wrap: wrap;

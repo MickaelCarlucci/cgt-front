@@ -9,6 +9,11 @@
     margin: 1%;
 }
 
+.dark-mode .part-left {
+    background-color: #e1d1d148 ;
+    color: rgb(246, 244, 236);
+}
+
 .part-left h2 {
     text-decoration: underline;
 }
@@ -42,6 +47,14 @@
     text-align: center;
 }
 
+.delete-button-poll {
+    box-shadow: 2px 2px 2px black;
+}
+
+.dark-mode .button-left-part {
+    background-color: #d30012ae;
+}
+
 .button-left-part:hover {
     transform: translateY(-4px); /* Simule un déplacement vertical vers le bas */
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
@@ -63,6 +76,11 @@
     margin: 1%;
 }
 
+.dark-mode .part-right {
+    background-color: #e1d1d148 ;
+    color: rgb(246, 244, 236);
+}
+
 .part-right h2 {
     text-decoration: underline;
 }
@@ -79,6 +97,10 @@
     color: #d30013;
     font-size: 1.2rem;
     margin-left: 10px ;
+}
+
+.dark-mode .part-right ul li span {
+    color: #d30012ae;
 }
 
 

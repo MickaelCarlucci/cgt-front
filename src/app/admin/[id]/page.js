@@ -159,7 +159,7 @@ export default function Page() {
     <>
       {hasAccess ? (
         <>
-          <h1>
+          <h1 className="h1-id-admin-page">
             Vous êtes sur le profil de{" "}
             <span>
               {user.firstname} {user.lastname}

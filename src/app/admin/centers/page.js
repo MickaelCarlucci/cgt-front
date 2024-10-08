@@ -134,7 +134,7 @@ export default function Page() {
   return (
     <>
     {hasAccess ? (
-      <div>
+      <div className="main-contain-center-admin">
         <h1>Gestion des centres et activités</h1>
       <div className="main-contain">
         <div className="left-contain">

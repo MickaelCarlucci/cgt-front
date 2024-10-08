@@ -243,12 +243,11 @@ export default function Page() {
                   </button>
                 </div>
       
-                <div
+                <div className="div-editor-text-message"
                   style={{
                     minHeight: "150px",
                     border: "1px solid #ccc",
                     padding: "10px",
-                    backgroundColor: "#fff",
                     cursor: "text",
                   }}
                   onClick={(e) => {
