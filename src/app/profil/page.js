@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Modal from "../components/modal/modal";
 import { fetchWithToken } from "../utils/fetchWithToken";
+import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -355,6 +356,8 @@ export default function Page() {
       setError(error.message); // Stocker le message d'erreur dans l'état
     }
   };
+
+  if (status === "loading") return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
+import Loader from "../components/Loader/Loader";
 import './page.css';
 
 export default function DocumentPage() {
@@ -66,6 +67,8 @@ export default function DocumentPage() {
   const toggleSection = (sectionName) => {
     setActiveSection(activeSection === sectionName ? null : sectionName);
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

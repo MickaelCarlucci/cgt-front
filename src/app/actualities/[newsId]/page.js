@@ -6,6 +6,7 @@ import "draft-js/dist/Draft.css";
 import { fetchWithToken } from "../../utils/fetchWithToken";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Loader from "@/app/components/Loader/Loader";
 import './page.css';
 
 // Fonction utilitaire pour valider une URL et ajouter http si nécessaire
@@ -185,8 +186,10 @@ export default function EditNewsPage() {
   };
 
   if (isLoading) {
-    return <p>Chargement des données de la news...</p>;
+    return <Loader />;
   }
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

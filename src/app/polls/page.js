@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
+import Loader from "../components/Loader/Loader";
 import './page.css';
 
 export default function Page() {
@@ -113,6 +114,8 @@ export default function Page() {
       console.error("Erreur lors du vote:", error);
     }
   };
+
+  if (status === "loading") return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>

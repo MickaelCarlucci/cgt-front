@@ -10,6 +10,7 @@ import NavAdmin from "./components/adminNav/adminNav";
 import Footer from "./components/footer/footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "./components/Loader/Loader";
 import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -100,9 +101,7 @@ function AuthWrapper({ children }) {
     }
   }, [status, session, router]);
 
-  if (status === "loading") {
-    return <p>Chargement...</p>;
-  }
+  if (status === "loading") return <Loader />; 
 
   return <>{children}</>;
 }

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { fetchWithToken } from "../../../utils/fetchWithToken";
 import { BsBoxArrowRight } from "react-icons/bs";
+import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -160,6 +161,8 @@ const handleAddActivity= async (e) => {
     setError("Erreur lors de l'ajout de l'activité");
   }
 };
+
+if (status === "loading") return <Loader />; 
 
 
   return (

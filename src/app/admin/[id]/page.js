@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Modal from "../../components/modal/modal";
 import { fetchWithToken } from "../../utils/fetchWithToken";
+import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -153,7 +154,7 @@ export default function Page() {
     }
   };
 
-  if (status === "loading" || !user) return <p>Chargement...</p>; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (status === "loading" || !user) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>

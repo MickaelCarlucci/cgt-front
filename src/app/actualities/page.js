@@ -8,6 +8,7 @@ import { RiEditFill } from "react-icons/ri"; // Icone pour modifier
 import { fetchWithToken } from "../utils/fetchWithToken";
 import { convertFromRaw } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
+import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 // Fonction pour convertir le contenu Draft.js brut en HTML
@@ -208,6 +209,8 @@ export default function Page() {
       console.error("Erreur lors de la suppression:", error);
     }
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

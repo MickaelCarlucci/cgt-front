@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { fetchWithToken } from "../../utils/fetchWithToken";
 import { TfiTrash } from "react-icons/tfi";
 import Link from "next/link";
+import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -130,6 +131,8 @@ export default function Page() {
       setErrorActivity("Erreur lors de la suppression de l'activité");
     }
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

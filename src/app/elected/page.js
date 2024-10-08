@@ -6,6 +6,7 @@ import Link from "next/link";
 import SectionRP from "../components/sectionRP/sectionRP";
 import SectionCSE from "../components/sectionCSE/sectionCSE";
 import SectionCSSCT from "../components/sectionCSSCT/sectionCSSCT";
+import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -82,9 +83,7 @@ export default function Page() {
   };
 
   // Si la session est encore en train de se charger
-  if (status === "loading") {
-    return <p>Chargement de la session...</p>;
-  }
+  if (status === "loading") return <Loader />; 
 
   // Si les rôles ne sont pas définis
   if (!roles.length) {

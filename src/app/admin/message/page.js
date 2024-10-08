@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
 import { Editor, EditorState, RichUtils, convertToRaw, Modifier } from "draft-js";
 import "draft-js/dist/Draft.css";
+import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 // Fonction utilitaire pour valider une URL et ajouter http si nécessaire
@@ -190,6 +191,8 @@ export default function Page() {
       color: "#1e90ff", // Applique une couleur spécifique pour les liens
     },
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

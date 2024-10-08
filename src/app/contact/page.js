@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { fetchWithToken } from "../utils/fetchWithToken";
+import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -54,6 +55,8 @@ export default function Page() {
     setSelectedRole(null);
     fetchData(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/elected`, setFilteredElected, "Erreur lors de la récupération des utilisateurs.");
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

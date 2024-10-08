@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { TfiTrash } from "react-icons/tfi";
 import { fetchWithToken } from "../../utils/fetchWithToken";
+import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
@@ -156,6 +157,8 @@ export default function Page() {
       console.error("Erreur lors de la suppression:", error);
     }
   };
+
+  if (status === "loading") return <Loader />; 
 
   return (
     <>

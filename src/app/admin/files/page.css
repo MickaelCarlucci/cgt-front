@@ -75,6 +75,10 @@ select {
     color: rgb(246, 244, 236);
 }
 
+.container-managePdf li {
+    list-style-type: none;
+}
+
 .dark-mode .container-managePdf li {
     color: rgb(246, 244, 236);
 }
