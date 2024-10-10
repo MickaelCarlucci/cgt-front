@@ -9,16 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@jridgewell/sourcemap-codec": "^1.5.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "dotenv": "^16.4.5",
     "draft-js": "^0.11.7",
     "draft-js-export-html": "^1.4.1",
+    "glob": "^11.0.0",
     "next": "^14.2.13",
     "next-auth": "^4.24.8",
+    "next-pwa": "^5.6.0",
     "pdfjs-dist": "^4.6.82",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",

@@ -697,7 +697,7 @@ export default function Page() {
                   title={`Modifier`}
                 >
                   {error && <p style={{ color: "red" }}>{error}</p>}
-                  <label>Saississez votre adresse mail pour confirmer la suppression:</label>
+                  <label>Saisissez votre adresse mail pour confirmer la suppression:</label>
                   <input
                     type="text"
                     value={inputValue}
@@ -714,7 +714,7 @@ export default function Page() {
         </>
       ) : (
         <p className="connected">
-          Veuillez-vous connecter à votre compte <Link href="/auth">ici</Link>
+          Veuillez vous connecter à votre compte <Link href="/auth">ici</Link>
         </p>
       )}
     </>
