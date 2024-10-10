@@ -1,15 +1,23 @@
-/** @type {import('next').NextConfig} */
+import withPWA from 'next-pwa';
+
 const nextConfig = {
-    images: {
-      remotePatterns: [
-        {
-          protocol: 'http',  // Ou 'https' si vous utilisez https en production
-          hostname: 'localhost',
-          port: '3003',  // Spécifiez le port si nécessaire
-          pathname: '/images/**',  // Autorise les images dans ce chemin
-        },
-      ],
-    },
-  };
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3003',
+        pathname: '/images/**',
+      },
+    ],
+  },
   
-  export default nextConfig;
+};
+
+export default withPWA({
+  pwa: {
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+  },
+}, nextConfig); 

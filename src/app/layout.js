@@ -19,12 +19,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <Head>
+        {/* Meta tags pour la PWA */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-          rel="icon"
-          href="/favicon.ico"
-        />
+        <link rel="icon" href="/favicon.ico" />
         <title>Syndicat CGT Teleperformance</title>
+
+        {/* PWA configuration */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/assets/icons/icon-512x512.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
       <body className={`${inter.className} container`}>
         <SessionProvider>
@@ -95,7 +101,6 @@ function AuthWrapper({ children }) {
   }, [session, status]);
 
   useEffect(() => {
-    
     if (session?.error === "RefreshAccessTokenError") {
       signOut({ callbackUrl: "/auth" });
     }
