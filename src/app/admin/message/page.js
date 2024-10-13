@@ -31,6 +31,7 @@ export default function Page() {
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [currentColor, setCurrentColor] = useState("#000000"); // Couleur sélectionnée
+  const [sendNotification, setSendNotification] = useState(false); // État pour la case à cocher
 
   // Ref pour l'éditeur pour éviter le problème de "focus"
   const editorRefs = useRef([]);
@@ -142,16 +143,17 @@ export default function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
     formData.append("title", title);
     const contentsInHTML = editorStates.map((editorState) =>
       convertEditorStateToHTML(editorState)
     );
-    formData.append("contain", contentsInHTML); // Conversion en chaîne
+    formData.append("contain", contentsInHTML);
     formData.append("image", imageFile);
     formData.append("sectionId", selectedSection);
-
+    formData.append("sendNotification", sendNotification);
+  
     try {
       const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`,
@@ -163,21 +165,42 @@ export default function Page() {
           body: formData,
         }
       );
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error || "Une erreur est survenue.");
         return;
       }
-
+  
+      // Réinitialiser le formulaire
       setTitle("");
-      setEditorStates([EditorState.createEmpty()]); // Réinitialiser les éditeurs
+      setEditorStates([EditorState.createEmpty()]);
       setImageFile(null);
       setError("");
+      setSendNotification(false);
+  
+      // Envoyer la notification via l'API Push si la case est cochée
+      if (sendNotification) {
+        const notificationPayload = {
+          title: "Nouveau message publié",
+          body: "Un nouveau message a été ajouté à la section.",
+          icon: "/icons/icon-192x192.png"
+        };
+  
+        await fetch('/api/push', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(notificationPayload)
+        });
+      }
+  
     } catch (error) {
       setError("Erreur lors de la soumission.");
     }
   };
+  
 
   // Style personnalisé pour appliquer la couleur et le style des liens
   const customStyleMap = {
@@ -308,6 +331,17 @@ export default function Page() {
                 style={{ marginLeft: "10px" }}
               />
           </div>
+
+          <div>
+  <label>
+    <input
+      type="checkbox"
+      checked={sendNotification}
+      onChange={(e) => setSendNotification(e.target.checked)} // Met à jour l'état
+    />
+    Envoyer une notification aux utilisateurs
+  </label>
+</div>
       
           {error && <p style={{ color: "red" }}>{error}</p>}
           <button className="button-message" type="submit">Envoyer</button>

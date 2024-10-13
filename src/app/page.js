@@ -66,6 +66,21 @@ export default function Page() {
   const containerRef = useRef(null); // Référence pour observer les div-homepage
 
   useEffect(() => {
+    // Demander la permission de notifications
+    if ("Notification" in window) {
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            console.log("Permission de notification accordée.");
+          } else if (permission === "denied") {
+            console.log("Permission de notification refusée.");
+          }
+        });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     // Fonction pour récupérer les documents combinés
     async function fetchDocuments() {
       try {
