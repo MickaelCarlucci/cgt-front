@@ -16,6 +16,22 @@ import { useRouter } from "next/navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
+  // Enregistrement du Service Worker
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((registration) => {
+            console.log("Service Worker enregistré avec succès:", registration.scope);
+          })
+          .catch((error) => {
+            console.error("Échec de l'enregistrement du Service Worker:", error);
+          });
+      });
+    }
+  }, []);
+
   return (
     <html lang="fr">
       <Head>
@@ -27,8 +43,16 @@ export default function RootLayout({ children }) {
         {/* PWA configuration */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
-        <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192x192.png" />
-        <link rel="apple-touch-icon" sizes="512x512" href="/assets/icons/icon-512x512.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="192x192"
+          href="/assets/icons/icon-192x192.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="512x512"
+          href="/assets/icons/icon-512x512.png"
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
@@ -106,7 +130,7 @@ function AuthWrapper({ children }) {
     }
   }, [status, session, router]);
 
-  if (status === "loading") return <Loader />; 
+  if (status === "loading") return <Loader />;
 
   return <>{children}</>;
 }
