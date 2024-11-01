@@ -2,16 +2,19 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
-import { useSession, signOut } from "next-auth/react";
-import { useEffect } from "react";
-import { SessionProvider } from "next-auth/react";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import store from "./store/store";
 import Navbar from "./components/header/header";
 import NavAdmin from "./components/adminNav/adminNav";
 import Footer from "./components/footer/footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./components/Loader/Loader";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { setUser, clearUser, setLoading } from "./store/authSlice";
+import { firebaseAuth } from "./firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,14 +23,11 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-          rel="icon"
-          href="/favicon.ico"
-        />
+        <link rel="icon" href="/favicon.ico" />
         <title>Syndicat CGT Teleperformance</title>
       </Head>
       <body className={`${inter.className} container`}>
-        <SessionProvider>
+        <Provider store={store}>
           <AuthWrapper>
             <ToastContainer
               position="top-right"
@@ -45,63 +45,59 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
           </AuthWrapper>
-        </SessionProvider>
+        </Provider>
       </body>
     </html>
   );
 }
 
 function AuthWrapper({ children }) {
-  const { data: session, status } = useSession();
+  const dispatch = useDispatch();
   const router = useRouter();
+  const { user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const checkAndRefreshToken = async () => {
-      if (status === "authenticated" && session) {
-        const now = Date.now();
-        const tokenExpiration = new Date(session.expires).getTime();
+    dispatch(setLoading(true));
 
-        if (now >= tokenExpiration) {
+    // Observez l'état d'authentification de Firebase
+    const unsubscribe = onAuthStateChanged(
+      firebaseAuth,
+      async (firebaseUser) => {
+        if (firebaseUser) {
+          // Récupérer le token utilisateur pour validation côté serveur si nécessaire
+          const token = await firebaseUser.getIdToken();
+
+          // Simuler une requête vers votre backend pour obtenir l’utilisateur
           try {
-            const response = await fetch("/api/auth/refresh-token", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ refreshToken: session.refreshToken }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Erreur lors du rafraîchissement du token.");
-            }
-
-            const data = await response.json();
-          } catch (error) {
-            console.error(
-              "Erreur lors du rafraîchissement automatique du token :",
-              error
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/users/verify-token`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token }),
+              }
             );
-            signOut({ callbackUrl: "/auth" });
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error);
+
+            dispatch(setUser(data.user));
+          } catch (error) {
+            console.error("Erreur de validation du token :", error);
+            dispatch(clearUser());
+            router.push("/auth"); // Redirection en cas d'erreur
           }
+        } else {
+          dispatch(clearUser());
+          router.push("/auth");
         }
       }
-    };
+    );
 
-    const interval = setInterval(() => {
-      checkAndRefreshToken();
-    }, 10 * 60 * 1000); // Vérifier toutes les 10 minutes
+    return () => unsubscribe(); // Nettoyer l'abonnement Firebase Auth
+  }, [dispatch, router]);
 
-    return () => clearInterval(interval);
-  }, [session, status]);
-
-  useEffect(() => {
-    
-    if (session?.error === "RefreshAccessTokenError") {
-      signOut({ callbackUrl: "/auth" });
-    }
-  }, [status, session, router]);
-
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />; // Afficher un loader si en cours de chargement
 
   return <>{children}</>;
 }
