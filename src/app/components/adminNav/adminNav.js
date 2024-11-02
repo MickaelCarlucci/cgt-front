@@ -2,20 +2,27 @@
 import "./adminNav.css";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { useSelector } from "react-redux";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 export default function AdminNav() {
-  const { data: session, status } = useSession();
+  const { user } = useSelector((state) => state.auth);
   const [menuOpen, setMenuOpen] = useState(false);
-  const roles = session?.user?.roles?.split(", ") || []; // vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || []; // vérifie l'état de session pour ne pas afficher d'erreur
 
-  if (status !== "authenticated") {
+  if (!user) {
     return null; // Ne rien retourner pour les utilisateurs non authentifiés
   }
 
   // Vérifier les droits
-  const hasAccess = roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") || roles.includes("DS") || roles.includes("CSE") || roles.includes("CSSCT") || roles.includes("RP");
+  const hasAccess =
+    roles.includes("Admin") ||
+    roles.includes("SuperAdmin") ||
+    roles.includes("Moderateur") ||
+    roles.includes("DS") ||
+    roles.includes("CSE") ||
+    roles.includes("CSSCT") ||
+    roles.includes("RP");
 
   // Fonction pour fermer le menu après clic sur un lien
   const handleLinkClick = () => {
@@ -23,26 +30,52 @@ export default function AdminNav() {
   };
 
   return (
-    <div className={`navAdmin ${!hasAccess ? 'hidden' : ''}`}> {/* Ajouter la classe 'hidden' si pas d'accès */}
-      <button className="menu-toggle-admin" onClick={() => setMenuOpen(!menuOpen)}>
+    <div className={`navAdmin ${!hasAccess ? "hidden" : ""}`}>
+      {" "}
+      {/* Ajouter la classe 'hidden' si pas d'accès */}
+      <button
+        className="menu-toggle-admin"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
         {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
       </button>
-
-      <nav className={`navbar-admin ${menuOpen ? 'open' : ''}`}>
-        {roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") ? (
+      <nav className={`navbar-admin ${menuOpen ? "open" : ""}`}>
+        {roles.includes("Admin") ||
+        roles.includes("SuperAdmin") ||
+        roles.includes("Moderateur") ? (
           <>
-            <Link href="/admin" onClick={handleLinkClick}>Gérer les utilisateurs</Link>
-            <Link href="/admin/files" onClick={handleLinkClick}>Ajouter/supprimer un document</Link>
-            <Link href="/admin/poll" onClick={handleLinkClick}>Ajouter/supprimer un sondage</Link>
-            <Link href="/admin/centers" onClick={handleLinkClick}>Gérer les centres et activités</Link>
-            <Link href="/admin/message" onClick={handleLinkClick}>Message</Link>
+            <Link href="/admin" onClick={handleLinkClick}>
+              Gérer les utilisateurs
+            </Link>
+            <Link href="/admin/files" onClick={handleLinkClick}>
+              Ajouter/supprimer un document
+            </Link>
+            <Link href="/admin/poll" onClick={handleLinkClick}>
+              Ajouter/supprimer un sondage
+            </Link>
+            <Link href="/admin/centers" onClick={handleLinkClick}>
+              Gérer les centres et activités
+            </Link>
+            <Link href="/admin/message" onClick={handleLinkClick}>
+              Message
+            </Link>
           </>
         ) : null}
 
-        {roles.includes("DS") || roles.includes("Admin") || roles.includes("SuperAdmin") || roles.includes("Moderateur") || roles.includes("CSE") || roles.includes("CSSCT") || roles.includes("RP") ? (
+        {roles.includes("DS") ||
+        roles.includes("Admin") ||
+        roles.includes("SuperAdmin") ||
+        roles.includes("Moderateur") ||
+        roles.includes("CSE") ||
+        roles.includes("CSSCT") ||
+        roles.includes("RP") ? (
           <>
-            <Link href="#" onClick={handleLinkClick}>Tract</Link>
-            <Link href="/elected" onClick={handleLinkClick}>Elu(e)s et Mandaté(e)s</Link>
+            <Link href="#" onClick={handleLinkClick}>
+              Tract
+            </Link>
+            <Link href="/elected" onClick={handleLinkClick}>
+              Elu(e)s et Mandaté(e)s
+            </Link>
           </>
         ) : null}
       </nav>
