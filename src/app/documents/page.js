@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { fetchWithToken } from "../utils/fetchWithToken";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import Loader from "../components/Loader/Loader";
-import './page.css';
+import "./page.css";
 
 export default function DocumentPage() {
   const [pdfs, setPdfs] = useState([]);
@@ -16,35 +15,44 @@ export default function DocumentPage() {
   const [utilsDocuments, setUtilsDocuments] = useState([]);
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState(null); // Nouvelle variable pour gérer la section active
-  const { data: session, status } = useSession();
+  const { user, loading } = useSelector((state) => state.auth);
 
-  const roles = session?.user?.roles?.split(", ") || [];
-  const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
-    roles.includes(role)
-  );
+  const roles = user?.roles?.split(", ") || [];
+  const hasAccess = [
+    "Admin",
+    "SuperAdmin",
+    "Membre",
+    "Moderateur",
+    "DS",
+    "CSE",
+    "CSSCT",
+    "RP",
+  ].some((role) => roles.includes(role));
 
   // Regrouper tous les fetch dans un seul useEffect et vérifier l'authentification
   useEffect(() => {
-    if (status === "authenticated") {
+    if (user) {
       const fetchAllDocuments = async () => {
         try {
-          const [pdfRes, docRes, cseRes, rpRes, cssctRes, utilsRes] = await Promise.all([
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/4`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/5`),
-            fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/10`)
-          ]);
+          const [pdfRes, docRes, cseRes, rpRes, cssctRes, utilsRes] =
+            await Promise.all([
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/1`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/2`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/3`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/4`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/5`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/views/10`),
+            ]);
 
-          const [pdfData, docData, cseData, rpData, cssctData, utilsData] = await Promise.all([
-            pdfRes.json(),
-            docRes.json(),
-            cseRes.json(),
-            rpRes.json(),
-            cssctRes.json(),
-            utilsRes.json()
-          ]);
+          const [pdfData, docData, cseData, rpData, cssctData, utilsData] =
+            await Promise.all([
+              pdfRes.json(),
+              docRes.json(),
+              cseRes.json(),
+              rpRes.json(),
+              cssctRes.json(),
+              utilsRes.json(),
+            ]);
 
           setPdfs(pdfData);
           setDocuments(docData);
@@ -61,14 +69,14 @@ export default function DocumentPage() {
 
       fetchAllDocuments();
     }
-  }, [status]);
+  }, [user]);
 
   // Fonction pour basculer entre l'affichage et la fermeture des sections
   const toggleSection = (sectionName) => {
     setActiveSection(activeSection === sectionName ? null : sectionName);
   };
 
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -87,9 +95,9 @@ export default function DocumentPage() {
                 {utilsDocuments.map((doc) => (
                   <li key={doc.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -104,16 +112,17 @@ export default function DocumentPage() {
 
           <div className="navigation">
             <h3 onClick={() => toggleSection("accords")}>
-              Liste des accords d&apos;entreprise {activeSection === "accords" ? "▲" : "▼"}
+              Liste des accords d&apos;entreprise{" "}
+              {activeSection === "accords" ? "▲" : "▼"}
             </h3>
             {activeSection === "accords" && (
               <ul>
                 {pdfs.map((pdf) => (
                   <li key={pdf.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${pdf.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${pdf.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -135,9 +144,9 @@ export default function DocumentPage() {
                 {documents.map((doc) => (
                   <li key={doc.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -152,16 +161,17 @@ export default function DocumentPage() {
 
           <div className="navigation">
             <h3 onClick={() => toggleSection("cse")}>
-              Documents relatifs au Comité Social et Economique {activeSection === "cse" ? "▲" : "▼"}
+              Documents relatifs au Comité Social et Economique{" "}
+              {activeSection === "cse" ? "▲" : "▼"}
             </h3>
             {activeSection === "cse" && (
               <ul>
                 {cseDocuments.map((cse) => (
                   <li key={cse.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${cse.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${cse.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -176,16 +186,17 @@ export default function DocumentPage() {
 
           <div className="navigation">
             <h3 onClick={() => toggleSection("rp")}>
-              Documents relatifs aux Représentants de Proximité {activeSection === "rp" ? "▲" : "▼"}
+              Documents relatifs aux Représentants de Proximité{" "}
+              {activeSection === "rp" ? "▲" : "▼"}
             </h3>
             {activeSection === "rp" && (
               <ul>
                 {RPDocuments.map((RP) => (
                   <li key={RP.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${RP.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${RP.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -200,16 +211,17 @@ export default function DocumentPage() {
 
           <div className="navigation">
             <h3 onClick={() => toggleSection("cssct")}>
-              Documents relatifs à la Commission Santé, Sécurité et Conditions de Travail {activeSection === "cssct" ? "▲" : "▼"}
+              Documents relatifs à la Commission Santé, Sécurité et Conditions
+              de Travail {activeSection === "cssct" ? "▲" : "▼"}
             </h3>
             {activeSection === "cssct" && (
               <ul>
                 {CSSCTDocuments.map((doc) => (
                   <li key={doc.id}>
                     <a
-                      href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url
-                        .split("/")
-                        .pop()}`}
+                      href={`${
+                        process.env.NEXT_PUBLIC_API_URL
+                      }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download

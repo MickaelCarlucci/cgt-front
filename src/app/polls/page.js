@@ -1,59 +1,66 @@
-"use client"
-import { useSession } from "next-auth/react";
+"use client";
+import { useSelector } from "react-redux";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import PollDetails from "../components/optionPoll/page";
 import PollResults from "../components/resultPoll/page";
 import Loader from "../components/Loader/Loader";
-import './page.css';
+import "./page.css";
 
 export default function Page() {
-    const { data: session, status } = useSession()
+  const { user, loading } = useSelector((state) => state.auth);
 
-    const roles = session?.user?.roles?.split(", ") || [];
-    const userId = session?.user?.id;
-  
-    const [polls, setPolls] = useState([]);
-    const [selectedPoll, setSelectedPoll] = useState(null); // Initialisé à null
-    const [voteStatuses, setVoteStatuses] = useState({});
-    const [errorMessage, setErrorMessage] = useState(null);
+  const roles = user?.roles?.split(", ") || [];
+  const userId = user?.id;
 
-    const hasAccess = ["Admin", "SuperAdmin", "Membre", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
-        roles.includes(role)
-      );
+  const [polls, setPolls] = useState([]);
+  const [selectedPoll, setSelectedPoll] = useState(null); // Initialisé à null
+  const [voteStatuses, setVoteStatuses] = useState({});
+  const [errorMessage, setErrorMessage] = useState(null);
 
-      const checkUserVote = useCallback(
-        async (pollId) => {
-          try {
-            const response = await fetchWithToken(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/poll/${pollId}/vote-status/${userId}`
-            );
-            if (!response.ok)
-              throw new Error("Erreur lors de la vérification du vote");
-            const data = await response.json();
-    
-            // Mise à jour du statut de vote
-            setVoteStatuses((prev) => ({
-              ...prev,
-              [pollId]: data || { voted: false, optionId: null },
-            }));
-          } catch (error) {
-            console.error(
-              "Erreur lors de la vérification du vote utilisateur:",
-              error
-            );
-            setErrorMessage("Erreur lors de la vérification du vote.");
-          }
-        },
-        [userId]
-      );
+  const hasAccess = [
+    "Admin",
+    "SuperAdmin",
+    "Membre",
+    "Moderateur",
+    "DS",
+    "CSE",
+    "CSSCT",
+    "RP",
+  ].some((role) => roles.includes(role));
 
-      // Récupère les derniers sondages
+  const checkUserVote = useCallback(
+    async (pollId) => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/poll/${pollId}/vote-status/${userId}`
+        );
+        if (!response.ok)
+          throw new Error("Erreur lors de la vérification du vote");
+        const data = await response.json();
+
+        // Mise à jour du statut de vote
+        setVoteStatuses((prev) => ({
+          ...prev,
+          [pollId]: data || { voted: false, optionId: null },
+        }));
+      } catch (error) {
+        console.error(
+          "Erreur lors de la vérification du vote utilisateur:",
+          error
+        );
+        setErrorMessage("Erreur lors de la vérification du vote.");
+      }
+    },
+    [userId]
+  );
+
+  // Récupère les derniers sondages
   useEffect(() => {
     async function fetchPolls() {
       try {
-        const response = await fetchWithToken(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/poll/latest`
         );
         if (!response.ok)
@@ -80,10 +87,10 @@ export default function Page() {
       }
     }
 
-    if (status === "authenticated" && userId) {
+    if (user && userId) {
       fetchPolls();
     }
-  }, [userId, checkUserVote, status, voteStatuses]);
+  }, [userId, checkUserVote, user, voteStatuses]);
 
   // Gestion du vote
   const handleVote = async (pollId, optionId) => {
@@ -93,7 +100,6 @@ export default function Page() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${session.accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ optionId }),
@@ -115,7 +121,7 @@ export default function Page() {
     }
   };
 
-  if (status === "loading") return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>
@@ -124,37 +130,37 @@ export default function Page() {
           <div className="poll">
             <h1>Derniers Sondages</h1>
             {errorMessage && <p className="error">{errorMessage}</p>}
-              {polls.map((poll) => (
-                <div className="poll-container" key={poll.id}>
-                  <Link
-                    href={"#"}
-                    onClick={() =>
-                      setSelectedPoll(poll.id === selectedPoll ? null : poll.id)
-                    }
-                  >
-                    {poll.question}
-                  </Link>
+            {polls.map((poll) => (
+              <div className="poll-container" key={poll.id}>
+                <Link
+                  href={"#"}
+                  onClick={() =>
+                    setSelectedPoll(poll.id === selectedPoll ? null : poll.id)
+                  }
+                >
+                  {poll.question}
+                </Link>
 
-                  {/* Affiche les options si l'utilisateur n'a pas voté */}
-                  {selectedPoll === poll.id &&
-                    voteStatuses[poll.id]?.voted === false && (
-                      <div>
-                        <PollDetails pollId={poll.id} onVote={handleVote} />
-                      </div>
-                    )}
+                {/* Affiche les options si l'utilisateur n'a pas voté */}
+                {selectedPoll === poll.id &&
+                  voteStatuses[poll.id]?.voted === false && (
+                    <div>
+                      <PollDetails pollId={poll.id} onVote={handleVote} />
+                    </div>
+                  )}
 
-                  {/* Affiche les résultats si l'utilisateur a déjà voté */}
-                  {selectedPoll === poll.id &&
-                    voteStatuses[poll.id]?.voted === true && (
-                      <div>
-                        <PollResults
-                          pollId={poll.id}
-                          optionId={voteStatuses[poll.id].optionId}
-                        />
-                      </div>
-                    )}
-                </div>
-              ))}
+                {/* Affiche les résultats si l'utilisateur a déjà voté */}
+                {selectedPoll === poll.id &&
+                  voteStatuses[poll.id]?.voted === true && (
+                    <div>
+                      <PollResults
+                        pollId={poll.id}
+                        optionId={voteStatuses[poll.id].optionId}
+                      />
+                    </div>
+                  )}
+              </div>
+            ))}
           </div>
         </div>
       ) : (
@@ -164,5 +170,5 @@ export default function Page() {
         </p>
       )}
     </>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Link from "next/link";
 import SectionRP from "../components/sectionRP/sectionRP";
@@ -10,30 +10,32 @@ import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useSelector((state) => state.auth);
   const [appointment, setAppointment] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleSection, setVisibleSection] = useState(null); // État pour suivre quelle section est visible
   const [formData, setFormData] = useState({
     subject: "",
     date: "",
-    linkMeeting: ""
+    linkMeeting: "",
   });
   const [error, setError] = useState("");
 
   // Gestion des rôles : si la session est chargée et qu'il y a un utilisateur
-  const roles = session?.user?.roles?.split(", ") || [];
-  const userId = session?.user?.id;
+  const roles = user?.roles?.split(", ") || [];
+  const userId = user?.id;
 
   const appointmentFetch = async () => {
     try {
-      const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment`
+      );
       const data = await response.json();
       setAppointment(data);
       setFormData({
         subject: data.subject,
         date: data.date,
-        linkMeeting: data.linkMeeting
+        linkMeeting: data.linkMeeting,
       });
     } catch (error) {
       setError("Erreur lors de la récupération du rendez-vous.");
@@ -41,10 +43,10 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" && userId) {
+    if (user && userId) {
       appointmentFetch();
     }
-  }, [status, userId]);
+  }, [user, userId]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -53,37 +55,43 @@ export default function Page() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment/update`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await fetchWithToken(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/elected/appointment/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       if (response.ok) {
         setFormData("");
         setError("");
         appointmentFetch();
         closeModal();
       } else {
-        setError("Une erreur est survenue lors de la mise en place du nouveau rendez-vous");
+        setError(
+          "Une erreur est survenue lors de la mise en place du nouveau rendez-vous"
+        );
       }
     } catch (error) {
       console.error("Erreur:", error);
-      setError("Une erreur s'est produite pendant la mise en place du nouveau rendez-vous");
+      setError(
+        "Une erreur s'est produite pendant la mise en place du nouveau rendez-vous"
+      );
     }
   };
 
   // Si la session est encore en train de se charger
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   // Si les rôles ne sont pas définis
   if (!roles.length) {
@@ -92,40 +100,68 @@ export default function Page() {
 
   // Fonction pour basculer l'affichage des sections
   const toggleSection = (section) => {
-    setVisibleSection((prevSection) => (prevSection === section ? null : section));
+    setVisibleSection((prevSection) =>
+      prevSection === section ? null : section
+    );
   };
 
   return (
     <>
       <div className="navbar-elected">
-        {(roles.includes("DS") || roles.includes("CSE") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("CSE")}>CSE</Link>
+        {(roles.includes("DS") ||
+          roles.includes("CSE") ||
+          roles.includes("SuperAdmin") ||
+          roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("CSE")}>
+            CSE
+          </Link>
         )}
-        {(roles.includes("DS") || roles.includes("CSSCT") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("CSSCT")}>CSSCT</Link>
+        {(roles.includes("DS") ||
+          roles.includes("CSSCT") ||
+          roles.includes("SuperAdmin") ||
+          roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("CSSCT")}>
+            CSSCT
+          </Link>
         )}
-        {(roles.includes("DS") || roles.includes("RP") || roles.includes("SuperAdmin") || roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("RP")}>RP</Link>
+        {(roles.includes("DS") ||
+          roles.includes("RP") ||
+          roles.includes("SuperAdmin") ||
+          roles.includes("Admin")) && (
+          <Link href="#" onClick={() => toggleSection("RP")}>
+            RP
+          </Link>
         )}
       </div>
 
-      {(roles.includes("DS") || roles.includes("SuperAdmin") || roles.includes("Admin") || roles.includes("RP") || roles.includes("CSSCT") || roles.includes("CSE")) ? (
+      {roles.includes("DS") ||
+      roles.includes("SuperAdmin") ||
+      roles.includes("Admin") ||
+      roles.includes("RP") ||
+      roles.includes("CSSCT") ||
+      roles.includes("CSE") ? (
         <div className="content-elected">
           <h1>Prochain rendez-vous:</h1>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <div className="appointment-div">
-          <p>Sujet de la réunion: {appointment.subject}</p>
-          <p>Date: {appointment.date}</p>
-          <p>
-            <Link target="_blank" rel="noopener noreferrer" href={`${appointment.linkMeeting}`}>
-              Cliquez ici
-            </Link> {" "}
-            pour accéder à la réunion ou copiez le lien ci-dessous.
-          </p>
-          <p>{appointment.linkMeeting}</p>
+            <p>Sujet de la réunion: {appointment.subject}</p>
+            <p>Date: {appointment.date}</p>
+            <p>
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`${appointment.linkMeeting}`}
+              >
+                Cliquez ici
+              </Link>{" "}
+              pour accéder à la réunion ou copiez le lien ci-dessous.
+            </p>
+            <p>{appointment.linkMeeting}</p>
           </div>
           {(roles.includes("Admin") || roles.includes("SuperAdmin")) && (
-            <button className="button-appointment" onClick={openModal}>Modifier le rendez-vous</button>
+            <button className="button-appointment" onClick={openModal}>
+              Modifier le rendez-vous
+            </button>
           )}
 
           {isModalOpen && (
@@ -134,9 +170,11 @@ export default function Page() {
                 <h3>Modifier le rendez-vous</h3>
                 <form className="modal-form-elected" onSubmit={handleSubmit}>
                   <div>
-                    <label className="modal-label-elected" htmlFor="subject">Sujet :</label>
-                    <input 
-                    className="modal-input-elected"
+                    <label className="modal-label-elected" htmlFor="subject">
+                      Sujet :
+                    </label>
+                    <input
+                      className="modal-input-elected"
                       type="text"
                       id="subject"
                       name="subject"
@@ -146,9 +184,11 @@ export default function Page() {
                     />
                   </div>
                   <div>
-                    <label className="modal-label-elected" htmlFor="date">Date :</label>
+                    <label className="modal-label-elected" htmlFor="date">
+                      Date :
+                    </label>
                     <input
-                    className="modal-input-elected"
+                      className="modal-input-elected"
                       type="text"
                       id="date"
                       name="date"
@@ -158,9 +198,14 @@ export default function Page() {
                     />
                   </div>
                   <div>
-                    <label className="modal-label-elected" htmlFor="linkMeeting">Lien de la réunion :</label>
+                    <label
+                      className="modal-label-elected"
+                      htmlFor="linkMeeting"
+                    >
+                      Lien de la réunion :
+                    </label>
                     <input
-                    className="modal-input-elected"
+                      className="modal-input-elected"
                       type="text"
                       id="linkMeeting"
                       name="linkMeeting"
@@ -170,8 +215,14 @@ export default function Page() {
                     />
                   </div>
                   {error && <p style={{ color: "red" }}>{error}</p>}
-                  <button className="modal-button-elected" type="submit">Enregistrer les modifications</button>
-                  <button className="modal-button-elected" type="button" onClick={closeModal}>
+                  <button className="modal-button-elected" type="submit">
+                    Enregistrer les modifications
+                  </button>
+                  <button
+                    className="modal-button-elected"
+                    type="button"
+                    onClick={closeModal}
+                  >
                     Annuler
                   </button>
                 </form>

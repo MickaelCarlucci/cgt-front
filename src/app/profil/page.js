@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../utils/authSlice";
 import { useRouter } from "next/navigation";
+import {
+  updateEmail,
+  signInWithEmailAndPassword,
+  updatePassword,
+  deleteUser,
+} from "firebase/auth";
 import Link from "next/link";
 import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Modal from "../components/modal/modal";
@@ -10,18 +17,25 @@ import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { user } = useSelector((state) => state.auth);
   const [userData, setUserData] = useState(null);
   const [centers, setCenters] = useState([]);
   const [activities, setActivities] = useState([]);
   const [passwordType, setPasswordType] = useState("password");
   const [error, setError] = useState(""); // État pour stocker les messages d'erreur
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
-  const hasAccess = ["Admin", "SuperAdmin", "Moderateur", "DS", "CSE", "CSSCT", "RP"].some((role) =>
-    roles.includes(role)
-);
+  const roles = user?.roles?.split(", ") || []; //vérifie l'état pour ne pas afficher d'erreur
+  const hasAccess = [
+    "Admin",
+    "SuperAdmin",
+    "Moderateur",
+    "DS",
+    "CSE",
+    "CSSCT",
+    "RP",
+  ].some((role) => roles.includes(role));
 
   // États pour les modals
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,11 +51,13 @@ export default function Page() {
           const [userResponse, centersResponse, activitiesResponse] =
             await Promise.all([
               fetchWithToken(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${session.user.id}`
+                `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${user.id}`
               ),
-              fetchWithToken(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`),
               fetchWithToken(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${session.user.center_id}/activities`
+                `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
+              ),
+              fetchWithToken(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${user.center_id}/activities`
               ),
             ]);
 
@@ -80,10 +96,10 @@ export default function Page() {
       }
     };
 
-    if (session?.user.id) {
+    if (user.id) {
       fetchData();
     }
-  }, [session]);
+  }, [user]);
 
   // Mise à jour des activités lorsque le centre change
   useEffect(() => {
@@ -147,12 +163,11 @@ export default function Page() {
       // Appel API spécifique en fonction du champ modifié
       switch (modalField) {
         case "pseudo":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/pseudo`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/pseudo`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ pseudo: inputValue }),
@@ -161,12 +176,11 @@ export default function Page() {
           break;
 
         case "firstname":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/firstname`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/firstname`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ firstname: inputValue }),
@@ -175,12 +189,11 @@ export default function Page() {
           break;
 
         case "lastname":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/lastname`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/lastname`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ lastname: inputValue }),
@@ -189,26 +202,33 @@ export default function Page() {
           break;
 
         case "mail":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/mail`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ mail: inputValue }),
-            }
-          );
+          try {
+            // Mettre à jour l'email dans Firebase
+            await updateEmail(auth.currentUser, inputValue);
+
+            // Mettre à jour l'email dans la base de données
+            response = await fetchWithToken(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/mail`,
+              {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mail: inputValue }),
+              }
+            );
+          } catch (error) {
+            setError(
+              "Erreur lors de la mise à jour de l'email : " + error.message
+            );
+            return;
+          }
           break;
 
         case "phone":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/phone`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/phone`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ phone: inputValue }),
@@ -221,63 +241,36 @@ export default function Page() {
             setError("Les mots de passe ne correspondent pas.");
             return;
           }
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/password/modify`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                oldPassword: inputValue,
-                password: additionalValue,
-              }),
-            }
-          );
-          break;
+          try {
+            // Vérifier l'ancien mot de passe
+            await signInWithEmailAndPassword(auth, userData.mail, inputValue);
 
-        case "first_question":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/firstSecretSecurity`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                first_question: inputValue,
-                first_answer: additionalValue,
-              }),
-            }
-          );
-          break;
+            // Mettre à jour le mot de passe dans Firebase
+            await updatePassword(auth.currentUser, additionalValue);
 
-        case "second_question":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/secondSecretSecurity`,
-            {
-              method: "PATCH",
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                second_question: inputValue,
-                second_answer: additionalValue,
-              }),
-            }
-          );
+            // Optionnel : Mettre à jour le mot de passe dans la base de données (si nécessaire)
+            response = await fetchWithToken(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/password`,
+              {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: additionalValue }),
+              }
+            );
+          } catch (error) {
+            setError(
+              "Erreur lors de la mise à jour du mot de passe : " + error.message
+            );
+            return;
+          }
           break;
 
         case "center_id":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/center`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/center`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -288,12 +281,11 @@ export default function Page() {
           break;
 
         case "activity_id":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/activity`,
+          response = await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/activity`,
             {
               method: "PATCH",
               headers: {
-                Authorization: `Bearer ${session.accessToken}`,
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
@@ -303,24 +295,30 @@ export default function Page() {
           );
           break;
 
-          case "delete":
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/delete`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${session.accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                mail: inputValue,
-              }),
+        case "delete":
+          try {
+            // Supprimer l'utilisateur de Firebase
+            await deleteUser(auth.currentUser);
+
+            // Supprimer l'utilisateur de la base de données
+            response = await fetchWithToken(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/delete`,
+              {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mail: inputValue }),
+              }
+            );
+
+            if (response.ok) {
+              dispatch(logoutUser());
+              router.push("/auth");
+              return;
             }
-          );
-          // Si la suppression est réussie, redirigez l'utilisateur
-          if (response.ok) {
-            await signOut({ redirect: false });
-            router.push('/auth'); // Redirige vers la page de connexion
+          } catch (error) {
+            setError(
+              "Erreur lors de la suppression du compte : " + error.message
+            );
             return;
           }
           break;
@@ -332,7 +330,7 @@ export default function Page() {
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
-  
+
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json(); // Récupérer l'erreur renvoyée par l'API
           throw new Error(
@@ -343,7 +341,6 @@ export default function Page() {
           throw new Error("Le format attendu n'est pas correct.");
         }
       }
-
 
       // Mettre à jour les données utilisateur après modification
       setUserData((prevData) => ({
@@ -357,11 +354,11 @@ export default function Page() {
     }
   };
 
-  if (status === "loading") return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>
-      {status === "authenticated" ? (
+      {user ? (
         <>
           {userData ? (
             <div className="container-profile">
@@ -374,114 +371,95 @@ export default function Page() {
                 </p>
               </div>
 
-                <h2>Mes informations:</h2>
+              <h2>Mes informations:</h2>
               <div className="information-profile">
-                
+                <div className="element-profil">
+                  Mon pseudonyme:{" "}
+                  <span>
+                    {userData.pseudo}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("pseudo")}
+                    />
+                  </span>
+                </div>
+                <div className="element-profil">
+                  Mon Prénom:{" "}
+                  <span>
+                    {userData.firstname}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("firstname")}
+                    />
+                  </span>
+                </div>
+                <div className="element-profil">
+                  Mon Nom:{" "}
+                  <span>
+                    {userData.lastname}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("lastname")}
+                    />
+                  </span>
+                </div>
+                <div className="element-profil">
+                  Mon adresse mail:{" "}
+                  <span>
+                    {userData.mail}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("mail")}
+                    />
+                  </span>
+                </div>
+                {hasAccess ? (
                   <div className="element-profil">
-                    Mon pseudonyme:{" "}
+                    Mon numéro de téléphone:{" "}
                     <span>
-                      {userData.pseudo}{" "}
+                      {userData.phone}{" "}
                       <MdMode
                         className="pen-icon"
-                        onClick={() => openModal("pseudo")}
+                        onClick={() => openModal("phone")}
                       />
                     </span>
                   </div>
-                  <div className="element-profil">
-                    Mon Prénom:{" "}
-                    <span>
-                      {userData.firstname}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("firstname")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Mon Nom:{" "}
-                    <span>
-                      {userData.lastname}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("lastname")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Mon adresse mail:{" "}
-                    <span>
-                      {userData.mail}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("mail")}
-                      />
-                    </span>
-                  </div>
-                  {hasAccess ? (
-                    <div className="element-profil">
-                      Mon numéro de téléphone:{" "}
-                      <span>
-                        {userData.phone}{" "}
-                        <MdMode
-                          className="pen-icon"
-                          onClick={() => openModal("phone")}
-                        />
-                      </span>
-                    </div>
-                  ) : null}
-                  <div className="element-profil">
-                    Changer mon mot de passe{" "}
-                    <span>
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("password")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Ma première question secrète:{" "}
-                    <span>
-                      {userData.first_question}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("first_question")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Ma deuxième question secrète:{" "}
-                    <span>
-                      {userData.second_question}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("second_question")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Centre de rattachement:{" "}
-                    <span>
-                      {getCenterName(userData.center_id)}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("center_id")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil">
-                    Activité principale:{" "}
-                    <span>
-                      {getActivityName(userData.activity_id)}{" "}
-                      <MdMode
-                        className="pen-icon"
-                        onClick={() => openModal("activity_id")}
-                      />
-                    </span>
-                  </div>
-                  <div className="element-profil delete-profil" onClick={() => openModal("delete")} >
-                    Supprimer mon compte{" "}
-                  </div>
-                
+                ) : null}
+                <div className="element-profil">
+                  Changer mon mot de passe{" "}
+                  <span>
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("password")}
+                    />
+                  </span>
+                </div>
+                <div className="element-profil">
+                  Centre de rattachement:{" "}
+                  <span>
+                    {getCenterName(userData.center_id)}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("center_id")}
+                    />
+                  </span>
+                </div>
+                <div className="element-profil">
+                  Activité principale:{" "}
+                  <span>
+                    {getActivityName(userData.activity_id)}{" "}
+                    <MdMode
+                      className="pen-icon"
+                      onClick={() => openModal("activity_id")}
+                    />
+                  </span>
+                </div>
+                <div
+                  className="element-profil delete-profil"
+                  onClick={() => openModal("delete")}
+                >
+                  Supprimer mon compte{" "}
+                </div>
               </div>
 
               {/* Modal pour modifier un champ */}
@@ -556,31 +534,6 @@ export default function Page() {
                     {centers.map((center) => (
                       <option key={center.id} value={center.id}>
                         {center.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button onClick={handleSave}>Sauvegarder</button>
-                </Modal>
-              )}
-
-              {modalField === "activity_id" && (
-                <Modal
-                  isOpen={isModalOpen}
-                  onClose={closeModal}
-                  title={`Modifier`}
-                >
-                  {error && <p style={{ color: "red" }}>{error}</p>}
-                  <select
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    required
-                  >
-                    <option value="" disabled>
-                      Sélectionner une activité
-                    </option>
-                    {activities.map((activity) => (
-                      <option key={activity.id} value={activity.id}>
-                        {activity.name}
                       </option>
                     ))}
                   </select>
@@ -697,19 +650,22 @@ export default function Page() {
                   title={`Modifier`}
                 >
                   {error && <p style={{ color: "red" }}>{error}</p>}
-                  <label>Saisissez votre adresse mail pour confirmer la suppression:</label>
+                  <label>
+                    Saisissez votre adresse mail pour confirmer la suppression:
+                  </label>
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                   />
                   <button onClick={handleSave}>Sauvegarder</button>
-                  </Modal>
-
+                </Modal>
               )}
             </div>
           ) : (
-            <p className="connected">Erreur lors de la récupération des données utilisateur.</p>
+            <p className="connected">
+              Erreur lors de la récupération des données utilisateur.
+            </p>
           )}
         </>
       ) : (

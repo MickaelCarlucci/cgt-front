@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../../store/authSlice";
+import { logoutUser } from "../../utils/authSlice";
 import Link from "next/link";
 import Image from "next/image";
 import imgCGT from "../../../../public/assets/logoCGT.png";
