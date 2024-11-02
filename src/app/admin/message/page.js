@@ -1,9 +1,15 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
-import { Editor, EditorState, RichUtils, convertToRaw, Modifier } from "draft-js";
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  Modifier,
+} from "draft-js";
 import "draft-js/dist/Draft.css";
 import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
@@ -23,10 +29,10 @@ const isValidUrl = (string) => {
 };
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useSelector((state) => state.auth);
   const [title, setTitle] = useState("");
   const [sections, setSections] = useState([]);
-  const [selectedSection, setSelectedSection] = useState("")
+  const [selectedSection, setSelectedSection] = useState("");
   const [editorStates, setEditorStates] = useState([EditorState.createEmpty()]); // tableau d'états d'éditeurs
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -35,8 +41,8 @@ export default function Page() {
   // Ref pour l'éditeur pour éviter le problème de "focus"
   const editorRefs = useRef([]);
 
-  const roles = session?.user?.roles?.split(", ") || [];
-  const userId = session?.user?.id;
+  const roles = user?.roles?.split(", ") || [];
+  const userId = user?.id;
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );
@@ -69,32 +75,48 @@ export default function Page() {
       `COLOR_${currentColor}` // On applique un style inline avec la couleur sélectionnée
     );
 
-    const newEditorState = EditorState.push(editorStates[index], newContentState, "change-inline-style");
+    const newEditorState = EditorState.push(
+      editorStates[index],
+      newContentState,
+      "change-inline-style"
+    );
     handleContentChange(index, newEditorState);
   };
 
   // Fonction pour appliquer un lien hypertexte à partir du texte sélectionné
   const applyLink = (index) => {
     const selection = editorStates[index].getSelection();
-    
+
     // Vérifier qu'une sélection existe
     if (!selection.isCollapsed()) {
       const url = prompt("Veuillez entrer l'URL du lien :");
-      
+
       // Vérifier si l'URL est valide
       const validUrl = isValidUrl(url);
       if (validUrl) {
         const contentState = editorStates[index].getCurrentContent();
-        
+
         // Créer l'entité de lien sur l'URL validée
-        const contentStateWithLink = contentState.createEntity("LINK", "MUTABLE", { href: validUrl });
+        const contentStateWithLink = contentState.createEntity(
+          "LINK",
+          "MUTABLE",
+          { href: validUrl }
+        );
         const entityKey = contentStateWithLink.getLastCreatedEntityKey();
-    
+
         // Appliquer l'entité au texte sélectionné
-        const newContentState = Modifier.applyEntity(contentState, selection, entityKey);
-    
+        const newContentState = Modifier.applyEntity(
+          contentState,
+          selection,
+          entityKey
+        );
+
         // Mettre à jour l'état de l'éditeur
-        const newEditorState = EditorState.push(editorStates[index], newContentState, "apply-entity");
+        const newEditorState = EditorState.push(
+          editorStates[index],
+          newContentState,
+          "apply-entity"
+        );
         handleContentChange(index, newEditorState);
       } else {
         alert("L'URL entrée n'est pas valide.");
@@ -103,14 +125,13 @@ export default function Page() {
       alert("Veuillez sélectionner un texte à transformer en lien.");
     }
   };
-  
-  
-  
-  
 
   // Fonction pour appliquer un soulignement au texte sélectionné
   const applyUnderline = (index) => {
-    const newEditorState = RichUtils.toggleInlineStyle(editorStates[index], "UNDERLINE");
+    const newEditorState = RichUtils.toggleInlineStyle(
+      editorStates[index],
+      "UNDERLINE"
+    );
     handleContentChange(index, newEditorState);
   };
 
@@ -123,22 +144,22 @@ export default function Page() {
   useEffect(() => {
     async function fetchSection() {
       try {
-        const response = await fetchWithToken(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`
-        )
+        );
         if (!response.ok)
           throw new Error("Erreur lors de la récupération des sections");
         const data = await response.json();
-        setSections(data)
+        setSections(data);
       } catch (error) {
         console.error("Erreur lors de la récupération des sections:", error);
         setError("Erreur lors de la récupération des sections.");
       }
     }
-    if (status === "authenticated" && userId) {
+    if (user && userId) {
       fetchSection();
     }
-  }, [status, userId])
+  }, [user, userId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,9 +178,6 @@ export default function Page() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/information/news/${userId}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
           body: formData,
         }
       );
@@ -192,128 +210,175 @@ export default function Page() {
     },
   };
 
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   return (
     <>
       {hasAccess ? (
         <div style={{ margin: "20px" }}>
-        <form onSubmit={handleSubmit}>
-          <div className="form-message" style={{ display: "flex", flexDirection: "column", marginBottom: "20px" }}>
-            <label style={{ marginBottom: "5px" }}>Titre de la News:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Votre titre..."
-              required
-              style={{ padding: "5px", width: "300px" }}
-            />
-          </div>
-      
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
-            {editorStates.map((editorState, index) => (
-              <div key={index} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {/* Boutons pour Gras, Italique, etc. */}
-                <div className="editor-text">
-                  <button
-                    type="button"
-                    onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'BOLD'))}
-                    style={{ padding: "5px 10px", marginRight: "5px" }}
-                  >
-                    Gras
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleContentChange(index, RichUtils.toggleInlineStyle(editorStates[index], 'ITALIC'))}
-                    style={{ padding: "5px 10px", marginRight: "5px" }}
-                  >
-                    Italique
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyLink(index)}
-                    style={{ padding: "5px 10px" }}
-                  >
-                    Ajouter Lien
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => applyUnderline(index)}
-                    style={{ padding: "5px 10px", marginLeft: "5px" }}
-                  >
-                    Souligner
-                  </button>
-                </div>
-      
-                <div className="div-editor-text-message"
-                  style={{
-                    minHeight: "150px",
-                    border: "1px solid #ccc",
-                    padding: "10px",
-                    cursor: "text",
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Empêche l'interférence avec d'autres clics
-                    editorRefs.current[index]?.focus();
-                  }} // Utilisation de ref pour gérer le focus
-                >
-                  <Editor
-                    ref={(element) => (editorRefs.current[index] = element)} // Stocke la référence à l'éditeur
-                    editorState={editorState}
-                    onChange={(newState) => handleContentChange(index, newState)}
-                    handleKeyCommand={(command) => handleKeyCommand(command, index)}
-                    customStyleMap={customStyleMap} // Appliquer les styles personnalisés
-                    placeholder="Écrivez votre contenu ici..."
-                  />
-                </div>
-                {/* Sélecteur de couleur */}
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="color"
-                    value={currentColor}
-                    onChange={(e) => setCurrentColor(e.target.value)}
-                    style={{ marginRight: "10px" }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => applyColor(index)}
-                    style={{ padding: "5px 10px" }}
-                  >
-                    Appliquer couleur
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="selector-message">
-            <select
-              value={selectedSection}
-              onChange={(e) => setSelectedSection(e.target.value)}
-              required
+          <form onSubmit={handleSubmit}>
+            <div
+              className="form-message"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginBottom: "20px",
+              }}
             >
-              <option value="" disabled>Selectionnez une section</option>
-              {sections.filter((section) => section.id === 6 || section.id === 11).map((section) => (
-                <option key={section.id} value={section.id}>
-                  {section.name}
-                </option>
+              <label style={{ marginBottom: "5px" }}>Titre de la News:</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Votre titre..."
+                required
+                style={{ padding: "5px", width: "300px" }}
+              />
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                marginBottom: "20px",
+              }}
+            >
+              {editorStates.map((editorState, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {/* Boutons pour Gras, Italique, etc. */}
+                  <div className="editor-text">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleContentChange(
+                          index,
+                          RichUtils.toggleInlineStyle(
+                            editorStates[index],
+                            "BOLD"
+                          )
+                        )
+                      }
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Gras
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleContentChange(
+                          index,
+                          RichUtils.toggleInlineStyle(
+                            editorStates[index],
+                            "ITALIC"
+                          )
+                        )
+                      }
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Italique
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyLink(index)}
+                      style={{ padding: "5px 10px" }}
+                    >
+                      Ajouter Lien
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyUnderline(index)}
+                      style={{ padding: "5px 10px", marginLeft: "5px" }}
+                    >
+                      Souligner
+                    </button>
+                  </div>
+
+                  <div
+                    className="div-editor-text-message"
+                    style={{
+                      minHeight: "150px",
+                      border: "1px solid #ccc",
+                      padding: "10px",
+                      cursor: "text",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Empêche l'interférence avec d'autres clics
+                      editorRefs.current[index]?.focus();
+                    }} // Utilisation de ref pour gérer le focus
+                  >
+                    <Editor
+                      ref={(element) => (editorRefs.current[index] = element)} // Stocke la référence à l'éditeur
+                      editorState={editorState}
+                      onChange={(newState) =>
+                        handleContentChange(index, newState)
+                      }
+                      handleKeyCommand={(command) =>
+                        handleKeyCommand(command, index)
+                      }
+                      customStyleMap={customStyleMap} // Appliquer les styles personnalisés
+                      placeholder="Écrivez votre contenu ici..."
+                    />
+                  </div>
+                  {/* Sélecteur de couleur */}
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="color"
+                      value={currentColor}
+                      onChange={(e) => setCurrentColor(e.target.value)}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => applyColor(index)}
+                      style={{ padding: "5px 10px" }}
+                    >
+                      Appliquer couleur
+                    </button>
+                  </div>
+                </div>
               ))}
-            </select>
-            <label style={{ display: "block", marginBottom: "10px" }}>
-              Image (optionnel):
+            </div>
+            <div className="selector-message">
+              <select
+                value={selectedSection}
+                onChange={(e) => setSelectedSection(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Selectionnez une section
+                </option>
+                {sections
+                  .filter((section) => section.id === 6 || section.id === 11)
+                  .map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.name}
+                    </option>
+                  ))}
+              </select>
+              <label style={{ display: "block", marginBottom: "10px" }}>
+                Image (optionnel):
               </label>
               <input
                 type="file"
                 onChange={(e) => setImageFile(e.target.files[0])}
                 style={{ marginLeft: "10px" }}
               />
-          </div>
-      
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <button className="button-message" type="submit">Envoyer</button>
-        </form>
-      </div>
-      
+            </div>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            <button className="button-message" type="submit">
+              Envoyer
+            </button>
+          </form>
+        </div>
       ) : (
         <p className="connected">
           Vous ne devriez pas être ici ! Revenez à la page d&apos;

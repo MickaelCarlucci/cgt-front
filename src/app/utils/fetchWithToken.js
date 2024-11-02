@@ -1,7 +1,7 @@
-import { auth } from "../../../firebase-config"; // Assurez-vous que Firebase est correctement configuré
+import { firebaseAuth } from "../../../firebaseConfig"; // Assurez-vous que Firebase est correctement configuré
 
 export const fetchWithToken = async (url, options = {}) => {
-  const currentUser = auth.currentUser;
+  const currentUser = firebaseAuth.currentUser;
 
   if (!currentUser) {
     console.error("Aucun utilisateur connecté.");

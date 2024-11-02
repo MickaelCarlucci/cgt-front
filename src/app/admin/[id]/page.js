@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import Modal from "../../components/modal/modal";
 import { fetchWithToken } from "../../utils/fetchWithToken";
@@ -11,15 +11,15 @@ import "./page.css";
 export default function Page() {
   const params = useParams();
   const { id } = params;
-  const { data: session, status } = useSession();
-  const [user, setUser] = useState(null); // Initialiser avec null
+  const { user, loading } = useSelector((state) => state.auth);
+  const [userData, setUserData] = useState(null); // Initialiser avec null
   const [roleList, setRoleList] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const roles = session?.user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
   const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
     roles.includes(role)
   );
@@ -31,13 +31,13 @@ export default function Page() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userResponse = await fetchWithToken(
+        const userResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/users/findUserProfile/${id}`
         );
-        const userData = await userResponse.json();
-        setUser(userData);
+        const dataUser = await userResponse.json();
+        setUserData(dataUser);
 
-        const userRoles = userData.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
+        const userRoles = dataUser.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
         setSelectedRoles(userRoles);
       } catch (error) {
         setError("Erreur lors de la récupération de l'utilisateur");
@@ -49,7 +49,7 @@ export default function Page() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetchWithToken(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/roles`
         );
         const data = await response.json();
@@ -81,7 +81,6 @@ export default function Page() {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${session.accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -109,7 +108,6 @@ export default function Page() {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${session.accessToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ roleId }),
@@ -126,7 +124,6 @@ export default function Page() {
           {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${session.accessToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ roleId }),
@@ -154,7 +151,7 @@ export default function Page() {
     }
   };
 
-  if (status === "loading" || !user) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading || !user) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>
@@ -163,37 +160,43 @@ export default function Page() {
           <h1 className="h1-id-admin-page">
             Vous êtes sur le profil de{" "}
             <span>
-              {user.firstname} {user.lastname}
+              {userData.firstname} {userData.lastname}
             </span>
           </h1>
           <div className="container-management">
             <div className="user-information">
               <p>
-                Son pseudo est <span>{user.pseudo}</span>
+                Son pseudo est <span>{userData.pseudo}</span>
               </p>
               <p>
                 Son nom et prénoms:{" "}
                 <span>
-                  {user.lastname} {user.firstname}
+                  {userData.lastname} {userData.firstname}
                 </span>
               </p>
               <p>
-                Son adresse mail est <span>{user.mail}</span>
+                Son adresse mail est <span>{userData.mail}</span>
               </p>
               <p>
                 connecté pour la dernière fois le :{" "}
                 <span>
-                  {new Date(user.last_activity).toLocaleDateString("fr-FR", {
-                    weekday: "long", 
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                  {" "}à{" "}
-                  {new Date(user.last_activity).toLocaleTimeString("fr-FR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {new Date(userData.last_activity).toLocaleDateString(
+                    "fr-FR",
+                    {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}{" "}
+                  à{" "}
+                  {new Date(userData.last_activity).toLocaleTimeString(
+                    "fr-FR",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }
+                  )}
                 </span>
               </p>
               <p>

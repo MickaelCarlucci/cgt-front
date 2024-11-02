@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import Link from "next/link";
-import { fetchWithToken } from "../utils/fetchWithToken";
 import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { user, loading } = useSelector((state) => state.auth);
   const [searchBar, setSearchBar] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
@@ -16,15 +15,15 @@ export default function Page() {
   const [activities, setActivities] = useState([]);
   const [error, setError] = useState("");
 
-  const roles = session?.user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
   const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
     roles.includes(role)
-);
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetchWithToken(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/search/users`
         );
         const data = await response.json();
@@ -40,7 +39,7 @@ export default function Page() {
   useEffect(() => {
     const fetchCenters = async () => {
       try {
-        const response = await fetchWithToken(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
         );
         const data = await response.json();
@@ -70,7 +69,7 @@ export default function Page() {
   const listUsersByCenter = async (centerId) => {
     try {
       setSelectedCenter(centerId);
-      const response = await fetchWithToken(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users/${centerId}`
       );
       const data = await response.json();
@@ -88,11 +87,11 @@ export default function Page() {
 
   const listUsersByActivity = async (centerId, activityId) => {
     try {
-      const responseActivity = await fetchWithToken(
+      const responseActivity = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users/${centerId}/${activityId}`
       );
       const data = await responseActivity.json();
-      setUsers(data); 
+      setUsers(data);
     } catch (error) {
       setError("Erreur lors de la récupération des utilisateurs.");
     }
@@ -102,7 +101,7 @@ export default function Page() {
     setSelectedCenter(null);
     setActivities([]);
     try {
-      const response = await fetchWithToken(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/search/users`
       );
       const data = await response.json();
@@ -113,7 +112,7 @@ export default function Page() {
     }
   };
 
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -123,7 +122,9 @@ export default function Page() {
 
           {error && <p style={{ color: "red" }}>{error}</p>}
           <div>
-            <button onClick={resetFilters}>Afficher tous les utilisateurs</button>
+            <button onClick={resetFilters}>
+              Afficher tous les utilisateurs
+            </button>
           </div>
           <div className="centers-list">
             {centers.map((center) => (

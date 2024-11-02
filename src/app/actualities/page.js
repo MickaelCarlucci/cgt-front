@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import { TfiTrash } from "react-icons/tfi"; // Icone pour supprimer
@@ -77,73 +77,84 @@ const NewsList = ({
     <div className="actualities-content">
       <h2>{title}</h2>
       <ul>
-  {items.map((item) => (
-    <li
-      key={item.id}
-      className={selectedNewsId === item.id ? "opened" : ""} /* Ajoute la classe 'opened' si l'élément est sélectionné */
-    >
-      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-        <Link
-          href="#"
-          onClick={() =>
-            setSelectedNewsId(item.id === selectedNewsId ? null : item.id)
-          }
-        >
-          {item.title}
-        </Link>
-
-        {(roles.includes("Admin") ||
-          roles.includes("SuperAdmin") ||
-          roles.includes("Moderateur")) && (
-          <>
-            <span
-              className="delete-icon-actualities"
-              type="button"
-              onClick={() => handleDelete(item.id, type)} 
-              style={{ cursor: "pointer" }}
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className={
+              selectedNewsId === item.id ? "opened" : ""
+            } /* Ajoute la classe 'opened' si l'élément est sélectionné */
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
             >
-              <TfiTrash />
-            </span>
+              <Link
+                href="#"
+                onClick={() =>
+                  setSelectedNewsId(item.id === selectedNewsId ? null : item.id)
+                }
+              >
+                {item.title}
+              </Link>
 
-            <Link href={`/actualities/${item.id}`}>
-              <span className="modify-icon-actualities" style={{ cursor: "pointer" }}>
-                <RiEditFill />
-              </span>
-            </Link>
-          </>
-        )}
-      </div>
+              {(roles.includes("Admin") ||
+                roles.includes("SuperAdmin") ||
+                roles.includes("Moderateur")) && (
+                <>
+                  <span
+                    className="delete-icon-actualities"
+                    type="button"
+                    onClick={() => handleDelete(item.id, type)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <TfiTrash />
+                  </span>
 
-      {selectedNewsId === item.id && (
-        <div className="news-content">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: convertRawContentToHTML(JSON.parse(item.contain)),
-            }}
-          />
-          {item.image_url && (
-            <Image
-              src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
-              alt="Une image syndicaliste"
-              width={500}
-              height={300}
-              layout="intrinsic"
-              objectFit="cover"
-            />
-          )}
-        </div>
-      )}
-    </li>
-  ))}
-</ul>
+                  <Link href={`/actualities/${item.id}`}>
+                    <span
+                      className="modify-icon-actualities"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <RiEditFill />
+                    </span>
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {selectedNewsId === item.id && (
+              <div className="news-content">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: convertRawContentToHTML(JSON.parse(item.contain)),
+                  }}
+                />
+                {item.image_url && (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_API_URL}${item.image_url}`}
+                    alt="Une image syndicaliste"
+                    width={500}
+                    height={300}
+                    layout="intrinsic"
+                    objectFit="cover"
+                  />
+                )}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
 export default function Page() {
-  const { data: session, status } = useSession();
-  const roles = session?.user?.roles?.split(", ") || [];
-  const userId = session?.user?.id;
+  const { user, loading } = useSelector((state) => state.auth);
+  const roles = user?.roles?.split(", ") || [];
+  const userId = user?.id;
 
   const [news, setNews] = useState([]);
   const [selectedNewsId, setSelectedNewsId] = useState(null);
@@ -175,11 +186,11 @@ export default function Page() {
       }
     }
 
-    if (status === "authenticated" && userId) {
+    if (user && userId) {
       fetchData("latestNews", setNews);
       fetchData("latestDidYouKnow", setDidYouKnow);
     }
-  }, [status, userId]);
+  }, [user, userId]);
 
   const handleDelete = async (id, type) => {
     try {
@@ -187,9 +198,6 @@ export default function Page() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/information/delete/${id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
         }
       );
       if (response.ok) {
@@ -210,16 +218,16 @@ export default function Page() {
     }
   };
 
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   return (
     <>
       {hasAccess ? (
         <div className="main-container-actualities">
           {errorMessage && <p className="error">{errorMessage}</p>}
-          <div className="image-actualities"> 
-            <h1>{" "}</h1>
-            </div>
+          <div className="image-actualities">
+            <h1> </h1>
+          </div>
           <div className="container-left-and-right">
             <div className="left-part-actualities">
               <NewsList

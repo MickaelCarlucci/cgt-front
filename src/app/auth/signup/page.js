@@ -1,7 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { auth } from "../../../../firebaseConfig"; // Assurez-vous que firebase-config est correctement configuré
 import "./page.css";
 
 export default function Page() {
@@ -11,20 +16,16 @@ export default function Page() {
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [firstQuestion, setFirstQuestion] = useState("");
-  const [firstAnswer, setFirstAnswer] = useState("");
-  const [secondQuestion, setSecondQuestion] = useState("");
-  const [secondAnswer, setSecondAnswer] = useState("");
   const [centerId, setCenterId] = useState("");
-  const [activityId, setActivityId] = useState(""); // Pour stocker l'activité choisie
+  const [activityId, setActivityId] = useState("");
   const [centers, setCenters] = useState([]);
-  const [activities, setActivities] = useState([]); // Pour stocker les activités
+  const [activities, setActivities] = useState([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [passwordType, setPasswordType] = useState("password");
   const router = useRouter();
 
-  // Récupérer la liste des centres
+  // Récupération de la liste des centres
   useEffect(() => {
     const fetchCenters = async () => {
       try {
@@ -37,11 +38,10 @@ export default function Page() {
         setError("Erreur lors de la récupération des centres.");
       }
     };
-
     fetchCenters();
   }, []);
 
-  // Récupérer les activités une fois qu'un centre est sélectionné
+  // Récupération des activités liées au centre sélectionné
   useEffect(() => {
     const fetchActivities = async () => {
       if (centerId) {
@@ -50,39 +50,56 @@ export default function Page() {
             `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${centerId}/activities`
           );
           const data = await response.json();
-          setActivities(data); // Mettre à jour les activités liées au centre
+          setActivities(data);
         } catch (error) {
           setError("Erreur lors de la récupération des activités.");
         }
       }
     };
-
     fetchActivities();
-  }, [centerId]); // Re-fetch des activités chaque fois que le centre change
+  }, [centerId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setMessage("");
 
     if (password !== passwordConfirm) {
       setError("Les mots de passe ne correspondent pas.");
       return;
     }
 
-    const userData = {
-      pseudo,
-      firstname,
-      lastname,
-      mail,
-      password,
-      firstQuestion,
-      firstAnswer,
-      secondQuestion,
-      secondAnswer,
-      centerId,
-      activityId, // Envoyer l'ID de l'activité avec les autres données
-    };
-
     try {
+      // Création de l'utilisateur Firebase et récupération de l'UID
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        mail,
+        password
+      );
+      const firebaseUID = userCredential.user.uid;
+      const user = userCredential.user;
+
+      // Envoi de l'e-mail de vérification
+      await sendEmailVerification(user, {
+        url: `${window.location.origin}/auth/verify-email`,
+      });
+      console.log("E-mail de vérification envoyé à : ", user.email);
+
+      setMessage(
+        "Inscription réussie ! Un e-mail de vérification a été envoyé. Veuillez vérifier votre boîte de réception."
+      );
+
+      // Enregistrement de l'utilisateur dans votre base de données
+      const userData = {
+        pseudo,
+        firstname,
+        lastname,
+        mail,
+        firebaseUID,
+        centerId,
+        activityId,
+      };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/signup`,
         {
@@ -102,16 +119,19 @@ export default function Page() {
       }
 
       const data = await response.json();
-      setMessage(data.message || "Mail d'inscription envoyé !");
+      setMessage(
+        data.message ||
+          "Inscription réussie ! Un e-mail de vérification a été envoyé."
+      );
       setError("");
 
       // Redirection après succès
       setTimeout(() => {
-        router.push('/auth');
-      }, 3000); 
+        router.push("/auth");
+      }, 3000);
     } catch (error) {
-      setError("Erreur lors de la soumission.");
-      setMessage("");
+      console.error("Erreur lors de l'inscription :", error);
+      setError("Erreur lors de l'inscription : " + error.message);
     }
   };
 
@@ -120,8 +140,8 @@ export default function Page() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
+    <div className="signup-container">
+      <form className="signup-form" onSubmit={handleSubmit}>
         <div className="input-group">
           <label>
             Pseudonyme:
@@ -179,7 +199,11 @@ export default function Page() {
                 required
               />
               <span onClick={togglePasswordVisibility}>
-                {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
+                {passwordType === "password" ? (
+                  <MdVisibility />
+                ) : (
+                  <MdVisibilityOff />
+                )}
               </span>
             </label>
           </div>
@@ -194,52 +218,6 @@ export default function Page() {
               />
             </label>
           </div>
-        </div>
-
-        {/* Section Question secrète */}
-        <div className="input-group">
-          <label>
-            Question 1:
-            <input
-              type="text"
-              value={firstQuestion}
-              onChange={(e) => setFirstQuestion(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        <div className="input-group">
-          <label>
-            Réponse 1 (Les majuscules et minuscules ont une importances):
-            <input
-              type="text"
-              value={firstAnswer}
-              onChange={(e) => setFirstAnswer(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        <div className="input-group">
-          <label>
-            Question 2:
-            <input
-              type="text"
-              value={secondQuestion}
-              onChange={(e) => setSecondQuestion(e.target.value)}
-              required
-            />
-          </label>
-        </div>
-        <div className="input-group">
-          <label>
-            Réponse 2 (Les majuscules et minuscules ont une importances):
-            <input
-              type="text"
-              value={secondAnswer}
-              onChange={(e) => setSecondAnswer(e.target.value)}
-              required
-            />
-          </label>
         </div>
 
         {/* Sélection du centre */}

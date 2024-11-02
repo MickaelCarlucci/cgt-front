@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import { TfiTrash } from "react-icons/tfi";
 import { fetchWithToken } from "../../utils/fetchWithToken";
@@ -9,7 +9,7 @@ import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
-  const { data: session, status } = useSession();
+  const { user, loading } = useSelector((state) => state.auth);
   const [file, setFile] = useState(null);
   const [pdfs, setPdfs] = useState([]);
   const [message, setMessage] = useState("");
@@ -19,17 +19,17 @@ export default function Page() {
   const [sectionId, setSectionId] = useState("");
   const [error, setError] = useState("");
 
-  const roles = session?.user?.roles?.split(", ") || [];
+  const roles = user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );
-  const userId = session?.user?.id;
+  const userId = user?.id;
 
   // Fetch des centres
   useEffect(() => {
     const centerFetch = async () => {
       try {
-        const centerResponse = await fetchWithToken(
+        const centerResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/centers`
         );
         const centerData = await centerResponse.json();
@@ -45,7 +45,7 @@ export default function Page() {
   useEffect(() => {
     const sectionFetch = async () => {
       try {
-        const sectionResponse = await fetchWithToken(
+        const sectionResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/sections`
         );
         const sectionData = await sectionResponse.json();
@@ -72,10 +72,10 @@ export default function Page() {
 
   // Appel des PDFs une fois authentifié
   useEffect(() => {
-    if (status === "authenticated" && userId) {
+    if (user && userId) {
       fetchPdfs();
     }
-  }, [status, userId]);
+  }, [user, userId]);
 
   // Gestion du changement de fichier
   const handleFileChange = (e) => {
@@ -107,9 +107,6 @@ export default function Page() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/upload`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
           body: formData,
         }
       );
@@ -135,13 +132,10 @@ export default function Page() {
   // Gestion de la suppression d'un fichier PDF
   const handleDelete = async (pdfId) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/pdf/delete/${pdfId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
         }
       );
       if (response.ok) {
@@ -158,7 +152,7 @@ export default function Page() {
     }
   };
 
-  if (status === "loading") return <Loader />; 
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -167,8 +161,7 @@ export default function Page() {
           <div className="container-add-file">
             <h1>Uploader un fichier</h1>
             <form onSubmit={handleSubmit}>
-              <input
-              type="file" onChange={handleFileChange} />
+              <input type="file" onChange={handleFileChange} />
               <label>
                 Centre lié au document:
                 <select
@@ -233,4 +226,3 @@ export default function Page() {
     </>
   );
 }
-
