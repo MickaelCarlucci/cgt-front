@@ -1,4 +1,4 @@
-.login-container {
+.signup-container {
     background-color: white;
     border-radius: 8px;
     box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
@@ -14,7 +14,7 @@
     margin-top: 4%;
   }
 
-  .dark-mode .login-container {
+  .dark-mode .signup-container {
     background-color: #e1d1d148;
   }
 

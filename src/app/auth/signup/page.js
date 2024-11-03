@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { auth } from "../../../../firebaseConfig"; // Assurez-vous que firebase-config est correctement configuré
+import { firebaseAuth } from "../../../../firebaseConfig"; // Assurez-vous que firebase-config est correctement configuré
 import "./page.css";
 
 export default function Page() {
@@ -72,7 +72,7 @@ export default function Page() {
     try {
       // Création de l'utilisateur Firebase et récupération de l'UID
       const userCredential = await createUserWithEmailAndPassword(
-        auth,
+        firebaseAuth,
         mail,
         password
       );

@@ -17,7 +17,7 @@ import Loader from "../components/Loader/Loader";
 import "./page.css";
 
 export default function Page() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, loading } = useSelector((state) => state.auth);
   const [userData, setUserData] = useState(null);
   const [centers, setCenters] = useState([]);
   const [activities, setActivities] = useState([]);
@@ -47,7 +47,7 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (session) {
+        if (user && user.id) {
           const [userResponse, centersResponse, activitiesResponse] =
             await Promise.all([
               fetchWithToken(
@@ -96,7 +96,7 @@ export default function Page() {
       }
     };
 
-    if (user.id) {
+    if (user && user.id) {
       fetchData();
     }
   }, [user]);
