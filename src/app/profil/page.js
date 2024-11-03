@@ -4,17 +4,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../utils/authSlice";
 import { useRouter } from "next/navigation";
 import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   updateEmail,
   signInWithEmailAndPassword,
   updatePassword,
   deleteUser,
 } from "firebase/auth";
+
 import Link from "next/link";
 import { MdMode, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Modal from "../components/modal/modal";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import Loader from "../components/Loader/Loader";
 import "./page.css";
+import { firebaseAuth } from "../../../firebaseConfig";
 
 export default function Page() {
   const { user, loading } = useSelector((state) => state.auth);
@@ -22,9 +26,12 @@ export default function Page() {
   const [centers, setCenters] = useState([]);
   const [activities, setActivities] = useState([]);
   const [passwordType, setPasswordType] = useState("password");
+  const [reauthPassword, setReauthPassword] = useState("");
+  const [emailUpdateRequested, setEmailUpdateRequested] = useState(false);
   const [error, setError] = useState(""); // État pour stocker les messages d'erreur
   const router = useRouter();
   const dispatch = useDispatch();
+  const isEmailVerified = firebaseAuth.currentUser?.emailVerified;
 
   const roles = user?.roles?.split(", ") || []; //vérifie l'état pour ne pas afficher d'erreur
   const hasAccess = [
@@ -101,6 +108,46 @@ export default function Page() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      const user = firebaseAuth.currentUser;
+
+      await user.reload();
+
+      if (user.emailVerified) {
+        try {
+          await fetchWithToken(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userData.id}/mail`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mail: user.email }),
+            }
+          );
+          setError("Votre email a été mis à jour avec succès.");
+          setEmailUpdateRequested(false); // Reset l'état une fois mis à jour
+        } catch (error) {
+          setError(
+            "Erreur lors de la mise à jour de l'email dans la base de données : " +
+              error.message
+          );
+        }
+      }
+    };
+
+    if (emailUpdateRequested && userData && firebaseAuth.currentUser) {
+      checkEmailVerification();
+    }
+
+    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+      if (user && emailUpdateRequested && userData) {
+        checkEmailVerification();
+      }
+    });
+
+    return () => unsubscribe();
+  }, [emailUpdateRequested, userData]);
+
   // Mise à jour des activités lorsque le centre change
   useEffect(() => {
     const fetchActivities = async () => {
@@ -158,7 +205,7 @@ export default function Page() {
 
   const handleSave = async () => {
     try {
-      let response;
+      let response = null; // Initialise response à null
 
       // Appel API spécifique en fonction du champ modifié
       switch (modalField) {
@@ -203,19 +250,35 @@ export default function Page() {
 
         case "mail":
           try {
-            // Mettre à jour l'email dans Firebase
-            await updateEmail(auth.currentUser, inputValue);
+            if (!reauthPassword) {
+              setError("Le mot de passe est requis pour changer l'email.");
+              return;
+            }
 
-            // Mettre à jour l'email dans la base de données
-            response = await fetchWithToken(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/mail`,
-              {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ mail: inputValue }),
-              }
+            const credential = EmailAuthProvider.credential(
+              firebaseAuth.currentUser.email,
+              reauthPassword
+            );
+
+            // Réauthentifier l'utilisateur
+            await reauthenticateWithCredential(
+              firebaseAuth.currentUser,
+              credential
+            );
+
+            // Mettre à jour l'email dans Firebase
+            await updateEmail(firebaseAuth.currentUser, inputValue);
+
+            // Envoyer l'email de vérification
+            await firebaseAuth.currentUser.sendEmailVerification();
+
+            // Enregistrer que l'email est en attente de vérification
+            setEmailUpdateRequested(true);
+            setError(
+              "Un email de vérification a été envoyé à votre nouvel email. Veuillez le confirmer pour finaliser la mise à jour."
             );
           } catch (error) {
+            // Gérer les erreurs de mise à jour de l'email
             setError(
               "Erreur lors de la mise à jour de l'email : " + error.message
             );
@@ -243,21 +306,16 @@ export default function Page() {
           }
           try {
             // Vérifier l'ancien mot de passe
-            await signInWithEmailAndPassword(auth, userData.mail, inputValue);
+            await signInWithEmailAndPassword(
+              firebaseAuth,
+              userData.mail,
+              inputValue
+            );
 
             // Mettre à jour le mot de passe dans Firebase
-            await updatePassword(auth.currentUser, additionalValue);
-
-            // Optionnel : Mettre à jour le mot de passe dans la base de données (si nécessaire)
-            response = await fetchWithToken(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/password`,
-              {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ password: additionalValue }),
-              }
-            );
+            await updatePassword(firebaseAuth.currentUser, additionalValue);
           } catch (error) {
+            // Gère uniquement les erreurs de signInWithEmailAndPassword et updatePassword
             setError(
               "Erreur lors de la mise à jour du mot de passe : " + error.message
             );
@@ -297,9 +355,6 @@ export default function Page() {
 
         case "delete":
           try {
-            // Supprimer l'utilisateur de Firebase
-            await deleteUser(auth.currentUser);
-
             // Supprimer l'utilisateur de la base de données
             response = await fetchWithToken(
               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/delete`,
@@ -310,7 +365,11 @@ export default function Page() {
               }
             );
 
-            if (response.ok) {
+            // Supprimer l'utilisateur de Firebase
+            await deleteUser(firebaseAuth.currentUser);
+
+            if (response?.ok) {
+              // Vérifiez que response est défini avant de vérifier ok
               dispatch(logoutUser());
               router.push("/auth");
               return;
@@ -328,7 +387,8 @@ export default function Page() {
           return;
       }
 
-      if (!response.ok) {
+      // Vérifiez que response n'est pas null avant d'accéder à response.ok
+      if (response && !response.ok) {
         const contentType = response.headers.get("content-type");
 
         if (contentType && contentType.includes("application/json")) {
@@ -478,40 +538,6 @@ export default function Page() {
                     onChange={(e) => setInputValue(e.target.value)}
                   />
 
-                  {(modalField === "first_question" ||
-                    modalField === "second_question") && (
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      <label>Réponse secrète:</label>
-                      <input
-                        type={passwordType}
-                        value={additionalValue}
-                        onChange={(e) => setAdditionalValue(e.target.value)}
-                        style={{ paddingRight: "30px" }}
-                      />
-                      <span
-                        style={{
-                          position: "absolute",
-                          right: "10px",
-                          cursor: "pointer",
-                        }}
-                        onMouseDown={handleMouseDown}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseUp}
-                      >
-                        {passwordType === "password" ? (
-                          <MdVisibility />
-                        ) : (
-                          <MdVisibilityOff />
-                        )}
-                      </span>
-                    </div>
-                  )}
                   <button onClick={handleSave}>Sauvegarder</button>
                 </Modal>
               )}
@@ -534,6 +560,31 @@ export default function Page() {
                     {centers.map((center) => (
                       <option key={center.id} value={center.id}>
                         {center.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button onClick={handleSave}>Sauvegarder</button>
+                </Modal>
+              )}
+
+              {modalField === "activity_id" && (
+                <Modal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  title={`Modifier`}
+                >
+                  {error && <p style={{ color: "red" }}>{error}</p>}
+                  <select
+                    value={inputValue} // Assurez-vous que inputValue correspond bien à l'ID du centre sans affichage direct
+                    onChange={(e) => setInputValue(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Sélectionner une activité
+                    </option>
+                    {activities.map((activity) => (
+                      <option key={activity.id} value={activity.id}>
+                        {activity.name}
                       </option>
                     ))}
                   </select>
@@ -639,6 +690,37 @@ export default function Page() {
                       )}
                     </span>
                   </div>
+                  <button onClick={handleSave}>Sauvegarder</button>
+                </Modal>
+              )}
+
+              {modalField === "mail" && (
+                <Modal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  title={`Modifier l'email`}
+                >
+                  {error && <p style={{ color: "red" }}>{error}</p>}
+                  <label>Email actuel</label>
+                  <input
+                    type="text"
+                    value={firebaseAuth.currentUser?.email || ""}
+                    disabled
+                  />
+                  <label>Nouvel email</label>
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Nouvel email"
+                  />
+                  <label>Mot de passe actuel</label>
+                  <input
+                    type="password"
+                    value={reauthPassword}
+                    onChange={(e) => setReauthPassword(e.target.value)}
+                    placeholder="Mot de passe actuel"
+                  />
                   <button onClick={handleSave}>Sauvegarder</button>
                 </Modal>
               )}
