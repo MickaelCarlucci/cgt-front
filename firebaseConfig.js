@@ -1,6 +1,10 @@
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  browserLocalPersistence,
+  setPersistence,
+} from "firebase/auth";
 
 const firebaseClientConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,5 +18,13 @@ const firebaseClientConfig = {
 // Initialisation de Firebase uniquement côté client
 const firebaseApp = initializeApp(firebaseClientConfig);
 const firebaseAuth = getAuth(firebaseApp);
+
+setPersistence(firebaseAuth, browserLocalPersistence)
+  .then(() => {
+    console.log("Persistence définie sur localStorage");
+  })
+  .catch((error) => {
+    console.error("Erreur de configuration de la persistance Firebase:", error);
+  });
 
 export { firebaseAuth };

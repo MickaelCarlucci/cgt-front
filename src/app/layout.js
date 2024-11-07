@@ -12,7 +12,12 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "./components/Loader/Loader";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { setUser, clearUser, setLoading } from "./utils/authSlice";
+import {
+  loginWithLocalStorage,
+  setUser,
+  clearUser,
+  setLoading,
+} from "./utils/authSlice";
 import { firebaseAuth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -57,44 +62,59 @@ function AuthWrapper({ children }) {
   const { user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(setLoading(true));
+    // Charger l'état de l'utilisateur à partir du localStorage ou de Firebase
+    const initializeAuth = async () => {
+      dispatch(setLoading(true));
 
-    // Observez l'état d'authentification de Firebase
-    const unsubscribe = onAuthStateChanged(
-      firebaseAuth,
-      async (firebaseUser) => {
-        if (firebaseUser) {
-          // Récupérer le token utilisateur pour validation côté serveur si nécessaire
-          const token = await firebaseUser.getIdToken();
+      const firebaseAuthKey = Object.keys(localStorage).find((key) =>
+        key.startsWith("firebase:authUser")
+      );
 
-          // Simuler une requête vers votre backend pour obtenir l’utilisateur
-          try {
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/users/verify-token`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token }),
+      if (firebaseAuthKey) {
+        // Si une session existe dans localStorage, essayez de connecter l'utilisateur automatiquement
+        await dispatch(loginWithLocalStorage());
+      } else {
+        // Observez l'état d'authentification Firebase pour les nouvelles connexions
+        const unsubscribe = onAuthStateChanged(
+          firebaseAuth,
+          async (firebaseUser) => {
+            if (firebaseUser) {
+              // Récupérer le token utilisateur pour validation côté serveur si nécessaire
+              const token = await firebaseUser.getIdToken();
+
+              try {
+                const response = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/users/verify-token`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token }),
+                  }
+                );
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error);
+
+                dispatch(setUser(data.user));
+              } catch (error) {
+                console.error("Erreur de validation du token :", error);
+                dispatch(clearUser());
+                router.push("/auth"); // Redirection en cas d'erreur
               }
-            );
-            const data = await response.json();
-
-            if (!response.ok) throw new Error(data.error);
-
-            dispatch(setUser(data.user));
-          } catch (error) {
-            console.error("Erreur de validation du token :", error);
-            dispatch(clearUser());
-            router.push("/auth"); // Redirection en cas d'erreur
+            } else {
+              dispatch(clearUser());
+              router.push("/auth"); // Redirection si non connecté
+            }
           }
-        } else {
-          dispatch(clearUser());
-          router.push("/auth");
-        }
-      }
-    );
+        );
 
-    return () => unsubscribe(); // Nettoyer l'abonnement Firebase Auth
+        return () => unsubscribe(); // Nettoyer l'abonnement Firebase Auth
+      }
+
+      dispatch(setLoading(false)); // Arrête le chargement après tentative de connexion
+    };
+
+    initializeAuth();
   }, [dispatch, router]);
 
   if (loading) return <Loader />; // Afficher un loader si en cours de chargement

@@ -70,6 +70,57 @@ export const loginUser = (email, password) => async (dispatch) => {
   }
 };
 
+export const loginWithLocalStorage = () => async (dispatch) => {
+  dispatch(setLoading(true));
+
+  // Recherche de l'UID dans le localStorage
+  const firebaseAuthKey = Object.keys(localStorage).find((key) =>
+    key.startsWith("firebase:authUser")
+  );
+
+  if (!firebaseAuthKey) {
+    // Si la clé n'est pas trouvée, on arrête ici
+    console.warn(
+      "Clé d'authentification Firebase non trouvée dans localStorage"
+    );
+    dispatch(setLoading(false));
+    return;
+  }
+
+  const authData = JSON.parse(localStorage.getItem(firebaseAuthKey));
+  const uid = authData?.uid;
+
+  console.log("UID récupéré depuis localStorage :", uid); // Vérifiez l'UID ici
+
+  if (!uid) {
+    console.warn(
+      "UID introuvable dans les données d'authentification Firebase"
+    );
+    dispatch(setLoading(false));
+    return;
+  }
+
+  try {
+    // Requête pour récupérer les informations utilisateur avec l'UID
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/get-by-uid/${uid}`
+    );
+
+    if (!response.ok) throw new Error("Utilisateur non trouvé");
+
+    const userData = await response.json();
+
+    console.log("Données utilisateur récupérées depuis l'API :", userData);
+    dispatch(setUser(userData.user));
+  } catch (error) {
+    console.error("Erreur lors du chargement de l'utilisateur :", error);
+    localStorage.removeItem(firebaseAuthKey); // Nettoyage si l'UID est invalide
+    dispatch(clearUser());
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
 // Action asynchrone pour la déconnexion utilisateur
 export const logoutUser = () => async (dispatch) => {
   dispatch(setLoading(true));
