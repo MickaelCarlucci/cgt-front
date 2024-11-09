@@ -39,10 +39,16 @@
     border: 1px solid #2f2f2f;
     background-color: #2f2f2f;
     color: rgb(246, 244, 236);
+    transition: all 0.3s ease; /* Animation douce pour changement de couleur */
 }
 
 .option-container button:hover {
     background-color: #e0e0e0; /* Changement de couleur au survol */
+}
+
+.dark-mode .option-container button:hover {
+    color: black;
+    font-weight: bold;
 }
 
 @keyframes fadeIn {

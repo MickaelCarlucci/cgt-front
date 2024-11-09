@@ -132,14 +132,13 @@ export default function Page() {
             {errorMessage && <p className="error">{errorMessage}</p>}
             {polls.map((poll) => (
               <div className="poll-container" key={poll.id}>
-                <Link
-                  href={"#"}
+                <p
                   onClick={() =>
                     setSelectedPoll(poll.id === selectedPoll ? null : poll.id)
                   }
                 >
                   {poll.question}
-                </Link>
+                </p>
 
                 {/* Affiche les options si l'utilisateur n'a pas voté */}
                 {selectedPoll === poll.id &&

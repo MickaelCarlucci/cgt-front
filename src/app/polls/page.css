@@ -18,20 +18,23 @@
 
 .dark-mode .poll-container {
     background-color: #e1d1d148;
-    border: solid 3px #d30012ae
+    border: solid 3px #d30012ae;
 }
 
-.poll-container a {
-text-decoration: none;
+.poll-container p {
 color: #d30013;
 font-size: 1.5rem;
 font-weight: bold;
 text-shadow: 5px 5px 8px black ;
+cursor: pointer;
 }
 
-.dark-mode .poll-container a {
+.dark-mode .poll-container p {
     color: #d30012ae;
+    text-shadow: 2px 2px 4px black ;
 }
+
+
 
 @media (max-width: 550px) {
     .poll-container {
