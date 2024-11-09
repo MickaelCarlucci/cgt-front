@@ -36,6 +36,10 @@
   transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
+.dark-mode .appointment-div p a {
+  color: rgb(246, 244, 236);
+}
+
 .appointment-div p a:hover {
   color: #a90b18;
   font-weight: bold;
@@ -54,6 +58,10 @@
   background-color: #1a1919;
   color: rgb(246, 244, 236) ;
   border: 1px solid #1a1919;;
+}
+
+.dark-mode .selected-section p {
+  color: #f4f4f4;
 }
 
 .modal {

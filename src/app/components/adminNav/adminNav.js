@@ -70,9 +70,6 @@ export default function AdminNav() {
         roles.includes("CSSCT") ||
         roles.includes("RP") ? (
           <>
-            <Link href="#" onClick={handleLinkClick}>
-              Tract
-            </Link>
             <Link href="/elected" onClick={handleLinkClick}>
               Elu(e)s et Mandaté(e)s
             </Link>

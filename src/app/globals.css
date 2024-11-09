@@ -14,3 +14,11 @@ body.dark-mode {
 .connected {
     margin-top: 4%;
 }
+
+.dark-mode .connected {
+    color: #f0f0f0;
+}
+
+.dark-mode .connected a {
+    color: #d30012ae;
+}
