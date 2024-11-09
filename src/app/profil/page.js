@@ -31,7 +31,6 @@ export default function Page() {
   const [error, setError] = useState(""); // État pour stocker les messages d'erreur
   const router = useRouter();
   const dispatch = useDispatch();
-  const isEmailVerified = firebaseAuth.currentUser?.emailVerified;
 
   const roles = user?.roles?.split(", ") || []; //vérifie l'état pour ne pas afficher d'erreur
   const hasAccess = [
@@ -248,44 +247,6 @@ export default function Page() {
           );
           break;
 
-        case "mail":
-          try {
-            if (!reauthPassword) {
-              setError("Le mot de passe est requis pour changer l'email.");
-              return;
-            }
-
-            const credential = EmailAuthProvider.credential(
-              firebaseAuth.currentUser.email,
-              reauthPassword
-            );
-
-            // Réauthentifier l'utilisateur
-            await reauthenticateWithCredential(
-              firebaseAuth.currentUser,
-              credential
-            );
-
-            // Mettre à jour l'email dans Firebase
-            await updateEmail(firebaseAuth.currentUser, inputValue);
-
-            // Envoyer l'email de vérification
-            await firebaseAuth.currentUser.sendEmailVerification();
-
-            // Enregistrer que l'email est en attente de vérification
-            setEmailUpdateRequested(true);
-            setError(
-              "Un email de vérification a été envoyé à votre nouvel email. Veuillez le confirmer pour finaliser la mise à jour."
-            );
-          } catch (error) {
-            // Gérer les erreurs de mise à jour de l'email
-            setError(
-              "Erreur lors de la mise à jour de l'email : " + error.message
-            );
-            return;
-          }
-          break;
-
         case "phone":
           response = await fetchWithToken(
             `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/phone`,
@@ -460,16 +421,6 @@ export default function Page() {
                     <MdMode
                       className="pen-icon"
                       onClick={() => openModal("lastname")}
-                    />
-                  </span>
-                </div>
-                <div className="element-profil">
-                  Mon adresse mail:{" "}
-                  <span>
-                    {userData.mail}{" "}
-                    <MdMode
-                      className="pen-icon"
-                      onClick={() => openModal("mail")}
                     />
                   </span>
                 </div>
@@ -690,37 +641,6 @@ export default function Page() {
                       )}
                     </span>
                   </div>
-                  <button onClick={handleSave}>Sauvegarder</button>
-                </Modal>
-              )}
-
-              {modalField === "mail" && (
-                <Modal
-                  isOpen={isModalOpen}
-                  onClose={closeModal}
-                  title={`Modifier l'email`}
-                >
-                  {error && <p style={{ color: "red" }}>{error}</p>}
-                  <label>Email actuel</label>
-                  <input
-                    type="text"
-                    value={firebaseAuth.currentUser?.email || ""}
-                    disabled
-                  />
-                  <label>Nouvel email</label>
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Nouvel email"
-                  />
-                  <label>Mot de passe actuel</label>
-                  <input
-                    type="password"
-                    value={reauthPassword}
-                    onChange={(e) => setReauthPassword(e.target.value)}
-                    placeholder="Mot de passe actuel"
-                  />
                   <button onClick={handleSave}>Sauvegarder</button>
                 </Modal>
               )}
