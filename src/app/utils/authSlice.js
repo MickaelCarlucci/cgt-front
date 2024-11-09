@@ -39,7 +39,6 @@ export const loginUser = (email, password) => async (dispatch) => {
   dispatch(setLoading(true));
 
   try {
-    // Authentification avec Firebase
     const userCredential = await signInWithEmailAndPassword(
       firebaseAuth,
       email,
@@ -47,7 +46,10 @@ export const loginUser = (email, password) => async (dispatch) => {
     );
     const token = await getIdToken(userCredential.user);
 
-    // Appel au backend avec le token pour obtenir les informations utilisateur
+    // Définir le timestamp d'expiration de 24 heures
+    const expirationTime = Date.now() + 24 * 60 * 60 * 1000;
+    localStorage.setItem("sessionExpiration", expirationTime);
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/signin`,
       {
@@ -60,8 +62,7 @@ export const loginUser = (email, password) => async (dispatch) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error);
 
-    dispatch(setUser(data.user)); // Mettre à jour le store avec les informations utilisateur
-    console.log("Utilisateur reçu du backend :", data.user);
+    dispatch(setUser(data.user));
   } catch (error) {
     console.error("Erreur lors de la connexion :", error);
     dispatch(setError("Erreur lors de la connexion"));
@@ -127,6 +128,7 @@ export const logoutUser = () => async (dispatch) => {
 
   try {
     await signOut(firebaseAuth);
+    localStorage.removeItem("sessionExpiration");
     dispatch(clearUser());
   } catch (error) {
     console.error("Erreur lors de la déconnexion :", error);

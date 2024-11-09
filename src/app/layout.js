@@ -17,6 +17,7 @@ import {
   setUser,
   clearUser,
   setLoading,
+  logoutUser,
 } from "./utils/authSlice";
 import { firebaseAuth } from "../../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -66,13 +67,22 @@ function AuthWrapper({ children }) {
     const initializeAuth = async () => {
       dispatch(setLoading(true));
 
+      const expirationTime = localStorage.getItem("sessionExpiration");
+      if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
+        console.log("Session expirée, déconnexion...");
+        localStorage.removeItem("sessionExpiration");
+        dispatch(logoutUser());
+        router.push("/auth"); // Redirection vers la page de connexion
+        return;
+      }
+
       const firebaseAuthKey = Object.keys(localStorage).find((key) =>
         key.startsWith("firebase:authUser")
       );
 
       if (firebaseAuthKey) {
         // Si une session existe dans localStorage, essayez de connecter l'utilisateur automatiquement
-        await dispatch(loginWithLocalStorage());
+        dispatch(loginWithLocalStorage());
       } else {
         // Observez l'état d'authentification Firebase pour les nouvelles connexions
         const unsubscribe = onAuthStateChanged(
