@@ -4,9 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../utils/authSlice";
 import { useRouter } from "next/navigation";
 import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updateEmail,
   signInWithEmailAndPassword,
   updatePassword,
   deleteUser,
@@ -26,7 +23,6 @@ export default function Page() {
   const [centers, setCenters] = useState([]);
   const [activities, setActivities] = useState([]);
   const [passwordType, setPasswordType] = useState("password");
-  const [reauthPassword, setReauthPassword] = useState("");
   const [emailUpdateRequested, setEmailUpdateRequested] = useState(false);
   const [error, setError] = useState(""); // État pour stocker les messages d'erreur
   const router = useRouter();

@@ -15,6 +15,16 @@
     margin: 1%;
 }
 
+.delete-link {
+    color: #d30013;
+    cursor: pointer;
+    transition: all 0.3 ease;
+}
+
+.delete-link:hover {
+    text-decoration: underline;
+}
+
 .role{
     padding: 1%;
     margin: 1%;

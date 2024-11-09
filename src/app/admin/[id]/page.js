@@ -77,6 +77,24 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
+      console.log(id);
+      // Supprimer l'utilisateur de Firebase
+      const firebaseResponse = await fetchWithToken(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete-by-admin`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!firebaseResponse.ok) {
+        throw new Error(
+          "Erreur lors de la suppression de l'utilisateur dans Firebase"
+        );
+      }
+
       const response = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete`,
         {
@@ -90,7 +108,7 @@ export default function Page() {
         }
       );
 
-      if (response.ok) {
+      if (response?.ok) {
         router.push("/admin");
       } else {
         setError("Erreur lors de la suppression de l'utilisateur");
@@ -200,10 +218,8 @@ export default function Page() {
                   )}
                 </span>
               </p>
-              <p>
-                <Link href="#" onClick={() => openModal("mail")}>
-                  Voulez-vous supprimer son compte ?
-                </Link>
+              <p className="delete-link" onClick={() => openModal("mail")}>
+                Voulez-vous supprimer son compte ?
               </p>
             </div>
             <div className="role">

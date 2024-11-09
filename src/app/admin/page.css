@@ -41,19 +41,24 @@
     margin-right: 0.9%;
     font-size: 0.8rem;
   }
-  
-  .center-filtered a {
-    text-decoration: none;
-    color: #333;
-    transition: font-size 0.3s ease; 
+
+  .search-button-contact button {
+    margin: 0.5%;
+    cursor: pointer;
   }
   
-  .dark-mode .center-filtered a {
+  .center-filtered p {
+    cursor: pointer;
+    color: #333;
+    transition: all 0.3s ease; 
+  }
+  
+  .dark-mode .center-filtered p {
     color: rgb(246, 244, 236);
   }
 
-  .center-filtered a:hover {
-    font-size: 1rem; 
+  .center-filtered p:hover {
+    scale: 1.1; 
     color: #d30013;
   }
   

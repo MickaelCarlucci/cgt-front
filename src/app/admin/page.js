@@ -134,12 +134,12 @@ export default function Page() {
           <h1 className="h1-admin-page">Liste des utilisateurs</h1>
 
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <div>
+          <div className="search-button-contact">
             <button onClick={resetFilters}>
               Afficher tous les utilisateurs
             </button>
             <button onClick={fetchUsersWithoutRole}>
-              utilisateur sans rôle
+              Utilisateurs sans rôle
             </button>
           </div>
           <div className="centers-list">
@@ -150,7 +150,7 @@ export default function Page() {
                 value={center.id}
                 onClick={() => listUsersByCenter(center.id)}
               >
-                <Link href={"#"}>{center.name}</Link>
+                <p>{center.name}</p>
               </div>
             ))}
           </div>
@@ -166,7 +166,7 @@ export default function Page() {
                     listUsersByActivity(selectedCenter, activity.id)
                   }
                 >
-                  <Link href={"#"}>{activity.name}</Link>
+                  <p>{activity.name}</p>
                 </div>
               ))}
             </div>
