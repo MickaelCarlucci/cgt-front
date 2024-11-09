@@ -36,6 +36,7 @@ export default function Page() {
         );
         const dataUser = await userResponse.json();
         setUserData(dataUser);
+        console.log(dataUser);
 
         const userRoles = dataUser.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
         setSelectedRoles(userRoles);
@@ -151,11 +152,11 @@ export default function Page() {
     }
   };
 
-  if (loading || !user) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading || !userData) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
 
   return (
     <>
-      {hasAccess ? (
+      {hasAccess && userData ? (
         <>
           <h1 className="h1-id-admin-page">
             Vous êtes sur le profil de{" "}

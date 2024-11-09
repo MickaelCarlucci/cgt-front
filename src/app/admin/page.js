@@ -66,6 +66,19 @@ export default function Page() {
     setFilteredUsers(filtered); // Mise à jour de l'état avec les utilisateurs filtrés
   }, [searchBar, users]);
 
+  const fetchUsersWithoutRole = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/search/users-without-role`
+      );
+      const data = await response.json();
+      setFilteredUsers(data);
+      setUsers(data);
+    } catch {
+      setError("Erreur lors de la récupération des utilisateurs");
+    }
+  };
+
   const listUsersByCenter = async (centerId) => {
     try {
       setSelectedCenter(centerId);
@@ -124,6 +137,9 @@ export default function Page() {
           <div>
             <button onClick={resetFilters}>
               Afficher tous les utilisateurs
+            </button>
+            <button onClick={fetchUsersWithoutRole}>
+              utilisateur sans rôle
             </button>
           </div>
           <div className="centers-list">
