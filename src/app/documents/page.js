@@ -94,7 +94,7 @@ export default function DocumentPage() {
               <ul>
                 {utilsDocuments.map((doc) => (
                   <li key={doc.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
@@ -103,7 +103,7 @@ export default function DocumentPage() {
                       download
                     >
                       {doc.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -119,7 +119,7 @@ export default function DocumentPage() {
               <ul>
                 {pdfs.map((pdf) => (
                   <li key={pdf.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${pdf.pdf_url.split("/").pop()}`}
@@ -128,7 +128,7 @@ export default function DocumentPage() {
                       download
                     >
                       {pdf.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -143,7 +143,7 @@ export default function DocumentPage() {
               <ul>
                 {documents.map((doc) => (
                   <li key={doc.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
@@ -152,7 +152,7 @@ export default function DocumentPage() {
                       download
                     >
                       {doc.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -168,7 +168,7 @@ export default function DocumentPage() {
               <ul>
                 {cseDocuments.map((cse) => (
                   <li key={cse.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${cse.pdf_url.split("/").pop()}`}
@@ -177,7 +177,7 @@ export default function DocumentPage() {
                       download
                     >
                       {cse.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -193,7 +193,7 @@ export default function DocumentPage() {
               <ul>
                 {RPDocuments.map((RP) => (
                   <li key={RP.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${RP.pdf_url.split("/").pop()}`}
@@ -202,7 +202,7 @@ export default function DocumentPage() {
                       download
                     >
                       {RP.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -218,7 +218,7 @@ export default function DocumentPage() {
               <ul>
                 {CSSCTDocuments.map((doc) => (
                   <li key={doc.id}>
-                    <a
+                    <Link
                       href={`${
                         process.env.NEXT_PUBLIC_API_URL
                       }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
@@ -227,7 +227,7 @@ export default function DocumentPage() {
                       download
                     >
                       {doc.title}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

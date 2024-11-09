@@ -113,7 +113,7 @@ export default function Page() {
                   value={center.id}
                   onClick={() => listElectedByCenter(center.id)}
                 >
-                  <Link href={"#"}>{center.name}</Link>
+                  <p href={"#"}>{center.name}</p>
                 </div>
               ))}
 
@@ -126,7 +126,7 @@ export default function Page() {
                   value={role.id}
                   onClick={() => listElectedByRole(role.id)}
                 >
-                  <Link href={"#"}>{role.name}</Link>
+                  <p href={"#"}>{role.name}</p>
                 </div>
               ))}
           </div>

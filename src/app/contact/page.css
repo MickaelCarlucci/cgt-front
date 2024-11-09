@@ -31,19 +31,20 @@
     margin: 1%;
 }
 
-.list-center div a {
-    text-decoration: none;
+.list-center div p {
+    display: inline-block;
+    cursor: pointer;
     color: #d30013;
     transition: all 0.3s ease-in-out;
 }
 
 
-.list-center div a:hover {
+.list-center div p:hover {
     color: #a90b18;
     font-weight: bold;
 }
 
-.dark-mode .list-center div a:hover {
+.dark-mode .list-center div p:hover {
     text-shadow: 0 0 1px white, 0 0 5px white, 0 0 10px white
 }
 
