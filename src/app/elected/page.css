@@ -2,16 +2,25 @@
   margin: 3%;
 }
 
-.navbar-elected a {
-  text-decoration: none;
+.navbar-elected p {
+  display: inline-block;
   padding: 1%;
   color: #d30013;
+  cursor: pointer;
   transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
-.navbar-elected a:hover {
+.navbar-elected p:hover {
   color: #a90b18;
   font-weight: bold;
+}
+
+.dark-mode .navbar-elected p {
+  color: #a90b18;
+}
+
+.dark-mode .navbar-elected p:hover {
+  color: #d30013;
 }
 
 .dark-mode .content-elected h1 {
@@ -45,6 +54,10 @@
   font-weight: bold;
 }
 
+.dark-mode .appointment-div p a:hover {
+  color: #d30013;
+}
+
 .button-appointment {
   padding: 1%;
   border-radius: 10px;
@@ -52,12 +65,17 @@
   cursor: pointer;
   font-weight: bold;
   border: 1px solid #d3001216;
+  transition: all 0.3s ease-in-out;
 }
 
 .dark-mode .button-appointment {
   background-color: #1a1919;
   color: rgb(246, 244, 236) ;
   border: 1px solid #1a1919;;
+}
+
+.button-appointment:hover {
+  scale: 1.1;
 }
 
 .dark-mode .selected-section p {

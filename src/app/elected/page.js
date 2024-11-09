@@ -112,25 +112,25 @@ export default function Page() {
           roles.includes("CSE") ||
           roles.includes("SuperAdmin") ||
           roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("CSE")}>
+          <p href="#" onClick={() => toggleSection("CSE")}>
             CSE
-          </Link>
+          </p>
         )}
         {(roles.includes("DS") ||
           roles.includes("CSSCT") ||
           roles.includes("SuperAdmin") ||
           roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("CSSCT")}>
+          <p href="#" onClick={() => toggleSection("CSSCT")}>
             CSSCT
-          </Link>
+          </p>
         )}
         {(roles.includes("DS") ||
           roles.includes("RP") ||
           roles.includes("SuperAdmin") ||
           roles.includes("Admin")) && (
-          <Link href="#" onClick={() => toggleSection("RP")}>
+          <p href="#" onClick={() => toggleSection("RP")}>
             RP
-          </Link>
+          </p>
         )}
       </div>
 
