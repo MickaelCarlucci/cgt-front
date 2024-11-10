@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://cgt-tpfrance.fr
+
+# Sitemaps
+Sitemap: https://cgt-tpfrance.fr/sitemap.xml
