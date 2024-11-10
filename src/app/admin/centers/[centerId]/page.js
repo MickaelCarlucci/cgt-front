@@ -77,7 +77,6 @@ export default function Page() {
       centerId,
       activityId: activityLink, // Utilisez directement activityLink qui est l'ID
     };
-    console.log(activityData);
 
     try {
       const response = await fetch(
@@ -116,7 +115,6 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        console.log("détachement réussi", activityId);
         setActivityUnlink("");
         setError("");
         await fetchActivitiesByCenter(); // Recharger les activités du centre

@@ -83,7 +83,6 @@ export default function Page() {
       await sendEmailVerification(user, {
         url: `${window.location.origin}/auth/verify-email`,
       });
-      console.log("E-mail de vérification envoyé à : ", user.email);
 
       setMessage(
         "Inscription réussie ! Un e-mail de vérification a été envoyé. Veuillez vérifier votre boîte de réception."

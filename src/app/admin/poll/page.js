@@ -81,7 +81,6 @@ export default function Page() {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Sondage créé:", data);
 
       // Réinitialisation du formulaire après succès
       setQuestion(""); // Remettre la question à zéro

@@ -91,8 +91,6 @@ export const loginWithLocalStorage = () => async (dispatch) => {
   const authData = JSON.parse(localStorage.getItem(firebaseAuthKey));
   const uid = authData?.uid;
 
-  console.log("UID récupéré depuis localStorage :", uid); // Vérifiez l'UID ici
-
   if (!uid) {
     console.warn(
       "UID introuvable dans les données d'authentification Firebase"
@@ -111,7 +109,6 @@ export const loginWithLocalStorage = () => async (dispatch) => {
 
     const userData = await response.json();
 
-    console.log("Données utilisateur récupérées depuis l'API :", userData);
     dispatch(setUser(userData.user));
   } catch (error) {
     console.error("Erreur lors du chargement de l'utilisateur :", error);

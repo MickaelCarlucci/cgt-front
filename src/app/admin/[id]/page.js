@@ -36,7 +36,6 @@ export default function Page() {
         );
         const dataUser = await userResponse.json();
         setUserData(dataUser);
-        console.log(dataUser);
 
         const userRoles = dataUser.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
         setSelectedRoles(userRoles);
@@ -77,7 +76,6 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
-      console.log(id);
       // Supprimer l'utilisateur de Firebase
       const firebaseResponse = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete-by-admin`,

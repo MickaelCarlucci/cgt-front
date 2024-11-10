@@ -30,7 +30,11 @@ export default function RootLayout({ children }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/favicon.ico" />
-        <title>Syndicat CGT Teleperformance</title>
+        <title>CGT Teleperformance France</title>
+        <meta
+          name="description"
+          content="Site regroupant toutes les informations pour les salariés de l'entreprise Teleperformance France diffusé par le syndicat de la CGT"
+        />
       </Head>
       <body className={`${inter.className} container`}>
         <Provider store={store}>
@@ -69,7 +73,6 @@ function AuthWrapper({ children }) {
 
       const expirationTime = localStorage.getItem("sessionExpiration");
       if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
-        console.log("Session expirée, déconnexion...");
         localStorage.removeItem("sessionExpiration");
         dispatch(logoutUser());
         router.push("/auth"); // Redirection vers la page de connexion

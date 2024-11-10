@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.5.0",
@@ -19,6 +20,7 @@
     "glob": "^11.0.0",
     "next": "^14.2.13",
     "next-auth": "^4.24.8",
+    "next-sitemap": "^4.2.3",
     "pdfjs-dist": "^4.6.82",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

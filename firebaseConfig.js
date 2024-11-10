@@ -20,9 +20,7 @@ const firebaseApp = initializeApp(firebaseClientConfig);
 const firebaseAuth = getAuth(firebaseApp);
 
 setPersistence(firebaseAuth, browserLocalPersistence)
-  .then(() => {
-    console.log("Persistence définie sur localStorage");
-  })
+  .then(() => {})
   .catch((error) => {
     console.error("Erreur de configuration de la persistance Firebase:", error);
   });

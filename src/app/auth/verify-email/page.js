@@ -13,8 +13,6 @@ export default function Page() {
         if (user) {
           await user.reload(); // Recharger l'utilisateur pour avoir son statut à jour
           if (user.emailVerified) {
-            console.log("Utilisateur authentifié et email vérifié :", user);
-
             try {
               const response = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/users/verifyEmail`,
@@ -34,8 +32,6 @@ export default function Page() {
                   errorData
                 );
               } else {
-                const data = await response.json();
-                console.log("Réponse du backend :", data.message);
                 router.push("/auth"); // Redirection après succès
               }
             } catch (error) {
