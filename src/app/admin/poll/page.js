@@ -190,18 +190,16 @@ export default function Page() {
               {polls.map((poll) => (
                 <li key={poll.id}>
                   {poll.question}
-                  <Link href={"#"}>
-                    <span type="button" onClick={() => handleDelete(poll.id)}>
-                      <TfiTrash />
-                    </span>
-                  </Link>
+                  <span type="button" onClick={() => handleDelete(poll.id)}>
+                    <TfiTrash />
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
       ) : (
-        <p>
+        <p className="connected">
           Vous ne devriez pas être ici ! Revenez à la page d&apos;
           <Link href="/">accueil</Link>
         </p>

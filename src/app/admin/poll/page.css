@@ -95,6 +95,7 @@
 
 .part-right ul li span {
     color: #d30013;
+    cursor: pointer;
     font-size: 1.2rem;
     margin-left: 10px ;
 }

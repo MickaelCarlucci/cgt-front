@@ -83,12 +83,13 @@ select {
     color: rgb(246, 244, 236);
 }
 
-.container-managePdf ul li a {
+.container-managePdf ul li span {
+    cursor: pointer;
     color: #d30013;
     font-size: 1.1rem;
 }
 
-.dark-mode .container-managePdf ul li a {
+.dark-mode .container-managePdf ul li span {
     color: #d30012ae;
 }
 

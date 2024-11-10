@@ -207,11 +207,9 @@ export default function Page() {
               {pdfs.map((pdf) => (
                 <li key={pdf.id}>
                   {pdf.title}{" "}
-                  <Link href="#">
-                    <span type="button" onClick={() => handleDelete(pdf.id)}>
-                      <TfiTrash />
-                    </span>
-                  </Link>
+                  <span type="button" onClick={() => handleDelete(pdf.id)}>
+                    <TfiTrash />
+                  </span>
                 </li>
               ))}
             </ul>
