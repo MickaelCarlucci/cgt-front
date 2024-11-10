@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { sendPasswordResetEmail, confirmPasswordReset } from "firebase/auth";
-import { auth } from "../../../../firebaseConfig"; // Assurez-vous que firebase-config est correctement configuré
+import { firebaseAuth } from "../../../../firebaseConfig";
 import "./page.css";
 
 export default function ResetPasswordPage() {
@@ -14,6 +14,14 @@ export default function ResetPasswordPage() {
   const [showPasswordResetForm, setShowPasswordResetForm] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const oobCode = urlParams.get("oobCode");
+    if (oobCode) {
+      setShowPasswordResetForm(true);
+    }
+  }, []);
+
   // Fonction pour envoyer l'e-mail de réinitialisation
   const handleMailSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +29,7 @@ export default function ResetPasswordPage() {
     setSuccessMessage("");
 
     try {
-      await sendPasswordResetEmail(auth, mail);
+      await sendPasswordResetEmail(firebaseAuth, mail);
       setSuccessMessage(
         "Un e-mail de réinitialisation a été envoyé. Veuillez vérifier votre boîte de réception."
       );
@@ -43,7 +51,6 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // Récupérer oobCode (code d'action) depuis l'URL de la page
     const urlParams = new URLSearchParams(window.location.search);
     const oobCode = urlParams.get("oobCode");
 
@@ -53,9 +60,9 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      await confirmPasswordReset(auth, oobCode, newPassword);
+      await confirmPasswordReset(firebaseAuth, oobCode, newPassword);
       setSuccessMessage("Mot de passe mis à jour avec succès.");
-      router.push("/auth"); // Redirection vers la page de connexion
+      router.push("/auth");
     } catch (err) {
       setError(
         "Erreur lors de la mise à jour du mot de passe : " + err.message
