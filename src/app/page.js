@@ -155,7 +155,12 @@ export default function Page() {
                         />
                       );
                     } else {
-                      return <p>Le contenu n&apos;est pas disponible ou est mal formaté.</p>;
+                      return (
+                        <p>
+                          Le contenu n&apos;est pas disponible ou est mal
+                          formaté.
+                        </p>
+                      );
                     }
                   })()
                 ) : (
@@ -186,7 +191,9 @@ export default function Page() {
                     </div>
                     <div>
                       <Link
-                        href={`${process.env.NEXT_PUBLIC_API_URL}/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
+                        href={`${
+                          process.env.NEXT_PUBLIC_API_URL
+                        }/api/pdf/download/${doc.pdf_url.split("/").pop()}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
