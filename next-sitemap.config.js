@@ -1,5 +1,5 @@
 const config = {
-  siteUrl: "https://cgt-tpfrance.fr",
+  siteUrl: "https://cgt-teleperformance.fr",
   generateRobotsTxt: true, // (facultatif) Génère également un fichier robots.txt
 };
 
