@@ -1,133 +1,160 @@
 .login-container-signin {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
-      rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
-      rgba(0, 0, 0, 0.1) 2px 5px 40px 0px inset, rgba(0, 0, 0, 0.06) 2px 2px 1px,
-      rgba(0, 0, 0, 0.09) 2px 4px 2px, rgba(0, 0, 0, 0.09) 2px 8px 4px,
-      rgba(0, 0, 0, 0.09) 2px 16px 8px, rgba(0, 0, 0, 0.09) 2px 32px 16px;
-    padding: 40px;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-    margin: 0 auto;
-    margin-top: 5% ;
-  }
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
+    rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 2px 5px 40px 0px inset, rgba(0, 0, 0, 0.06) 2px 2px 1px,
+    rgba(0, 0, 0, 0.09) 2px 4px 2px, rgba(0, 0, 0, 0.09) 2px 8px 4px,
+    rgba(0, 0, 0, 0.09) 2px 16px 8px, rgba(0, 0, 0, 0.09) 2px 32px 16px;
+  margin: 5% auto;
+  max-width: 100%;
+  width: 90%;
+  text-align: center;
+  padding: 20px; /* Ajout de padding pour un meilleur rendu */
+}
 
-  .dark-mode .login-container-signin {
-    background-color: #1a1919;
-  }
-  
-  .login-form-signin {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .heading-signin {
-    color: black;
-    font-weight: 500;
-    font-size: 40px;
-    margin-bottom: 20px;
-  }
+.dark-mode .login-container-signin {
+  background-color: #1a1919;
+}
 
-  .dark-mode .heading-signin {
-    color: rgb(246, 244, 236);
-  }
-  
-  .input-group-signin {
-    margin-bottom: 20px;
-    position: relative; /* Permet de positionner l'icône à l'intérieur de l'input */
-  }
-  
-  .input-group-signin input {
-    background: none;
-    border: 1px solid #353535;
-    padding: 15px 23px;
-    font-size: 16px;
-    border-radius: 8px;
-    color: #979797;
-    width: 88%;
-    box-shadow: rgb(136 136 136 / 17%) 0px -23px 25px 0px inset,
-      rgb(81 81 81 / 23%) 0px -36px 30px 0px inset,
-      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
-      rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
-      rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
-  }
-  
-  .input-group-signin input:focus {
-    border-color: #d30013;
-    outline: none;
-  }
+.login-form-signin {
+  display: flex;
+  flex-direction: column;
+}
 
-  .icon-visibility {
-    position: absolute;
-    right: 10px; /* Place l'icône à droite de l'input */
-    top: 50%;
-    transform: translateY(-50%); /* Centre verticalement l'icône */
-    cursor: pointer;
-    color: black; /* La couleur de l'icône */
-  }
+.heading-signin {
+  color: black;
+  font-weight: 500;
+  font-size: 2rem; /* Taille adaptative */
+  margin-bottom: 20px;
+}
 
-  .input-group-signin span {
-    color: black;
-  }
-  
-  .button-signin {
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    background-color: #979797;
-    box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
-      rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
-      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
-      rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
-      rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
-    color: black;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button-signin:hover {
-    background-color: #d30013;
-  }
-  
-  .bottom-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-    color: black;
-    font-size: 15px;
-    font-weight: 400;
-  }
+.dark-mode .heading-signin {
+  color: rgb(246, 244, 236);
+}
 
-  .dark-mode .bottom-text-signin p {
-    color: rgb(246, 244, 236);
-  }
-  
-  .bottom-text-signin a {
-    color: #d30013;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .bottom-text-signin a:hover {
-    color: #9a000d;
-  }
-  
-  @media (max-width: 768px) {
-    .login-container-signin {
-      padding: 20px; /* Réduisez le padding pour les petits écrans */
-      margin-top: 10%; /* Augmentez le margin-top pour éviter l'encombrement */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .login-container-signin {
-      padding: 15px; /* Réduction supplémentaire pour les très petits écrans */
-      margin-top: 15%;
-    }
-  }
+.input-group-signin {
+  margin-bottom: 20px;
+  position: relative; /* Permet de positionner l'icône à l'intérieur de l'input */
+}
+
+.input-group-signin input {
+  background: none;
+  border: 1px solid #353535;
+  padding: 15px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  color: #979797;
+  width: 88%; /* Passe à 100% pour s'adapter */
+  box-shadow: rgb(136 136 136 / 17%) 0px -23px 25px 0px inset,
+    rgb(81 81 81 / 23%) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+.input-group-signin input:focus {
+  border-color: #d30013;
+  outline: none;
+}
+
+.icon-visibility {
+  position: absolute;
+  right: 10px; /* Place l'icône à droite de l'input */
+  top: 50%;
+  transform: translateY(-50%); /* Centre verticalement l'icône */
+  cursor: pointer;
+  color: black; /* La couleur de l'icône */
+}
+
+.input-group-signin span {
+  color: black;
+}
+
+.button-signin {
+  padding: 10px 20px; /* Ajustement du padding */
+  border: none;
+  border-radius: 8px;
+  background-color: #979797;
+  box-shadow: rgb(31 31 31 / 17%) 0px -23px 25px 0px inset,
+    rgb(108 108 108 / 23%) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  color: black;
+  width: 100%; /* Largeur adaptative */
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-signin:hover {
+  background-color: #d30013;
+}
+
+.bottom-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  color: black;
+  font-size: 0.9rem; /* Taille plus petite */
+  font-weight: 400;
+}
+
+.dark-mode .bottom-text-signin p {
+  color: rgb(246, 244, 236);
+}
+
+.bottom-text-signin a {
+  color: #d30013;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.bottom-text-signin a:hover {
+  color: #9a000d;
+}
+
+/* Media queries pour le rendu responsive */
+@media (max-width: 768px) {
+.login-container-signin {
+  width: 90%;
+  padding: 15px;
+}
+
+.heading-signin {
+  font-size: 1.5rem;
+}
+
+.button-signin {
+  width: 100%;
+  padding: 10px;
+}
+
+.bottom-text {
+  font-size: 0.8rem;
+}
+}
+
+@media (max-width: 480px) {
+.login-container-signin {
+  width: 95%;
+  padding: 10px;
+}
+
+.heading-signin {
+  font-size: 1.2rem;
+}
+
+.button-signin {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+.bottom-text {
+  font-size: 0.7rem;
+}
+}
