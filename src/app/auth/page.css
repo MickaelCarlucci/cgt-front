@@ -118,3 +118,16 @@
     color: #9a000d;
   }
   
+  @media (max-width: 768px) {
+    .login-container-signin {
+      padding: 20px; /* Réduisez le padding pour les petits écrans */
+      margin-top: 10%; /* Augmentez le margin-top pour éviter l'encombrement */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .login-container-signin {
+      padding: 15px; /* Réduction supplémentaire pour les très petits écrans */
+      margin-top: 15%;
+    }
+  }
