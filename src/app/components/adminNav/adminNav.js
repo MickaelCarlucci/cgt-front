@@ -40,13 +40,18 @@ export default function AdminNav() {
         {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
       </button>
       <nav className={`navbar-admin ${menuOpen ? "open" : ""}`}>
+
+        {roles.includes("Admin") || 
+        roles.includes("SuperAdmin") ? (
+          <><Link href="/admin" onClick={handleLinkClick}>
+          Gérer les utilisateurs
+        </Link></>
+        ): null }
+        
         {roles.includes("Admin") ||
         roles.includes("SuperAdmin") ||
         roles.includes("Moderateur") ? (
           <>
-            <Link href="/admin" onClick={handleLinkClick}>
-              Gérer les utilisateurs
-            </Link>
             <Link href="/admin/files" onClick={handleLinkClick}>
               Ajouter/supprimer un document
             </Link>
