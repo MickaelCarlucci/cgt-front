@@ -47,22 +47,18 @@ export default function Page() {
             placeholder="Mail"
           />
         </div>
-        <div className="input-group-signin" style={{ position: "relative" }}>
-          <input
-            type={passwordType}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "88%" }} // Assure que l'input prend toute la largeur
-            placeholder="Mot de passe"
-          />
-          <span className="icon-visibility" onClick={togglePasswordVisibility}>
-            {passwordType === "password" ? (
-              <MdVisibility />
-            ) : (
-              <MdVisibilityOff />
-            )}
-          </span>
-        </div>
+        <div className="input-group-signin">
+  <input
+    type={passwordType}
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="input-password"
+    placeholder="Mot de passe"
+  />
+  <span className="icon-visibility" onClick={togglePasswordVisibility}>
+    {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
+  </span>
+</div>
         <button className="button-signin" type="submit">
           Connexion
         </button>

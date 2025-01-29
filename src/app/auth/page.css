@@ -20,6 +20,8 @@
 .login-form-signin {
   display: flex;
   flex-direction: column;
+  align-items: center; /* Centre tous les éléments horizontalement */
+  width: 100%;
 }
 
 .heading-signin {
@@ -34,8 +36,13 @@
 }
 
 .input-group-signin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centre le contenu horizontalement */
+  width: 100%; 
+  margin: 10px;
   margin-bottom: 20px;
-  position: relative; /* Permet de positionner l'icône à l'intérieur de l'input */
 }
 
 .input-group-signin input {
@@ -45,7 +52,7 @@
   font-size: 1rem;
   border-radius: 8px;
   color: #979797;
-  width: 88%; /* Passe à 100% pour s'adapter */
+  width: 70%; /* Passe à 100% pour s'adapter */
   box-shadow: rgb(136 136 136 / 17%) 0px -23px 25px 0px inset,
     rgb(81 81 81 / 23%) 0px -36px 30px 0px inset,
     rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
@@ -58,14 +65,27 @@
   outline: none;
 }
 
+.input-password {
+  background: none;
+  border: 1px solid #353535;
+  padding: 15px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  color: #979797;
+  width: 70%; /* Définit une largeur spécifique */
+  padding-right: 40px; /* Ajoute un espace pour l'icône */
+}
+
 .icon-visibility {
   position: absolute;
-  right: 10px; /* Place l'icône à droite de l'input */
+  right: calc(15% + 10px); /* Place l'icône en fonction de la largeur de l'input */
   top: 50%;
-  transform: translateY(-50%); /* Centre verticalement l'icône */
+  transform: translateY(-50%);
   cursor: pointer;
-  color: black; /* La couleur de l'icône */
+  color: black;
+  font-size: 20px;
 }
+
 
 .input-group-signin span {
   color: black;
@@ -82,7 +102,7 @@
     rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
     rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
   color: black;
-  width: 88%; /* Largeur adaptative */
+  width: 70%; /* Largeur adaptative */
   margin: 0 auto;
   font-size: 1rem;
   font-weight: 500;
