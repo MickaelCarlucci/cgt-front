@@ -138,6 +138,7 @@ export default function Page() {
         {/* Boucle sur les documents combinés provenant de la table information et leaflet_stored */}
         {documents.map((doc) => (
           <div className="div-homepage" key={doc.id}>
+            {console.log("PDF URL:", `${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`)}
             <h2>{doc.title}</h2>
 
             {doc.source === "information" ? (

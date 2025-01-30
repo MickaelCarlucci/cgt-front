@@ -47,6 +47,42 @@ export default function Page() {
     roles.includes(role)
   );
 
+  const applyBlockAlignment = (index, alignment) => {
+    const contentState = editorStates[index].getCurrentContent();
+    const selection = editorStates[index].getSelection();
+  
+    // Appliquer les données d'alignement au bloc sélectionné
+    const newContentState = Modifier.setBlockData(
+      contentState,
+      selection,
+      { textAlign: alignment }
+    );
+  
+    const newEditorState = EditorState.push(
+      editorStates[index],
+      newContentState,
+      'change-block-data'
+    );
+  
+    handleContentChange(index, newEditorState);
+  };
+
+  const blockStyleFn = (contentBlock) => {
+    const textAlign = contentBlock.getData().get('textAlign');
+    switch (textAlign) {
+      case 'left':
+        return 'align-left';
+      case 'center':
+        return 'align-center';
+      case 'right':
+        return 'align-right';
+      case 'justify':
+        return 'align-justify';
+      default:
+        return '';
+    }
+  };
+
   // Fonction pour appliquer des styles comme gras/italique
   const handleKeyCommand = (command, index) => {
     const newState = RichUtils.handleKeyCommand(editorStates[index], command);
@@ -255,6 +291,34 @@ export default function Page() {
                 >
                   {/* Boutons pour Gras, Italique, etc. */}
                   <div className="editor-text">
+                  <button
+    type="button"
+    onClick={() => applyBlockAlignment(index, 'left')}
+    style={{ padding: "5px 10px", marginRight: "5px" }}
+  >
+    Aligner à gauche
+  </button>
+  <button
+    type="button"
+    onClick={() => applyBlockAlignment(index, 'center')}
+    style={{ padding: "5px 10px", marginRight: "5px" }}
+  >
+    Centrer
+  </button>
+  <button
+    type="button"
+    onClick={() => applyBlockAlignment(index, 'right')}
+    style={{ padding: "5px 10px", marginRight: "5px" }}
+  >
+    Aligner à droite
+  </button>
+  <button
+    type="button"
+    onClick={() => applyBlockAlignment(index, 'justify')}
+    style={{ padding: "5px 10px", marginRight: "5px" }}
+  >
+    Justifier
+  </button>
                     <button
                       type="button"
                       onClick={() =>
@@ -323,6 +387,7 @@ export default function Page() {
                       handleKeyCommand={(command) =>
                         handleKeyCommand(command, index)
                       }
+                      blockStyleFn={blockStyleFn}
                       customStyleMap={customStyleMap} // Appliquer les styles personnalisés
                       placeholder="Écrivez votre contenu ici..."
                     />

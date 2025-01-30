@@ -12,7 +12,7 @@ export default function Page() {
         <p>
           Le syndicat se situe au <br /> 139 rue Joseph Brunet
           <br /> BP 90159 <br /> 33042 Bordeaux Cedex <br />
-          Ghrib Malika <br /> SIREN: a déterminer{" "}
+          Représentant légal du syndicat de Bordeaux: Ghrib Malika <br />
         </p>
         <p></p>
       </div>
@@ -26,7 +26,7 @@ export default function Page() {
         <p>mail: compliance@hostinger.com</p>
       </div>
       <div>
-        Les contenus du site <span>[Nom du site]</span> (textes, images, logos,
+        Les contenus du site <span className="bold">cgt-teleperformance.fr</span> (textes, images, logos,
         etc.) sont la propriété exclusive du Syndicat CGT de l&apos;entreprise
         Teteperformance. Toute reproduction totale ou partielle de ces éléments
         est interdite sans l&apos;autorisation préalable du syndicat.
@@ -44,7 +44,7 @@ export default function Page() {
           de rectification et de suppression de vos données personnelles. Pour
           exercer ces droits, vous pouvez consulter votre profil directement sur
           le site ou contacter Didier Thiebauld à l&apos;adresse suivante :
-          [email de contact].
+          didier51.cse@gmail.com
         </p>
         <p>Ce site n&apos;utilise pas de cookies qui exploite vos données.</p>
       </div>

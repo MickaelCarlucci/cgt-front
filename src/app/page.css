@@ -83,6 +83,19 @@
     margin: 0 auto; /* Centrer le conteneur */
   }
 
+  .align-left {
+    text-align: left;
+  }
+  .align-center {
+    text-align: center;
+  }
+  .align-right {
+    text-align: right;
+  }
+  .align-justify {
+    text-align: justify;
+  }
+
 /* Media query pour les écrans de moins de 1000px */
 @media (max-width: 1000px) {
     .div-information {
