@@ -15,6 +15,15 @@ const nextConfig = {
       },
     ],
   },
+
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*", // Route vers les fichiers PDF
+        destination: "http://88.223.95.21/uploads/:path*", // Redirection vers le serveur
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -105,6 +105,9 @@ export default function Header() {
         <Link href="/documents" onClick={handleLinkClick}>
           Documents
         </Link>
+        <Link href="/calculator" onClick={handleLinkClick}>
+          Calculateur
+        </Link>
         <Link href="/contact" onClick={handleLinkClick}>
           Contact
         </Link>
