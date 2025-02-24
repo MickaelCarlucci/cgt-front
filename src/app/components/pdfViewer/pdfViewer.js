@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import 'pdfjs-dist/web/pdf_viewer.css';
+import { useEffect, useRef, useState, useCallback } from "react";
+import "pdfjs-dist/web/pdf_viewer.css";
 
 export default function PdfViewer({ file }) {
   const canvasRef = useRef(null);
@@ -19,7 +19,8 @@ export default function PdfViewer({ file }) {
   // Charger pdfjsLib uniquement côté client
   useEffect(() => {
     async function loadPdfJsLib() {
-      const pdfjs = await import('pdfjs-dist/webpack');
+      const pdfjs = await import("pdfjs-dist/webpack");
+      console.log("Chargement pdfLib first State");
       pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
       setPdfjsLib(pdfjs); // Stocker pdfjsLib dans l'état
     }
@@ -28,82 +29,98 @@ export default function PdfViewer({ file }) {
 
   useEffect(() => {
     if (!pdfjsLib || !file || !containerRef.current) return; // Ne pas continuer si pdfjsLib, file, ou containerRef n'est pas prêt
-  
+
     const loadingTask = pdfjsLib.getDocument(file);
-  
+
     loadingTask.promise.then(
       (pdf) => {
-        setPdfDocument(pdf);  // Stocker le document PDF
-        setNumPages(pdf.numPages);  // Mettre à jour le nombre total de pages
-        setPageNumber(1);  // Réinitialiser à la première page
+        setPdfDocument(pdf); // Stocker le document PDF
+        console.log("pdf");
+        setNumPages(pdf.numPages); // Mettre à jour le nombre total de pages
+        console.log("loading pages", pdf.numPages);
+        setPageNumber(1); // Réinitialiser à la première page
       },
       (error) => {
-        console.error('Erreur lors du chargement du PDF', error);
+        console.error("Erreur lors du chargement du PDF", error);
       }
     );
   }, [file, pdfjsLib, containerRef]); // Attendre que pdfjsLib, file et containerRef soient prêts
-  
 
   // Fonction de rendu des pages
-  const renderPage = useCallback((pdf, pageNum) => {
-    if (isRendering) {
-      return; // Empêche plusieurs rendus en même temps
-    }
+  const renderPage = useCallback(
+    (pdf, pageNum) => {
+      if (isRendering) {
+        console.log("isRendering");
+        return; // Empêche plusieurs rendus en même temps
+      }
 
-    setIsRendering(true); // Indique qu'un rendu est en cours
+      setIsRendering(true); // Indique qu'un rendu est en cours
 
-    // Annuler la tâche de rendu précédente, si elle existe
-    if (renderTask) {
-      renderTask.cancel();  // Annuler la tâche précédente
-    }
+      // Annuler la tâche de rendu précédente, si elle existe
+      if (renderTask) {
+        console.log("renderTask");
+        renderTask.cancel(); // Annuler la tâche précédente
+      }
 
-    pdf.getPage(pageNum).then((page) => {
-      const containerWidth = containerRef.current.offsetWidth; // Obtenir la largeur du conteneur
-      const viewport = page.getViewport({ scale: defaultScale });
+      pdf.getPage(pageNum).then((page) => {
+        const containerWidth = containerRef.current.offsetWidth; // Obtenir la largeur du conteneur
+        const viewport = page.getViewport({ scale: defaultScale });
 
-      // Calculer l'échelle dynamique en fonction de la taille du conteneur
-      const scale = Math.max(containerWidth / viewport.width, minScale); // Limiter l'échelle à minScale pour éviter que le texte ne devienne trop petit
-      const scaledViewport = page.getViewport({ scale });
+        // Calculer l'échelle dynamique en fonction de la taille du conteneur
+        const scale = Math.max(containerWidth / viewport.width, minScale); // Limiter l'échelle à minScale pour éviter que le texte ne devienne trop petit
+        const scaledViewport = page.getViewport({ scale });
 
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-      canvas.height = scaledViewport.height;
-      canvas.width = scaledViewport.width;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        canvas.height = scaledViewport.height;
+        canvas.width = scaledViewport.width;
 
-      const renderContext = {
-        canvasContext: context,
-        viewport: scaledViewport,
-      };
+        const renderContext = {
+          canvasContext: context,
+          viewport: scaledViewport,
+        };
 
-      // Lancer la tâche de rendu de la nouvelle page
-      const task = page.render(renderContext);
-      setRenderTask(task);  // Mettre à jour la tâche de rendu dans l'état
+        // Lancer la tâche de rendu de la nouvelle page
+        const task = page.render(renderContext);
+        console.log("task");
+        setRenderTask(task); // Mettre à jour la tâche de rendu dans l'état
 
-      task.promise.then(() => {
-        setIsRendering(false); // Rendu terminé
-        setRenderTask(null);  // Tâche terminée, la nettoyer
-      }).catch((err) => {
-        if (err.name !== 'RenderingCancelledException') {
-          console.error('Erreur lors du rendu de la page', err);
-        }
-        setIsRendering(false); // Rendu terminé même en cas d'erreur
+        task.promise
+          .then(() => {
+            setIsRendering(false); // Rendu terminé
+            setRenderTask(null); // Tâche terminée, la nettoyer
+          })
+          .catch((err) => {
+            if (err.name !== "RenderingCancelledException") {
+              console.error("Erreur lors du rendu de la page", err);
+            }
+            setIsRendering(false); // Rendu terminé même en cas d'erreur
+          });
       });
-    });
-  }, [isRendering, renderTask]);
+    },
+    [isRendering, renderTask]
+  );
 
   useEffect(() => {
     if (!pdfjsLib || !file) return; // Ne pas continuer si pdfjsLib ou file n'est pas prêt
+    console.log("📥 Tentative de chargement du PDF :", file);
 
     const loadingTask = pdfjsLib.getDocument(file);
-
+    console.log("loadingTask");
     loadingTask.promise.then(
       (pdf) => {
-        setPdfDocument(pdf);  // Stocker le document PDF
-        setNumPages(pdf.numPages);  // Mettre à jour le nombre total de pages
-        setPageNumber(1);  // Réinitialiser à la première page
+        console.log("✅ PDF chargé avec succès :", pdf);
+        setPdfDocument(pdf); // Stocker le document PDF
+        setNumPages(pdf.numPages); // Mettre à jour le nombre total de pages
+        setPageNumber(1); // Réinitialiser à la première page
+        console.log("loadingtask Completed");
       },
       (error) => {
-        console.error('Erreur lors du chargement du PDF', error);
+        console.error(
+          "❌ Erreur lors du chargement du PDF :",
+          error.message,
+          error
+        );
       }
     );
   }, [file, pdfjsLib]); // Attendre que pdfjsLib et file soient prêts
@@ -111,7 +128,8 @@ export default function PdfViewer({ file }) {
   // Rendre la page lorsque le numéro de page ou le document change
   useEffect(() => {
     if (pdfDocument) {
-      renderPage(pdfDocument, pageNumber);  // Rendre la page
+      renderPage(pdfDocument, pageNumber); // Rendre la page
+      console.log("rendering page");
     }
   }, [pageNumber, pdfDocument, renderPage]);
 
@@ -130,13 +148,22 @@ export default function PdfViewer({ file }) {
   };
 
   return (
-    <div ref={containerRef} style={{ width: '100%' }}>
-      <canvas ref={canvasRef} style={{ width: '100%', height: 'auto' }}></canvas>
-      <div style={{ textAlign: 'center', marginTop: '10px' }}>
-        <button onClick={goToPrevPage} disabled={pageNumber <= 1 || isRendering}>
+    <div ref={containerRef} style={{ width: "100%" }}>
+      <canvas
+        ref={canvasRef}
+        style={{ width: "100%", height: "auto" }}
+      ></canvas>
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
+        <button
+          onClick={goToPrevPage}
+          disabled={pageNumber <= 1 || isRendering}
+        >
           Précédente
         </button>
-        <button onClick={goToNextPage} disabled={pageNumber >= numPages || isRendering}>
+        <button
+          onClick={goToNextPage}
+          disabled={pageNumber >= numPages || isRendering}
+        >
           Suivante
         </button>
         <p>
