@@ -5,6 +5,8 @@ import "./page.css";
 
 export default function Page() {
   const [resultat, setResultat] = useState(null);
+  const [rqth, setRqth] = useState(false);
+  const [mutuelle, setMutuelle] = useState(0);
 
   const calculerIndemnite = () => {
     const status = document.getElementById("status").value;
@@ -28,15 +30,14 @@ export default function Page() {
       anciennete--;
     }
 
-    const salaireReference =
-      status === "non_cadres" ? salariesBrut / 12 : salariesBrut / 18;
-
+    const salaireReference = salariesBrut / 12;
     let indemniteLegale = 0;
+
     if (status === "non_cadres") {
       indemniteLegale += Math.min(10, anciennete) * (salaireReference * 0.25);
       indemniteLegale +=
         Math.max(0, anciennete - 10) * (salaireReference * (1 / 3));
-    } else if (status === "cadres") {
+    } else {
       indemniteLegale +=
         Math.min(5, anciennete) * (salaireReference * (3 / 10));
       indemniteLegale +=
@@ -58,34 +59,49 @@ export default function Page() {
     const montantSpecifiqueParAnnee = 3000;
     let indemniteSpecifique = anciennete * montantSpecifiqueParAnnee;
     const plafond = age >= 58 ? 90000 : 70000;
-
     let montantTotal = indemniteLegale + indemniteSpecifique;
+    let isPlafonne = false;
+
     if (montantTotal > plafond) {
       indemniteSpecifique = plafond - indemniteLegale;
       montantTotal = plafond;
+      isPlafonne = true;
     }
+
+    let allocationMensuelleBrute = salaireReference * 0.75;
+    const allocationMinimale = 1801.8 * 0.85;
+    if (allocationMensuelleBrute < allocationMinimale) {
+      allocationMensuelleBrute = allocationMinimale;
+    }
+
+    let allocationMensuelleNette =
+      allocationMensuelleBrute * (1 - 0.067) - mutuelle;
+    let dispositionRQTH = rqth ? indemniteLegale : 0;
+    const montantNetTotal =
+      indemniteLegale +
+      dispositionRQTH +
+      (montantTotal - indemniteLegale) * 0.903;
 
     setResultat({
       anciennete,
       age,
-      salaireReference: salaireReference.toFixed(2),
+      salaireReference,
       plafond,
-      indemniteLegale: indemniteLegale.toFixed(2),
-      indemniteSpecifique: indemniteSpecifique.toFixed(2),
-      montantTotal: montantTotal.toFixed(2),
-      montantNet: (
-        indemniteLegale +
-        (montantTotal - indemniteLegale) * 0.903
-      ).toFixed(2),
+      indemniteLegale,
+      indemniteSpecifique,
+      montantTotal,
+      montantNetTotal,
+      allocationMensuelleBrute,
+      allocationMensuelleNette,
+      dispositionRQTH,
+      isPlafonne,
     });
   };
 
   return (
     <div className="container-calculator">
       <h1>Calculateur d&apos;Indemnité</h1>
-      <p>
-        Les informations que vous saisissez ci-dessous ne sont pas enregistrées
-      </p>
+      <p>Les informations saisies ne sont pas conservées.</p>
 
       <table className="table-calculator">
         <tbody>
@@ -107,6 +123,18 @@ export default function Page() {
             </td>
             <td>
               <input type="number" id="salariesBrut" step="0.01" required />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label>Salarié RQTH :</label>
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                checked={rqth}
+                onChange={() => setRqth(!rqth)}
+              />
             </td>
           </tr>
           <tr>
@@ -142,48 +170,30 @@ export default function Page() {
       </table>
 
       {resultat && (
-        <div>
+        <div className="result-table">
           <h2>Résultats :</h2>
-          <table className="result-table">
-            <tbody>
-              <tr>
-                <td>Votre ancienneté :</td>
-                <td>{resultat.anciennete} ans</td>
-              </tr>
-              <tr>
-                <td>Votre âge au départ :</td>
-                <td>{resultat.age} ans</td>
-              </tr>
-              <tr>
-                <td>Salaire de référence :</td>
-                <td>{resultat.salaireReference} €</td>
-              </tr>
-              <tr>
-                <td>Plafond appliqué :</td>
-                <td>{resultat.plafond} €</td>
-              </tr>
-              <tr>
-                <td>Indemnité légale :</td>
-                <td>{resultat.indemniteLegale} €</td>
-              </tr>
-              <tr>
-                <td>Indemnité spécifique :</td>
-                <td>{resultat.indemniteSpecifique} €</td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>MONTANT TOTAL ESTIMÉ :</strong>
-                </td>
-                <td>{resultat.montantTotal} €</td>
-              </tr>
-              <tr>
-                <td>Montant net :</td>
-                <td className="result-net">{resultat.montantNet} €</td>
-              </tr>
-            </tbody>
-          </table>
+          <p>Votre ancienneté : {resultat.anciennete} ans</p>
+          <p>Indemnité légale : {resultat.indemniteLegale.toFixed(2)} €</p>
+          <p>
+            Indemnité spécifique : {resultat.indemniteSpecifique.toFixed(2)} €
+          </p>
+          <p>
+            Montant Total Estimé : {resultat.montantTotal.toFixed(2)} €{" "}
+            {resultat.isPlafonne ? "(plafonné)" : ""}
+          </p>
+          <p className="result-net">
+            Montant net (après CSG/CRDS) : {resultat.montantNetTotal.toFixed(2)}{" "}
+            €
+          </p>
+          <p className="result-net">
+            Allocation mensuelle nette :{" "}
+            {resultat.allocationMensuelleNette.toFixed(2)} €
+          </p>
         </div>
       )}
+      <div className="dedicace">
+        <p>© 2025 Didier - Tous droits réservés </p>
+      </div>
     </div>
   );
 }
