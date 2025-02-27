@@ -15,7 +15,7 @@ export default function Page() {
   const [activities, setActivities] = useState([]);
   const [error, setError] = useState("");
 
-  const roles = user?.roles?.split(", ") || []; //vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
     roles.includes(role)
   );
@@ -63,7 +63,7 @@ export default function Page() {
       );
     }
 
-    setFilteredUsers(filtered); // Mise à jour de l'état avec les utilisateurs filtrés
+    setFilteredUsers(filtered);
   }, [searchBar, users]);
 
   const fetchUsersWithoutRole = async () => {

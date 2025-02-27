@@ -15,7 +15,7 @@ export default function Page() {
   const userId = user?.id;
 
   const [polls, setPolls] = useState([]);
-  const [selectedPoll, setSelectedPoll] = useState(null); // Initialisé à null
+  const [selectedPoll, setSelectedPoll] = useState(null);
   const [voteStatuses, setVoteStatuses] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -40,7 +40,6 @@ export default function Page() {
           throw new Error("Erreur lors de la vérification du vote");
         const data = await response.json();
 
-        // Mise à jour du statut de vote
         setVoteStatuses((prev) => ({
           ...prev,
           [pollId]: data || { voted: false, optionId: null },
@@ -56,7 +55,6 @@ export default function Page() {
     [userId]
   );
 
-  // Récupère les derniers sondages
   useEffect(() => {
     async function fetchPolls() {
       try {
@@ -68,12 +66,10 @@ export default function Page() {
         const data = await response.json();
         setPolls(data);
 
-        // Définit le premier sondage comme sélectionné par défaut
         if (data.length > 0) {
           setSelectedPoll(data[0].id);
         }
 
-        // Vérifie si l'utilisateur a voté pour chaque sondage
         if (userId) {
           data.forEach((poll) => {
             if (!voteStatuses[poll.id]) {
@@ -92,7 +88,6 @@ export default function Page() {
     }
   }, [userId, checkUserVote, user, voteStatuses]);
 
-  // Gestion du vote
   const handleVote = async (pollId, optionId) => {
     try {
       const response = await fetchWithToken(
@@ -108,7 +103,6 @@ export default function Page() {
       if (!response.ok) throw new Error("Erreur lors du vote");
       const data = await response.json();
 
-      // Met à jour directement sans rappeler checkUserVote
       setVoteStatuses((prev) => ({
         ...prev,
         [pollId]: { voted: true, optionId: data.optionId },
@@ -121,7 +115,7 @@ export default function Page() {
     }
   };
 
-  if (loading) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -140,7 +134,6 @@ export default function Page() {
                   {poll.question}
                 </p>
 
-                {/* Affiche les options si l'utilisateur n'a pas voté */}
                 {selectedPoll === poll.id &&
                   voteStatuses[poll.id]?.voted === false && (
                     <div>
@@ -148,7 +141,6 @@ export default function Page() {
                     </div>
                   )}
 
-                {/* Affiche les résultats si l'utilisateur a déjà voté */}
                 {selectedPoll === poll.id &&
                   voteStatuses[poll.id]?.voted === true && (
                     <div>

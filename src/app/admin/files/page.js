@@ -25,7 +25,6 @@ export default function Page() {
   );
   const userId = user?.id;
 
-  // Fetch des centres
   useEffect(() => {
     const centerFetch = async () => {
       try {
@@ -41,7 +40,6 @@ export default function Page() {
     centerFetch();
   }, []);
 
-  // Fetch des sections
   useEffect(() => {
     const sectionFetch = async () => {
       try {
@@ -57,7 +55,6 @@ export default function Page() {
     sectionFetch();
   }, []);
 
-  // Fetch des PDFs
   const fetchPdfs = async () => {
     try {
       const response = await fetch(
@@ -70,19 +67,16 @@ export default function Page() {
     }
   };
 
-  // Appel des PDFs une fois authentifié
   useEffect(() => {
     if (user && userId) {
       fetchPdfs();
     }
   }, [user, userId]);
 
-  // Gestion du changement de fichier
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // Gestion de l'upload de fichier
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -116,9 +110,8 @@ export default function Page() {
         setFile(null);
         setCenterId("");
         setSectionId("");
-        e.target.reset(); // Réinitialiser le formulaire HTML
+        e.target.reset();
 
-        // Recharger la liste des PDFs après l'upload
         await fetchPdfs();
       } else {
         setMessage("Erreur lors du téléchargement du fichier");
@@ -129,7 +122,6 @@ export default function Page() {
     }
   };
 
-  // Gestion de la suppression d'un fichier PDF
   const handleDelete = async (pdfId) => {
     try {
       const response = await fetchWithToken(
@@ -139,7 +131,6 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        // Mettre à jour la liste des fichiers après suppression
         setPdfs(pdfs.filter((pdf) => pdf.id !== pdfId));
       } else {
         console.error("Erreur lors de la suppression du fichier");

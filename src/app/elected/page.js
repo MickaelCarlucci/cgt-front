@@ -13,7 +13,7 @@ export default function Page() {
   const { user, loading } = useSelector((state) => state.auth);
   const [appointment, setAppointment] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visibleSection, setVisibleSection] = useState(null); // État pour suivre quelle section est visible
+  const [visibleSection, setVisibleSection] = useState(null);
   const [formData, setFormData] = useState({
     subject: "",
     date: "",
@@ -21,7 +21,6 @@ export default function Page() {
   });
   const [error, setError] = useState("");
 
-  // Gestion des rôles : si la session est chargée et qu'il y a un utilisateur
   const roles = user?.roles?.split(", ") || [];
   const userId = user?.id;
 
@@ -90,15 +89,12 @@ export default function Page() {
     }
   };
 
-  // Si la session est encore en train de se charger
   if (loading) return <Loader />;
 
-  // Si les rôles ne sont pas définis
   if (!roles.length) {
     return <p>Aucun rôle défini pour l&apos;utilisateur.</p>;
   }
 
-  // Fonction pour basculer l'affichage des sections
   const toggleSection = (section) => {
     setVisibleSection((prevSection) =>
       prevSection === section ? null : section
@@ -230,7 +226,6 @@ export default function Page() {
             </div>
           )}
 
-          {/* Affichage conditionnel basé sur l'état visibleSection */}
           {visibleSection === "RP" && <SectionRP />}
           {visibleSection === "CSE" && <SectionCSE />}
           {visibleSection === "CSSCT" && <SectionCSSCT />}

@@ -67,7 +67,6 @@ function AuthWrapper({ children }) {
   const { user, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Charger l'état de l'utilisateur à partir du localStorage ou de Firebase
     const initializeAuth = async () => {
       dispatch(setLoading(true));
 
@@ -75,7 +74,7 @@ function AuthWrapper({ children }) {
       if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
         localStorage.removeItem("sessionExpiration");
         dispatch(logoutUser());
-        router.push("/auth"); // Redirection vers la page de connexion
+        router.push("/auth");
         return;
       }
 
@@ -84,15 +83,12 @@ function AuthWrapper({ children }) {
       );
 
       if (firebaseAuthKey) {
-        // Si une session existe dans localStorage, essayez de connecter l'utilisateur automatiquement
         dispatch(loginWithLocalStorage());
       } else {
-        // Observez l'état d'authentification Firebase pour les nouvelles connexions
         const unsubscribe = onAuthStateChanged(
           firebaseAuth,
           async (firebaseUser) => {
             if (firebaseUser) {
-              // Récupérer le token utilisateur pour validation côté serveur si nécessaire
               const token = await firebaseUser.getIdToken();
 
               try {
@@ -112,25 +108,25 @@ function AuthWrapper({ children }) {
               } catch (error) {
                 console.error("Erreur de validation du token :", error);
                 dispatch(clearUser());
-                router.push("/auth"); // Redirection en cas d'erreur
+                router.push("/auth");
               }
             } else {
               dispatch(clearUser());
-              router.push("/auth"); // Redirection si non connecté
+              router.push("/auth");
             }
           }
         );
 
-        return () => unsubscribe(); // Nettoyer l'abonnement Firebase Auth
+        return () => unsubscribe();
       }
 
-      dispatch(setLoading(false)); // Arrête le chargement après tentative de connexion
+      dispatch(setLoading(false));
     };
 
     initializeAuth();
   }, [dispatch, router]);
 
-  if (loading) return <Loader />; // Afficher un loader si en cours de chargement
+  if (loading) return <Loader />;
 
   return <>{children}</>;
 }

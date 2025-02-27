@@ -15,7 +15,6 @@ export default function Header() {
   const [darkMode, setDarkMode] = useState(false);
   const dispatch = useDispatch();
 
-  // Charger le mode sombre depuis le localStorage
   useEffect(() => {
     const savedMode = localStorage.getItem("darkMode");
     if (savedMode === "true") {
@@ -24,7 +23,6 @@ export default function Header() {
     }
   }, []);
 
-  // Appliquer la classe 'dark-mode' lorsque le bouton est cliqué et sauvegarder dans le localStorage
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add("dark-mode");
@@ -44,7 +42,7 @@ export default function Header() {
   };
 
   const handleLinkClick = () => {
-    setMenuOpen(false); // Fermer le menu après clic
+    setMenuOpen(false);
   };
 
   useEffect(() => {
@@ -80,15 +78,13 @@ export default function Header() {
       </button>
 
       <nav className={`navbar ${menuOpen ? "open" : ""}`}>
-        {/* Ajout du bouton pour basculer le mode sombre */}
         <div className="theme_switcher">
           <label id="switch" className="switch">
-            {/* Synchroniser la position initiale du bouton */}
             <input
               className="dark-mode-toggle"
               type="checkbox"
               onChange={toggleDarkMode}
-              checked={darkMode} // Lier l'état à la checkbox
+              checked={darkMode}
             />
             <span className="slider round"></span>
           </label>

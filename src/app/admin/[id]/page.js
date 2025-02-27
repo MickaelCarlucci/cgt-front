@@ -12,14 +12,14 @@ export default function Page() {
   const params = useParams();
   const { id } = params;
   const { user, loading } = useSelector((state) => state.auth);
-  const [userData, setUserData] = useState(null); // Initialiser avec null
+  const [userData, setUserData] = useState(null);
   const [roleList, setRoleList] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const roles = user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin"].some((role) =>
     roles.includes(role)
   );
@@ -37,7 +37,7 @@ export default function Page() {
         const dataUser = await userResponse.json();
         setUserData(dataUser);
 
-        const userRoles = dataUser.roles.split(",").map((role) => role.trim()); // Découpe la chaîne en tableau et enlève les espaces
+        const userRoles = dataUser.roles.split(",").map((role) => role.trim());
         setSelectedRoles(userRoles);
       } catch (error) {
         setError("Erreur lors de la récupération de l'utilisateur");
@@ -76,7 +76,6 @@ export default function Page() {
 
   const handleDelete = async () => {
     try {
-      // Supprimer l'utilisateur de Firebase
       const firebaseResponse = await fetchWithToken(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/delete-by-admin`,
         {
@@ -119,7 +118,6 @@ export default function Page() {
   const updateRoleForUser = async (roleId, action) => {
     try {
       if (action === "add") {
-        // Requête POST pour ajouter un rôle
         const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/link`,
           {
@@ -135,7 +133,6 @@ export default function Page() {
           throw new Error("Erreur lors de l'ajout du rôle");
         }
       } else if (action === "remove") {
-        // Requête DELETE pour supprimer un rôle
         const response = await fetchWithToken(
           `${process.env.NEXT_PUBLIC_API_URL}/api/admin/role/${id}/unlink`,
           {
@@ -158,17 +155,15 @@ export default function Page() {
 
   const handleRoleChange = (roleId, roleName) => {
     if (selectedRoles.includes(roleName)) {
-      // Supprimer le rôle si déjà sélectionné
       setSelectedRoles(selectedRoles.filter((role) => role !== roleName));
-      updateRoleForUser(roleId, "remove"); // Envoyer l'ID du rôle à l'API pour le supprimer
+      updateRoleForUser(roleId, "remove");
     } else {
-      // Ajouter le rôle s'il n'est pas sélectionné
       setSelectedRoles([...selectedRoles, roleName]);
-      updateRoleForUser(roleId, "add"); // Envoyer l'ID du rôle à l'API pour l'ajouter
+      updateRoleForUser(roleId, "add");
     }
   };
 
-  if (loading || !userData) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading || !userData) return <Loader />;
 
   return (
     <>

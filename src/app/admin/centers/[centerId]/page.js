@@ -20,7 +20,7 @@ export default function Page() {
   const [titleCenter, setTitleCenter] = useState("");
   const [error, setError] = useState("");
 
-  const roles = user?.roles?.split(", ") || []; // Vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || [];
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );
@@ -36,14 +36,12 @@ export default function Page() {
           const activitiesData = await activitiesResponse.json();
           setActivities(activitiesData);
 
-          // Fetch de toutes les activités disponibles
           const allActivitiesResponse = await fetchWithToken(
             `${process.env.NEXT_PUBLIC_API_URL}/api/admin/activities`
           );
           const allActivitiesData = await allActivitiesResponse.json();
           setAllActivities(allActivitiesData);
 
-          // Fetch du titre du centre
           const titleResponse = await fetchWithToken(
             `${process.env.NEXT_PUBLIC_API_URL}/api/admin/center/${centerId}`
           );
@@ -75,7 +73,7 @@ export default function Page() {
     e.preventDefault();
     const activityData = {
       centerId,
-      activityId: activityLink, // Utilisez directement activityLink qui est l'ID
+      activityId: activityLink,
     };
 
     try {
@@ -91,9 +89,9 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        setActivityLink(""); // Réinitialiser le champ de saisie
+        setActivityLink("");
         setError("");
-        await fetchActivitiesByCenter(); // Recharger les activités du centre
+        await fetchActivitiesByCenter();
       } else {
         setError("Erreur lors de la mise à jour des activités");
       }
@@ -117,7 +115,7 @@ export default function Page() {
       if (response.ok) {
         setActivityUnlink("");
         setError("");
-        await fetchActivitiesByCenter(); // Recharger les activités du centre
+        await fetchActivitiesByCenter();
       } else {
         setError("Erreur lors de la mise à jour des activités");
       }
@@ -153,10 +151,9 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        setActivity(""); // Réinitialiser le champ de saisie
+        setActivity("");
         setError("");
         fetchActivitiesByCenter();
-        // Recharger les activités
       } else {
         setError("Erreur lors de la mise à jour des activités");
       }
@@ -186,7 +183,7 @@ export default function Page() {
                     {activity.name}{" "}
                     <span
                       type="button"
-                      onClick={() => handleUnlinkActivity(activity.id)} // Passez seulement activity.id
+                      onClick={() => handleUnlinkActivity(activity.id)}
                       style={{ cursor: "pointer" }}
                     >
                       <BsBoxArrowRight />
@@ -214,7 +211,7 @@ export default function Page() {
             <form>
               <select
                 value={activityLink}
-                onChange={(e) => setActivityLink(e.target.value)} // Met à jour activityLink directement avec l'ID
+                onChange={(e) => setActivityLink(e.target.value)}
                 required
               >
                 <option value="" disabled>

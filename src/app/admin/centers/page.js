@@ -74,9 +74,9 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        setCenter(""); // Réinitialiser le champ de saisie
+        setCenter("");
         setErrorCenter("");
-        centerFetch(); // Recharger les centres
+        centerFetch();
       } else {
         setErrorCenter("Erreur lors de la mise à jour des centres");
       }

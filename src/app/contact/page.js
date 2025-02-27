@@ -28,7 +28,6 @@ export default function Page() {
     "RP",
   ].some((role) => roles.includes(role));
 
-  // Fonction générique pour fetch les données
   const fetchData = async (url, setter, errorMsg) => {
     try {
       const response = await fetchWithToken(url);
@@ -102,9 +101,8 @@ export default function Page() {
           {error && <p style={{ color: "red" }}>{error}</p>}
 
           <h4>Filtres:</h4>
-          {/* Filtres par centres et rôles */}
+
           <div className="list-center">
-            {/* Boucle sur les centres en excluant ceux avec l'id 14 et 15 */}
             {centers
               .filter((center) => center.id !== 14 && center.id !== 15)
               .map((center) => (
@@ -117,7 +115,6 @@ export default function Page() {
                 </div>
               ))}
 
-            {/* Boucle sur les rôles avec l'ID 4, 5, 6, ou 7 */}
             {rolesData
               .filter((role) => [4, 5, 6, 7].includes(role.id))
               .map((role) => (
@@ -131,7 +128,6 @@ export default function Page() {
               ))}
           </div>
 
-          {/* Liste des élus filtrés */}
           <div className="contact-information">
             {filteredElected.map((elected) => (
               <div className="information-elected" key={elected.id}>

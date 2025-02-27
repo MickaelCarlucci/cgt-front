@@ -42,8 +42,8 @@
     font-weight: bold;
     width: 167px;
     cursor: pointer;
-    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.2s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
     text-align: center;
 }
 
@@ -56,13 +56,13 @@
 }
 
 .button-left-part:hover {
-    transform: translateY(-4px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-4px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .button-left-part:active {
-    transform: translateY(4px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(4px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .create-poll {

@@ -118,7 +118,7 @@ export default function Page() {
     if (typeof content === "string") {
       try {
         const parsedContent = JSON.parse(content);
-        console.log(parsedContent);
+
         return parsedContent;
       } catch (error) {
         console.error("Erreur lors du parsing JSON :", error);
@@ -136,13 +136,8 @@ export default function Page() {
       {error && <p className="error">{error}</p>}
 
       <div className="container" ref={containerRef}>
-        {/* Boucle sur les documents combinés provenant de la table information et leaflet_stored */}
         {documents.map((doc) => (
           <div className="div-homepage" key={doc.id}>
-            {console.log(
-              "PDF URL:",
-              `${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`
-            )}
             <h2>{doc.title}</h2>
 
             {doc.source === "information" ? (
@@ -150,9 +145,7 @@ export default function Page() {
                 {doc.contain ? (
                   (() => {
                     const parsedContent = parseContent(doc.contain);
-                    {
-                      console.log(parseContent);
-                    }
+
                     if (parsedContent && parsedContent.blocks) {
                       return (
                         <div
@@ -178,7 +171,6 @@ export default function Page() {
                 {doc.image_url && (
                   <div className="image-container">
                     <div className="image-wrapper">
-                      {console.log("le lien de l'image est:" + doc.image_url)}
                       <Image
                         src={`${process.env.NEXT_PUBLIC_API_URL}${doc.image_url}`}
                         alt="Une image syndicaliste"
@@ -194,10 +186,6 @@ export default function Page() {
                 {doc.pdf_url ? (
                   <>
                     <div className="pdf-container">
-                      {console.log(
-                        "PDF URL:",
-                        `${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`
-                      )}
                       <PdfViewer
                         file={`${process.env.NEXT_PUBLIC_API_URL}${doc.pdf_url}`}
                       />

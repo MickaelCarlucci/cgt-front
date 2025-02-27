@@ -34,7 +34,6 @@ const authSlice = createSlice({
 
 export const { setUser, clearUser, setLoading, setError } = authSlice.actions;
 
-// Action asynchrone pour la connexion utilisateur
 export const loginUser = (email, password) => async (dispatch) => {
   dispatch(setLoading(true));
 
@@ -46,7 +45,6 @@ export const loginUser = (email, password) => async (dispatch) => {
     );
     const token = await getIdToken(userCredential.user);
 
-    // Définir le timestamp d'expiration de 24 heures
     const expirationTime = Date.now() + 24 * 60 * 60 * 1000;
     localStorage.setItem("sessionExpiration", expirationTime);
 
@@ -74,13 +72,11 @@ export const loginUser = (email, password) => async (dispatch) => {
 export const loginWithLocalStorage = () => async (dispatch) => {
   dispatch(setLoading(true));
 
-  // Recherche de l'UID dans le localStorage
   const firebaseAuthKey = Object.keys(localStorage).find((key) =>
     key.startsWith("firebase:authUser")
   );
 
   if (!firebaseAuthKey) {
-    // Si la clé n'est pas trouvée, on arrête ici
     console.warn(
       "Clé d'authentification Firebase non trouvée dans localStorage"
     );
@@ -100,7 +96,6 @@ export const loginWithLocalStorage = () => async (dispatch) => {
   }
 
   try {
-    // Requête pour récupérer les informations utilisateur avec l'UID
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/users/get-by-uid/${uid}`
     );
@@ -112,14 +107,13 @@ export const loginWithLocalStorage = () => async (dispatch) => {
     dispatch(setUser(userData.user));
   } catch (error) {
     console.error("Erreur lors du chargement de l'utilisateur :", error);
-    localStorage.removeItem(firebaseAuthKey); // Nettoyage si l'UID est invalide
+    localStorage.removeItem(firebaseAuthKey);
     dispatch(clearUser());
   } finally {
     dispatch(setLoading(false));
   }
 };
 
-// Action asynchrone pour la déconnexion utilisateur
 export const logoutUser = () => async (dispatch) => {
   dispatch(setLoading(true));
 

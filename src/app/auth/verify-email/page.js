@@ -11,7 +11,7 @@ export default function Page() {
     const handleEmailVerification = async () => {
       onAuthStateChanged(auth, async (user) => {
         if (user) {
-          await user.reload(); // Recharger l'utilisateur pour avoir son statut à jour
+          await user.reload();
           if (user.emailVerified) {
             try {
               const response = await fetch(
@@ -32,7 +32,7 @@ export default function Page() {
                   errorData
                 );
               } else {
-                router.push("/auth"); // Redirection après succès
+                router.push("/auth");
               }
             } catch (error) {
               console.error("Erreur lors de l'appel à l'API :", error);

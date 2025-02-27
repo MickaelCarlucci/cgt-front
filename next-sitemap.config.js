@@ -1,6 +1,6 @@
 const config = {
-  siteUrl: "https://cgt-teleperformance.fr",
-  generateRobotsTxt: true, // (facultatif) Génère également un fichier robots.txt
+  siteUrl: "https://cgt-tp.fr",
+  generateRobotsTxt: true,
 };
 
 module.exports = config;

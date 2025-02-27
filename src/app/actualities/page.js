@@ -3,15 +3,14 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
-import { TfiTrash } from "react-icons/tfi"; // Icone pour supprimer
-import { RiEditFill } from "react-icons/ri"; // Icone pour modifier
+import { TfiTrash } from "react-icons/tfi";
+import { RiEditFill } from "react-icons/ri";
 import { fetchWithToken } from "../utils/fetchWithToken";
 import { convertFromRaw } from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
 import Loader from "../components/Loader/Loader";
 import "./page.css";
 
-// Fonction pour convertir le contenu Draft.js brut en HTML
 const convertRawContentToHTML = (rawContent) => {
   const contentState = convertFromRaw(rawContent);
 
@@ -201,7 +200,6 @@ export default function Page() {
         }
       );
       if (response.ok) {
-        // Mettre à jour la bonne liste en fonction du type (news ou saviez-vous)
         if (type === "news") {
           setNews(news.filter((item) => item.id !== id));
         } else if (type === "didYouKnow") {
@@ -237,7 +235,7 @@ export default function Page() {
                 selectedNewsId={selectedNewsId}
                 setSelectedNewsId={setSelectedNewsId}
                 title="Dernières news"
-                type="news" // Passez le type "news"
+                type="news"
               />
             </div>
 
@@ -249,7 +247,7 @@ export default function Page() {
                 selectedNewsId={selectedNewsId}
                 setSelectedNewsId={setSelectedNewsId}
                 title="Le saviez-vous ?"
-                type="didYouKnow" // Passez le type "didYouKnow"
+                type="didYouKnow"
               />
             </div>
           </div>

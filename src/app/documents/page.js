@@ -14,7 +14,7 @@ export default function DocumentPage() {
   const [CSSCTDocuments, setCSSCTDocuments] = useState([]);
   const [utilsDocuments, setUtilsDocuments] = useState([]);
   const [error, setError] = useState(null);
-  const [activeSection, setActiveSection] = useState(null); // Nouvelle variable pour gérer la section active
+  const [activeSection, setActiveSection] = useState(null);
   const { user, loading } = useSelector((state) => state.auth);
 
   const roles = user?.roles?.split(", ") || [];
@@ -29,7 +29,6 @@ export default function DocumentPage() {
     "RP",
   ].some((role) => roles.includes(role));
 
-  // Regrouper tous les fetch dans un seul useEffect et vérifier l'authentification
   useEffect(() => {
     if (user) {
       const fetchAllDocuments = async () => {
@@ -71,7 +70,6 @@ export default function DocumentPage() {
     }
   }, [user]);
 
-  // Fonction pour basculer entre l'affichage et la fermeture des sections
   const toggleSection = (sectionName) => {
     setActiveSection(activeSection === sectionName ? null : sectionName);
   };

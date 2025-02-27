@@ -22,7 +22,6 @@ export default function ResetPasswordPage() {
     }
   }, []);
 
-  // Fonction pour envoyer l'e-mail de réinitialisation
   const handleMailSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -41,7 +40,6 @@ export default function ResetPasswordPage() {
     }
   };
 
-  // Fonction pour mettre à jour le mot de passe après avoir cliqué sur le lien de réinitialisation
   const handleNewPasswordSubmit = async (e) => {
     e.preventDefault();
     setError("");

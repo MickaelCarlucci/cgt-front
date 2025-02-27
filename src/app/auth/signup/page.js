@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { firebaseAuth } from "../../../../firebaseConfig"; // Assurez-vous que firebase-config est correctement configuré
+import { firebaseAuth } from "../../../../firebaseConfig";
 import "./page.css";
 
 export default function Page() {
@@ -25,7 +25,6 @@ export default function Page() {
   const [passwordType, setPasswordType] = useState("password");
   const router = useRouter();
 
-  // Récupération de la liste des centres
   useEffect(() => {
     const fetchCenters = async () => {
       try {
@@ -41,7 +40,6 @@ export default function Page() {
     fetchCenters();
   }, []);
 
-  // Récupération des activités liées au centre sélectionné
   useEffect(() => {
     const fetchActivities = async () => {
       if (centerId) {
@@ -70,7 +68,6 @@ export default function Page() {
     }
 
     try {
-      // Création de l'utilisateur Firebase et récupération de l'UID
       const userCredential = await createUserWithEmailAndPassword(
         firebaseAuth,
         mail,
@@ -79,7 +76,6 @@ export default function Page() {
       const firebaseUID = userCredential.user.uid;
       const user = userCredential.user;
 
-      // Envoi de l'e-mail de vérification
       await sendEmailVerification(user, {
         url: `${window.location.origin}/auth/verify-email`,
       });
@@ -88,7 +84,6 @@ export default function Page() {
         "Inscription réussie ! Un e-mail de vérification a été envoyé. Veuillez vérifier votre boîte de réception."
       );
 
-      // Enregistrement de l'utilisateur dans votre base de données
       const userData = {
         pseudo,
         firstname,
@@ -124,7 +119,6 @@ export default function Page() {
       );
       setError("");
 
-      // Redirection après succès
       setTimeout(() => {
         router.push("/auth");
       }, 3000);
@@ -186,7 +180,6 @@ export default function Page() {
           </label>
         </div>
 
-        {/* Section Mot de passe */}
         <div className="password-group">
           <div className="input-group">
             <label>
@@ -219,7 +212,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Sélection du centre */}
         <div className="input-group">
           <label>
             Sélectionnez votre centre:
@@ -240,7 +232,6 @@ export default function Page() {
           </label>
         </div>
 
-        {/* Sélection de l'activité - Affiché uniquement si un centre est sélectionné */}
         {centerId && (
           <div className="input-group">
             <label>

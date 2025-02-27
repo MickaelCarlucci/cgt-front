@@ -15,15 +15,13 @@ import "draft-js/dist/Draft.css";
 import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
-// Fonction utilitaire pour valider une URL et ajouter http si nécessaire
 const isValidUrl = (string) => {
   try {
-    // Si l'URL ne contient pas de schéma (http ou https), ajouter http:// par défaut
     if (!/^https?:\/\//i.test(string)) {
-      string = "http://" + string; // Ajouter http:// si l'URL n'a pas de schéma
+      string = "http://" + string;
     }
-    new URL(string); // Vérifier si c'est une URL valide après ajout du schéma
-    return string; // Retourner l'URL corrigée
+    new URL(string);
+    return string;
   } catch (_) {
     return false;
   }
@@ -34,12 +32,11 @@ export default function Page() {
   const [title, setTitle] = useState("");
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState("");
-  const [editorStates, setEditorStates] = useState([EditorState.createEmpty()]); // tableau d'états d'éditeurs
+  const [editorStates, setEditorStates] = useState([EditorState.createEmpty()]);
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [currentColor, setCurrentColor] = useState("#000000"); // Couleur sélectionnée
+  const [currentColor, setCurrentColor] = useState("#000000");
 
-  // Ref pour l'éditeur pour éviter le problème de "focus"
   const editorRefs = useRef([]);
 
   const roles = user?.roles?.split(", ") || [];
@@ -52,7 +49,6 @@ export default function Page() {
     const contentState = editorStates[index].getCurrentContent();
     const selection = editorStates[index].getSelection();
 
-    // Appliquer les données d'alignement au bloc sélectionné
     const newContentState = Modifier.setBlockData(contentState, selection, {
       textAlign: alignment,
     });
@@ -82,7 +78,6 @@ export default function Page() {
     }
   };
 
-  // Fonction pour appliquer des styles comme gras/italique
   const handleKeyCommand = (command, index) => {
     const newState = RichUtils.handleKeyCommand(editorStates[index], command);
     if (newState) {
@@ -92,14 +87,12 @@ export default function Page() {
     return "not-handled";
   };
 
-  // Gestion du changement de contenu pour chaque éditeur
   const handleContentChange = (index, editorState) => {
     const updatedEditorStates = [...editorStates];
     updatedEditorStates[index] = editorState;
     setEditorStates(updatedEditorStates);
   };
 
-  // Fonction pour appliquer la couleur sélectionnée au texte
   const applyColor = (index) => {
     const selection = editorStates[index].getSelection();
     const contentState = editorStates[index].getCurrentContent();
@@ -107,7 +100,7 @@ export default function Page() {
     const newContentState = Modifier.applyInlineStyle(
       contentState,
       selection,
-      `COLOR_${currentColor}` // On applique un style inline avec la couleur sélectionnée
+      `COLOR_${currentColor}`
     );
 
     const newEditorState = EditorState.push(
@@ -118,20 +111,16 @@ export default function Page() {
     handleContentChange(index, newEditorState);
   };
 
-  // Fonction pour appliquer un lien hypertexte à partir du texte sélectionné
   const applyLink = (index) => {
     const selection = editorStates[index].getSelection();
 
-    // Vérifier qu'une sélection existe
     if (!selection.isCollapsed()) {
       const url = prompt("Veuillez entrer l'URL du lien :");
 
-      // Vérifier si l'URL est valide
       const validUrl = isValidUrl(url);
       if (validUrl) {
         const contentState = editorStates[index].getCurrentContent();
 
-        // Créer l'entité de lien sur l'URL validée
         const contentStateWithLink = contentState.createEntity(
           "LINK",
           "MUTABLE",
@@ -139,14 +128,12 @@ export default function Page() {
         );
         const entityKey = contentStateWithLink.getLastCreatedEntityKey();
 
-        // Appliquer l'entité au texte sélectionné
         const newContentState = Modifier.applyEntity(
           contentState,
           selection,
           entityKey
         );
 
-        // Mettre à jour l'état de l'éditeur
         const newEditorState = EditorState.push(
           editorStates[index],
           newContentState,
@@ -161,7 +148,6 @@ export default function Page() {
     }
   };
 
-  // Fonction pour appliquer un soulignement au texte sélectionné
   const applyUnderline = (index) => {
     const newEditorState = RichUtils.toggleInlineStyle(
       editorStates[index],
@@ -170,10 +156,9 @@ export default function Page() {
     handleContentChange(index, newEditorState);
   };
 
-  // Fonction pour convertir l'état de l'éditeur en texte brut avant envoi
   const convertEditorStateToHTML = (editorState) => {
     const contentState = editorState.getCurrentContent();
-    return JSON.stringify(convertToRaw(contentState)); // Envoi au format JSON
+    return JSON.stringify(convertToRaw(contentState));
   };
 
   useEffect(() => {
@@ -205,7 +190,7 @@ export default function Page() {
     const contentsInHTML = editorStates.map((editorState) =>
       convertEditorStateToHTML(editorState)
     );
-    formData.append("contain", contentsInHTML); // Conversion en chaîne
+    formData.append("contain", contentsInHTML);
     formData.append("image", imageFile);
     formData.append("sectionId", selectedSection);
 
@@ -230,16 +215,15 @@ export default function Page() {
     }
   };
 
-  // Style personnalisé pour appliquer la couleur et le style des liens
   const customStyleMap = {
     [`COLOR_${currentColor}`]: {
-      color: currentColor, // Applique la couleur sélectionnée
+      color: currentColor,
     },
     UNDERLINE: {
-      textDecoration: "underline", // Applique le soulignement
+      textDecoration: "underline",
     },
     LINK_COLOR: {
-      color: "#1e90ff", // Applique une couleur spécifique pour les liens
+      color: "#1e90ff",
     },
   };
 
@@ -286,7 +270,6 @@ export default function Page() {
                     gap: "10px",
                   }}
                 >
-                  {/* Boutons pour Gras, Italique, etc. */}
                   <div className="editor-text">
                     <button
                       type="button"
@@ -371,12 +354,12 @@ export default function Page() {
                       cursor: "text",
                     }}
                     onClick={(e) => {
-                      e.stopPropagation(); // Empêche l'interférence avec d'autres clics
+                      e.stopPropagation();
                       editorRefs.current[index]?.focus();
-                    }} // Utilisation de ref pour gérer le focus
+                    }}
                   >
                     <Editor
-                      ref={(element) => (editorRefs.current[index] = element)} // Stocke la référence à l'éditeur
+                      ref={(element) => (editorRefs.current[index] = element)}
                       editorState={editorState}
                       onChange={(newState) =>
                         handleContentChange(index, newState)
@@ -385,11 +368,11 @@ export default function Page() {
                         handleKeyCommand(command, index)
                       }
                       blockStyleFn={blockStyleFn}
-                      customStyleMap={customStyleMap} // Appliquer les styles personnalisés
+                      customStyleMap={customStyleMap}
                       placeholder="Écrivez votre contenu ici..."
                     />
                   </div>
-                  {/* Sélecteur de couleur */}
+
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <input
                       type="color"

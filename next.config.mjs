@@ -9,9 +9,9 @@ const nextConfig = {
         pathname: "/images/**",
       },
       {
-        protocol: "https", // Utilise HTTPS pour la production
+        protocol: "https",
         hostname: "cgt-tp.fr",
-        pathname: "/images/**", // Autorise les images dans ce chemin
+        pathname: "/images/**",
       },
     ],
   },
@@ -27,8 +27,8 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/uploads/:path*", // Route vers les fichiers PDF
-        destination: "http://88.223.95.21/uploads/:path*", // Redirection vers le serveur
+        source: "/uploads/:path*",
+        destination: "http://88.223.95.21/uploads/:path*",
       },
     ];
   },

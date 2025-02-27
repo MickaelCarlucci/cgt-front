@@ -26,18 +26,18 @@ background-color: #e1d1d148;
     font-weight: bold;
     width: 167px;
     cursor: pointer;
-    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.2s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .container-add-file button:hover {
-    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-2px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .container-add-file button:active {
-    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(2px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .dark-mode .container-add-file form label {

@@ -5,69 +5,63 @@ import "pdfjs-dist/web/pdf_viewer.css";
 
 export default function PdfViewer({ file }) {
   const canvasRef = useRef(null);
-  const containerRef = useRef(null); // Référence pour le conteneur
+  const containerRef = useRef(null);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [pdfDocument, setPdfDocument] = useState(null);
   const [renderTask, setRenderTask] = useState(null);
-  const [pdfjsLib, setPdfjsLib] = useState(null); // Stocker pdfjsLib dans l'état
-  const [isRendering, setIsRendering] = useState(false); // Empêcher le rendu multiple
+  const [pdfjsLib, setPdfjsLib] = useState(null);
+  const [isRendering, setIsRendering] = useState(false);
 
-  const minScale = 1.3; // Échelle minimale pour la lisibilité
-  const defaultScale = 1.5; // Échelle par défaut si la taille le permet
+  const minScale = 1.3;
+  const defaultScale = 1.5;
 
-  // Charger pdfjsLib uniquement côté client
   useEffect(() => {
     async function loadPdfJsLib() {
       const pdfjs = await import("pdfjs-dist/webpack");
-      console.log("Chargement pdfLib first State");
+
       pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-      setPdfjsLib(pdfjs); // Stocker pdfjsLib dans l'état
+      setPdfjsLib(pdfjs);
     }
     loadPdfJsLib();
   }, []);
 
   useEffect(() => {
-    if (!pdfjsLib || !file || !containerRef.current) return; // Ne pas continuer si pdfjsLib, file, ou containerRef n'est pas prêt
+    if (!pdfjsLib || !file || !containerRef.current) return;
 
     const loadingTask = pdfjsLib.getDocument(file);
 
     loadingTask.promise.then(
       (pdf) => {
-        setPdfDocument(pdf); // Stocker le document PDF
-        console.log("pdf");
-        setNumPages(pdf.numPages); // Mettre à jour le nombre total de pages
-        console.log("loading pages", pdf.numPages);
-        setPageNumber(1); // Réinitialiser à la première page
+        setPdfDocument(pdf);
+
+        setNumPages(pdf.numPages);
+
+        setPageNumber(1);
       },
       (error) => {
         console.error("Erreur lors du chargement du PDF", error);
       }
     );
-  }, [file, pdfjsLib, containerRef]); // Attendre que pdfjsLib, file et containerRef soient prêts
+  }, [file, pdfjsLib, containerRef]);
 
-  // Fonction de rendu des pages
   const renderPage = useCallback(
     (pdf, pageNum) => {
       if (isRendering) {
-        console.log("isRendering");
-        return; // Empêche plusieurs rendus en même temps
+        return;
       }
 
-      setIsRendering(true); // Indique qu'un rendu est en cours
+      setIsRendering(true);
 
-      // Annuler la tâche de rendu précédente, si elle existe
       if (renderTask) {
-        console.log("renderTask");
-        renderTask.cancel(); // Annuler la tâche précédente
+        renderTask.cancel();
       }
 
       pdf.getPage(pageNum).then((page) => {
-        const containerWidth = containerRef.current.offsetWidth; // Obtenir la largeur du conteneur
+        const containerWidth = containerRef.current.offsetWidth;
         const viewport = page.getViewport({ scale: defaultScale });
 
-        // Calculer l'échelle dynamique en fonction de la taille du conteneur
-        const scale = Math.max(containerWidth / viewport.width, minScale); // Limiter l'échelle à minScale pour éviter que le texte ne devienne trop petit
+        const scale = Math.max(containerWidth / viewport.width, minScale);
         const scaledViewport = page.getViewport({ scale });
 
         const canvas = canvasRef.current;
@@ -80,21 +74,20 @@ export default function PdfViewer({ file }) {
           viewport: scaledViewport,
         };
 
-        // Lancer la tâche de rendu de la nouvelle page
         const task = page.render(renderContext);
-        console.log("task");
-        setRenderTask(task); // Mettre à jour la tâche de rendu dans l'état
+
+        setRenderTask(task);
 
         task.promise
           .then(() => {
-            setIsRendering(false); // Rendu terminé
-            setRenderTask(null); // Tâche terminée, la nettoyer
+            setIsRendering(false);
+            setRenderTask(null);
           })
           .catch((err) => {
             if (err.name !== "RenderingCancelledException") {
               console.error("Erreur lors du rendu de la page", err);
             }
-            setIsRendering(false); // Rendu terminé même en cas d'erreur
+            setIsRendering(false);
           });
       });
     },
@@ -102,18 +95,15 @@ export default function PdfViewer({ file }) {
   );
 
   useEffect(() => {
-    if (!pdfjsLib || !file) return; // Ne pas continuer si pdfjsLib ou file n'est pas prêt
-    console.log("📥 Tentative de chargement du PDF :", file);
+    if (!pdfjsLib || !file) return;
 
     const loadingTask = pdfjsLib.getDocument(file);
-    console.log("loadingTask");
+
     loadingTask.promise.then(
       (pdf) => {
-        console.log("✅ PDF chargé avec succès :", pdf);
-        setPdfDocument(pdf); // Stocker le document PDF
-        setNumPages(pdf.numPages); // Mettre à jour le nombre total de pages
-        setPageNumber(1); // Réinitialiser à la première page
-        console.log("loadingtask Completed");
+        setPdfDocument(pdf);
+        setNumPages(pdf.numPages);
+        setPageNumber(1);
       },
       (error) => {
         console.error(
@@ -123,24 +113,20 @@ export default function PdfViewer({ file }) {
         );
       }
     );
-  }, [file, pdfjsLib]); // Attendre que pdfjsLib et file soient prêts
+  }, [file, pdfjsLib]);
 
-  // Rendre la page lorsque le numéro de page ou le document change
   useEffect(() => {
     if (pdfDocument) {
-      renderPage(pdfDocument, pageNumber); // Rendre la page
-      console.log("rendering page");
+      renderPage(pdfDocument, pageNumber);
     }
   }, [pageNumber, pdfDocument, renderPage]);
 
-  // Fonction pour passer à la page précédente
   const goToPrevPage = () => {
     if (pageNumber > 1 && !isRendering) {
       setPageNumber((prevPage) => prevPage - 1);
     }
   };
 
-  // Fonction pour passer à la page suivante
   const goToNextPage = () => {
     if (pageNumber < numPages && !isRendering) {
       setPageNumber((prevPage) => prevPage + 1);

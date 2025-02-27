@@ -4,17 +4,17 @@
 
 .user-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 colonnes de taille égale */
-    gap: 16px; /* Espace entre les éléments */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 16px; 
     padding:0 10% 0 10%;
-    list-style: none; /* Enlever les puces des éléments de liste */
+    list-style: none; 
   }
   
   .user-grid li {
-    background-color: #f0f0f0; /* Couleur de fond des éléments de liste */
-    padding: 8px; /* Espacement interne des éléments */
-    border-radius: 4px; /* Coins arrondis */
-    text-align: center; /* Centrer le texte dans chaque élément */
+    background-color: #f0f0f0; 
+    padding: 8px; 
+    border-radius: 4px; 
+    text-align: center; 
   }
 
   .dark-mode .user-grid li {
@@ -22,12 +22,12 @@
   }
   
   .user-grid li a {
-    text-decoration: none; /* Enlever la décoration du lien */
-    color: #333; /* Couleur du texte */
+    text-decoration: none; 
+    color: #333; 
   }
   
   .user-grid li a:hover {
-    color: #d30013; /* Couleur du texte au survol */
+    color: #d30013; 
   }
 
   .centers-list {
@@ -88,7 +88,7 @@
   @media (max-width: 900px) {
     .user-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* 2 colonnes de taille égale */
+        grid-template-columns: repeat(2, 1fr); 
       }
 
   }
@@ -96,7 +96,7 @@
   @media (max-width: 400px) {
     .user-grid {
         display: grid;
-        grid-template-columns: repeat(1, 1fr); /* 1 colonne */
+        grid-template-columns: repeat(1, 1fr); 
       }
 
   }

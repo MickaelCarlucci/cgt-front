@@ -46,8 +46,8 @@
 }
 
 .contain-centers ul li {
-    display: flex; /* Utilisation de Flexbox pour aligner le texte et l'icône */
-    align-items: center; /* Centre verticalement les éléments dans le li */
+    display: flex; 
+    align-items: center; 
     justify-content: center;
     margin: 2%;
 }
@@ -65,7 +65,7 @@
     padding: 10px 20px;
     font-weight: bold;
     text-decoration: none;
-    overflow: hidden; /* Pour que l'effet de remplissage ne dépasse pas les bords */
+    overflow: hidden; 
     transition: color 0.4s ease;
 }
 
@@ -77,8 +77,8 @@
   width: 100%;
   height: 100%;
   background-color: #d30013;
-  z-index: -1; /* Derrière le texte */
-  transition: top 0.4s ease; /* Transition de la position top pour l'effet dynamique */
+  z-index: -1; 
+  transition: top 0.4s ease; 
 }
 
 .contain-centers ul li a:hover::before {
@@ -86,14 +86,14 @@
 }
 
 .contain-centers ul li a:hover {
-    color: white; /* Change la couleur du texte au survol */
+    color: white; 
 }
 
 .contain-centers ul li span {
     display: inline-block;
-  vertical-align: middle; /* Aligne l'icône au milieu du texte */
-  font-size: 1.2em; /* Ajuste la taille de l'icône */
-  margin-left: 10px; /* Optionnel : espacement entre le lien et l'icône */
+  vertical-align: middle; 
+  font-size: 1.2em; 
+  margin-left: 10px; 
 }
 
 .dark-mode .contain-centers ul li span {
@@ -116,18 +116,18 @@
     font-weight: bold;
     width: 167px;
     cursor: pointer;
-    transition: all 0.2s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.2s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
 }
 
 .contain-addCenter button:hover {
-    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-2px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .contain-addCenter button:active {
-    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(2px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .contain-activities h2 {
@@ -151,9 +151,9 @@
 
 .contain-activities span {
     display: inline-block;
-  vertical-align: middle; /* Aligne l'icône au milieu du texte */
-  font-size: 1.2em; /* Ajuste la taille de l'icône */
-  margin-left: 10px; /* Optionnel : espacement entre le lien et l'icône */
+  vertical-align: middle; 
+  font-size: 1.2em; 
+  margin-left: 10px; 
   color: #d30013;
 }
 

@@ -24,11 +24,11 @@ export default function Page() {
   const [activities, setActivities] = useState([]);
   const [passwordType, setPasswordType] = useState("password");
   const [emailUpdateRequested, setEmailUpdateRequested] = useState(false);
-  const [error, setError] = useState(""); // État pour stocker les messages d'erreur
+  const [error, setError] = useState("");
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const roles = user?.roles?.split(", ") || []; //vérifie l'état pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || [];
   const hasAccess = [
     "Admin",
     "SuperAdmin",
@@ -39,7 +39,6 @@ export default function Page() {
     "RP",
   ].some((role) => roles.includes(role));
 
-  // États pour les modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalField, setModalField] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -120,7 +119,7 @@ export default function Page() {
             }
           );
           setError("Votre email a été mis à jour avec succès.");
-          setEmailUpdateRequested(false); // Reset l'état une fois mis à jour
+          setEmailUpdateRequested(false);
         } catch (error) {
           setError(
             "Erreur lors de la mise à jour de l'email dans la base de données : " +
@@ -143,7 +142,6 @@ export default function Page() {
     return () => unsubscribe();
   }, [emailUpdateRequested, userData]);
 
-  // Mise à jour des activités lorsque le centre change
   useEffect(() => {
     const fetchActivities = async () => {
       if (modalField === "center_id" && inputValue) {
@@ -153,7 +151,7 @@ export default function Page() {
           );
           if (response.ok) {
             const data = await response.json();
-            setActivities(data); // Mettre à jour les activités en fonction du centre sélectionné
+            setActivities(data);
           } else {
             setError("Erreur lors de la récupération des activités.");
           }
@@ -176,7 +174,7 @@ export default function Page() {
 
   const openModal = (field) => {
     setModalField(field);
-    setInputValue(userData[field]); // Pré-remplir l'input avec la valeur actuelle
+    setInputValue(userData[field]);
     setAdditionalValue("");
     setPassworConfirmValue("");
     setIsModalOpen(true);
@@ -185,7 +183,7 @@ export default function Page() {
   const closeModal = () => {
     setIsModalOpen(false);
     setModalField("");
-    setError(""); // Réinitialiser l'erreur lors de la fermeture de la modal
+    setError("");
   };
 
   const getCenterName = (centerId) => {
@@ -200,9 +198,8 @@ export default function Page() {
 
   const handleSave = async () => {
     try {
-      let response = null; // Initialise response à null
+      let response = null;
 
-      // Appel API spécifique en fonction du champ modifié
       switch (modalField) {
         case "pseudo":
           response = await fetchWithToken(
@@ -262,17 +259,14 @@ export default function Page() {
             return;
           }
           try {
-            // Vérifier l'ancien mot de passe
             await signInWithEmailAndPassword(
               firebaseAuth,
               userData.mail,
               inputValue
             );
 
-            // Mettre à jour le mot de passe dans Firebase
             await updatePassword(firebaseAuth.currentUser, additionalValue);
           } catch (error) {
-            // Gère uniquement les erreurs de signInWithEmailAndPassword et updatePassword
             setError(
               "Erreur lors de la mise à jour du mot de passe : " + error.message
             );
@@ -312,7 +306,6 @@ export default function Page() {
 
         case "delete":
           try {
-            // Supprimer l'utilisateur de la base de données
             response = await fetchWithToken(
               `${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.id}/delete`,
               {
@@ -322,11 +315,9 @@ export default function Page() {
               }
             );
 
-            // Supprimer l'utilisateur de Firebase
             await deleteUser(firebaseAuth.currentUser);
 
             if (response?.ok) {
-              // Vérifiez que response est défini avant de vérifier ok
               dispatch(logoutUser());
               router.push("/auth");
               return;
@@ -344,34 +335,31 @@ export default function Page() {
           return;
       }
 
-      // Vérifiez que response n'est pas null avant d'accéder à response.ok
       if (response && !response.ok) {
         const contentType = response.headers.get("content-type");
 
         if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json(); // Récupérer l'erreur renvoyée par l'API
+          const errorData = await response.json();
           throw new Error(
             errorData.error || "Erreur lors de la sauvegarde des modifications."
           );
         } else {
-          // Si la réponse n'est pas du JSON, créer un message d'erreur générique
           throw new Error("Le format attendu n'est pas correct.");
         }
       }
 
-      // Mettre à jour les données utilisateur après modification
       setUserData((prevData) => ({
         ...prevData,
         [modalField]: inputValue,
       }));
 
-      closeModal(); // Fermer la modal après la sauvegarde
+      closeModal();
     } catch (error) {
-      setError(error.message); // Stocker le message d'erreur dans l'état
+      setError(error.message);
     }
   };
 
-  if (loading) return <Loader />; // Afficher un message de chargement si l'utilisateur n'est pas encore défini
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -469,7 +457,6 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Modal pour modifier un champ */}
               {(modalField !== "password" ||
                 modalField !== "center_id" ||
                 modalField !== "activity_id") && (
@@ -497,7 +484,7 @@ export default function Page() {
                 >
                   {error && <p style={{ color: "red" }}>{error}</p>}
                   <select
-                    value={inputValue} // Assurez-vous que inputValue correspond bien à l'ID du centre sans affichage direct
+                    value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     required
                   >
@@ -522,7 +509,7 @@ export default function Page() {
                 >
                   {error && <p style={{ color: "red" }}>{error}</p>}
                   <select
-                    value={inputValue} // Assurez-vous que inputValue correspond bien à l'ID du centre sans affichage direct
+                    value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     required
                   >

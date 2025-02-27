@@ -11,22 +11,20 @@ import "./page.css";
 export default function Page() {
   const { user, loading } = useSelector((state) => state.auth);
   const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState([""]); // On initialise avec une option vide
-  const [polls, setPolls] = useState([]); // Tableau vide pour stocker les sondages
+  const [options, setOptions] = useState([""]);
+  const [polls, setPolls] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const roles = user?.roles?.split(", ") || [];
   const userId = user?.id;
 
-  // Fonction pour ajouter une nouvelle option
   const addOption = () => {
-    setOptions([...options, ""]); // Ajoute une nouvelle option vide
+    setOptions([...options, ""]);
   };
 
   const hasAccess = ["Admin", "SuperAdmin", "Moderateur"].some((role) =>
     roles.includes(role)
   );
 
-  // useEffect pour récupérer les sondages
   useEffect(() => {
     async function fetchPolls() {
       try {
@@ -47,24 +45,20 @@ export default function Page() {
     }
   }, [user, userId]);
 
-  // Fonction pour supprimer une option
   const removeOption = (index) => {
-    const newOptions = options.filter((_, i) => i !== index); // Retirer l'option d'index donné
+    const newOptions = options.filter((_, i) => i !== index);
     setOptions(newOptions);
   };
 
-  // Fonction pour mettre à jour une option
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
   };
 
-  // Gestion de la soumission du formulaire
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche la soumission par défaut
+    e.preventDefault();
 
-    // Envoie les données à l'API route
     const response = await fetchWithToken(
       `${process.env.NEXT_PUBLIC_API_URL}/api/poll/newPoll`,
       {
@@ -74,7 +68,7 @@ export default function Page() {
         },
         body: JSON.stringify({
           question,
-          options: options.filter((option) => option.trim() !== ""), // Ne garde que les options non vides
+          options: options.filter((option) => option.trim() !== ""),
         }),
       }
     );
@@ -82,18 +76,15 @@ export default function Page() {
     if (response.ok) {
       const data = await response.json();
 
-      // Réinitialisation du formulaire après succès
-      setQuestion(""); // Remettre la question à zéro
-      setOptions([""]); // Remettre une seule option vide
+      setQuestion("");
+      setOptions([""]);
 
-      // Mettre à jour la liste des sondages après création
       setPolls([...polls, data]);
     } else {
       console.error("Erreur lors de la création du sondage");
     }
   };
 
-  // Fonction pour supprimer un sondage
   const handleDelete = async (pollId) => {
     try {
       const response = await fetchWithToken(
@@ -104,7 +95,6 @@ export default function Page() {
       );
 
       if (response.ok) {
-        // Mettre à jour la liste des sondages après suppression
         setPolls(polls.filter((poll) => poll.id !== pollId));
       } else {
         console.error("Erreur lors de la suppression du sondage");

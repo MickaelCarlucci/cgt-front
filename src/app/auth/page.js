@@ -16,11 +16,10 @@ export default function Page() {
   const dispatch = useDispatch();
   const { user, error } = useSelector((state) => state.auth);
 
-  // Cette fonction est appelée après la connexion réussie pour afficher le toast
   useEffect(() => {
     if (user) {
       toast.success(`Bienvenue ${user.pseudo}`);
-      router.push("/"); // Rediriger l'utilisateur après connexion
+      router.push("/");
     } else if (error) {
       toast.error(error);
     }
@@ -48,17 +47,21 @@ export default function Page() {
           />
         </div>
         <div className="input-group-signin">
-  <input
-    type={passwordType}
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    className="input-password"
-    placeholder="Mot de passe"
-  />
-  <span className="icon-visibility" onClick={togglePasswordVisibility}>
-    {passwordType === "password" ? <MdVisibility /> : <MdVisibilityOff />}
-  </span>
-</div>
+          <input
+            type={passwordType}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-password"
+            placeholder="Mot de passe"
+          />
+          <span className="icon-visibility" onClick={togglePasswordVisibility}>
+            {passwordType === "password" ? (
+              <MdVisibility />
+            ) : (
+              <MdVisibilityOff />
+            )}
+          </span>
+        </div>
         <button className="button-signin" type="submit">
           Connexion
         </button>

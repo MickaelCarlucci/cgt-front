@@ -8,13 +8,12 @@ import { FaBars, FaTimes } from "react-icons/fa";
 export default function AdminNav() {
   const { user } = useSelector((state) => state.auth);
   const [menuOpen, setMenuOpen] = useState(false);
-  const roles = user?.roles?.split(", ") || []; // vérifie l'état de session pour ne pas afficher d'erreur
+  const roles = user?.roles?.split(", ") || [];
 
   if (!user) {
-    return null; // Ne rien retourner pour les utilisateurs non authentifiés
+    return null;
   }
 
-  // Vérifier les droits
   const hasAccess =
     roles.includes("Admin") ||
     roles.includes("SuperAdmin") ||
@@ -24,15 +23,13 @@ export default function AdminNav() {
     roles.includes("CSSCT") ||
     roles.includes("RP");
 
-  // Fonction pour fermer le menu après clic sur un lien
   const handleLinkClick = () => {
-    setMenuOpen(false); // Fermer le menu après clic
+    setMenuOpen(false);
   };
 
   return (
     <div className={`navAdmin ${!hasAccess ? "hidden" : ""}`}>
       {" "}
-      {/* Ajouter la classe 'hidden' si pas d'accès */}
       <button
         className="menu-toggle-admin"
         onClick={() => setMenuOpen(!menuOpen)}
@@ -40,14 +37,14 @@ export default function AdminNav() {
         {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
       </button>
       <nav className={`navbar-admin ${menuOpen ? "open" : ""}`}>
+        {roles.includes("Admin") || roles.includes("SuperAdmin") ? (
+          <>
+            <Link href="/admin" onClick={handleLinkClick}>
+              Gérer les utilisateurs
+            </Link>
+          </>
+        ) : null}
 
-        {roles.includes("Admin") || 
-        roles.includes("SuperAdmin") ? (
-          <><Link href="/admin" onClick={handleLinkClick}>
-          Gérer les utilisateurs
-        </Link></>
-        ): null }
-        
         {roles.includes("Admin") ||
         roles.includes("SuperAdmin") ||
         roles.includes("Moderateur") ? (

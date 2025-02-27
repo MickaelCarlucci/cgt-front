@@ -1,9 +1,8 @@
-import "./modal.css"; // Ajoute des styles pour la modal
+import "./modal.css";
 
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
-  // Fonction pour gérer le clic à l'extérieur de la modal
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains("modal-overlay")) {
       onClose();

@@ -26,8 +26,8 @@
     font-weight: bold;
     background-color: #d30013;
     cursor: pointer;
-    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.4s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
 }
 
 .dark-mode .form-update-header button {
@@ -36,13 +36,13 @@
 }
 
 .form-update-header button:hover {
-    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-2px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .form-update-header button:active {
-    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(2px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .dark-mode .h3-contain-update {
@@ -58,8 +58,8 @@
     border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.4s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
 }
 
 .dark-mode .editor-text-id {
@@ -67,8 +67,8 @@
 }
 
 .editor-text-id:hover {
-    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-2px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
     background-color: #d30013;
     color: rgb(255, 255, 255);
 }
@@ -78,8 +78,8 @@
 }
 
 .editor-text-id:active {
-    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(2px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }
 
 .text-news-contain {
@@ -87,7 +87,7 @@
 }
 
 .centered-block {
-    text-align: center; /* Centre le texte dans les blocs Draft.js */
+    text-align: center; 
   }
 
 .button-save-update {
@@ -96,8 +96,8 @@
     font-weight: bold;
     background-color: #d30013;
     cursor: pointer;
-    transition: all 0.4s ease; /* Ajoute une transition pour rendre l'animation fluide */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre initiale */
+    transition: all 0.4s ease; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
 }
 
 .dark-mode .button-save-update {
@@ -105,11 +105,11 @@
 }
 
 .button-save-update:hover {
-    transform: translateY(-2px); /* Simule un déplacement vertical vers le bas */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Réduit l'ombre pour donner l'impression que le bouton est enfoncé */
+    transform: translateY(-2px); 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); 
 }
 
 .button-save-update:active {
-    transform: translateY(2px); /* Bouton encore plus enfoncé lorsqu'il est cliqué */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); /* Ombre réduite pour un effet de bouton appuyé */
+    transform: translateY(2px); 
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); 
 }

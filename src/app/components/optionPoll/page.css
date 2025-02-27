@@ -21,17 +21,17 @@
 }
 
 .option-container button {
-    width: 200px; /* Largeur fixe pour les boutons */
-    height: 50px; /* Hauteur fixe pour les boutons */
-    box-sizing: border-box; /* S'assure que le padding est inclus dans la largeur/hauteur */
+    width: 200px; 
+    height: 50px; 
+    box-sizing: border-box; 
     padding: 10px;
-    font-size: 16px; /* Taille de la police */
-    text-align: center; /* Centrer le texte dans le bouton */
-    border: 1px solid #ccc; /* Ajoute une bordure légère */
+    font-size: 16px; 
+    text-align: center; 
+    border: 1px solid #ccc; 
     border-radius: 5px;
-    background-color: #f0f0f0; /* Couleur de fond */
-    cursor: pointer; /* Change le curseur pour un bouton */
-    transition: background-color 0.3s ease; /* Animation douce pour changement de couleur */
+    background-color: #f0f0f0; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
     animation: fadeIn 3s ease-in-out;
 }
 
@@ -39,11 +39,11 @@
     border: 1px solid #2f2f2f;
     background-color: #2f2f2f;
     color: rgb(246, 244, 236);
-    transition: all 0.3s ease; /* Animation douce pour changement de couleur */
+    transition: all 0.3s ease; 
 }
 
 .option-container button:hover {
-    background-color: #e0e0e0; /* Changement de couleur au survol */
+    background-color: #e0e0e0; 
 }
 
 .dark-mode .option-container button:hover {

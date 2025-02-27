@@ -10,7 +10,7 @@
   max-width: 100%;
   width: 50%;
   text-align: center;
-  padding: 20px; /* Ajout de padding pour un meilleur rendu */
+  padding: 20px; 
 }
 
 .dark-mode .login-container-signin {
@@ -20,14 +20,14 @@
 .login-form-signin {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centre tous les éléments horizontalement */
+  align-items: center; 
   width: 100%;
 }
 
 .heading-signin {
   color: black;
   font-weight: 500;
-  font-size: 2rem; /* Taille adaptative */
+  font-size: 2rem; 
   margin-bottom: 20px;
 }
 
@@ -39,7 +39,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center; /* Centre le contenu horizontalement */
+  justify-content: center; 
   width: 100%; 
   margin: 10px;
   margin-bottom: 20px;
@@ -52,7 +52,7 @@
   font-size: 1rem;
   border-radius: 8px;
   color: #979797;
-  width: 70%; /* Passe à 100% pour s'adapter */
+  width: 70%; 
   box-shadow: rgb(136 136 136 / 17%) 0px -23px 25px 0px inset,
     rgb(81 81 81 / 23%) 0px -36px 30px 0px inset,
     rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
@@ -72,13 +72,13 @@
   font-size: 1rem;
   border-radius: 8px;
   color: #979797;
-  width: 70%; /* Définit une largeur spécifique */
-  padding-right: 40px; /* Ajoute un espace pour l'icône */
+  width: 70%; 
+  padding-right: 40px; 
 }
 
 .icon-visibility {
   position: absolute;
-  right: calc(15% + 10px); /* Place l'icône en fonction de la largeur de l'input */
+  right: calc(15% + 10px); 
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -92,7 +92,7 @@
 }
 
 .button-signin {
-  padding: 10px 20px; /* Ajustement du padding */
+  padding: 10px 20px; 
   border: none;
   border-radius: 8px;
   background-color: #979797;
@@ -102,7 +102,7 @@
     rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
     rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
   color: black;
-  width: 70%; /* Largeur adaptative */
+  width: 70%; 
   margin: 0 auto;
   font-size: 1rem;
   font-weight: 500;
@@ -120,7 +120,7 @@
   align-items: center;
   margin-top: 20px;
   color: black;
-  font-size: 0.9rem; /* Taille plus petite */
+  font-size: 0.9rem; 
   font-weight: 400;
 }
 
@@ -139,7 +139,7 @@
   color: #9a000d;
 }
 
-/* Media queries pour le rendu responsive */
+
 @media (max-width: 768px) {
 
 .heading-signin {

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
-import './page.css';
+import "./page.css";
 
 const PollResults = ({ pollId }) => {
   const [results, setResults] = useState([]);
@@ -8,11 +8,16 @@ const PollResults = ({ pollId }) => {
   useEffect(() => {
     async function fetchResults() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/poll/${pollId}/options`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/poll/${pollId}/options`
+        );
         const data = await response.json();
         setResults(data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des résultats du sondage:", error);
+        console.error(
+          "Erreur lors de la récupération des résultats du sondage:",
+          error
+        );
       }
     }
 
@@ -26,14 +31,20 @@ const PollResults = ({ pollId }) => {
       <h2>Résultats du sondage</h2>
       <ul>
         {results.map((result) => {
-          const percentage = totalVotes > 0 ? (result.vote / totalVotes) * 100 : 0;
+          const percentage =
+            totalVotes > 0 ? (result.vote / totalVotes) * 100 : 0;
           return (
             <li key={result.id}>
               <div className="result-item">
-                <span>{result.option}: {result.vote} vote{result.vote > 1 ? "s" : ""} ({percentage.toFixed(2)}%)</span>
+                <span>
+                  {result.option}: {result.vote} vote
+                  {result.vote > 1 ? "s" : ""} ({percentage.toFixed(2)}%)
+                </span>
                 <div className="bar-container">
-                  {/* La barre prend le pourcentage et l'animation démarre */}
-                  <div className="bar" style={{ '--bar-width': `${percentage}%` }}></div>
+                  <div
+                    className="bar"
+                    style={{ "--bar-width": `${percentage}%` }}
+                  ></div>
                 </div>
               </div>
             </li>

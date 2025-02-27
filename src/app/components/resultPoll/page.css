@@ -35,8 +35,8 @@
   .bar {
     background-color: #d30013;
     height: 100%;
-    width: 0; /* La largeur commence à 0 pour l'animation */
-    animation: growBar 1.5s forwards ease-in-out; /* Animation qui grandit la barre */
+    width: 0; 
+    animation: growBar 1.5s forwards ease-in-out; 
   }
   
   @keyframes growBar {
@@ -44,7 +44,7 @@
       width: 0;
     }
     to {
-      width: var(--bar-width); /* Utilisation de la variable CSS pour la largeur */
+      width: var(--bar-width); 
     }
   }
   

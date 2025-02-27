@@ -16,7 +16,6 @@ import Link from "next/link";
 import Loader from "@/app/components/Loader/Loader";
 import "./page.css";
 
-// Fonction utilitaire pour valider une URL et ajouter http si nécessaire
 const isValidUrl = (string) => {
   try {
     if (!/^https?:\/\//i.test(string)) {
@@ -74,7 +73,6 @@ export default function EditNewsPage() {
     }
   }, [newsId, user]);
 
-  // Fonction pour mettre à jour uniquement le titre
   const handleTitleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -106,7 +104,6 @@ export default function EditNewsPage() {
     }
   };
 
-  // Fonction pour mettre à jour uniquement le contenu
   const handleContentSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -146,13 +143,11 @@ export default function EditNewsPage() {
     setEditorState(newEditorState);
   };
 
-  // Appliquer les styles gras, italique, souligné
   const applyInlineStyle = (style) => {
     const newEditorState = RichUtils.toggleInlineStyle(editorState, style);
     setEditorState(newEditorState);
   };
 
-  // Appliquer un lien hypertexte
   const applyLink = () => {
     const selection = editorState.getSelection();
 
@@ -226,7 +221,6 @@ export default function EditNewsPage() {
           {error && <p style={{ color: "red" }}>{error}</p>}
           {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
 
-          {/* Formulaire pour le titre */}
           <form className="form-update-header" onSubmit={handleTitleSubmit}>
             <label>Titre de la news:</label>
             <input
@@ -245,11 +239,9 @@ export default function EditNewsPage() {
             </button>
           </form>
 
-          {/* Formulaire pour le contenu */}
           <form onSubmit={handleContentSubmit} style={{ marginTop: "20px" }}>
             <div style={{ margin: "20px 0" }}>
               <h3 className="h3-contain-update">Contenu de la news:</h3>
-              {/* Barre d'outils */}
               <div className="editor-buttons">
                 <button
                   className="editor-text-id"
@@ -299,7 +291,6 @@ export default function EditNewsPage() {
                 </button>
               </div>
 
-              {/* Éditeur de contenu */}
               <div
                 className="text-news-contain"
                 style={{

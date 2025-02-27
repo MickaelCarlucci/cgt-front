@@ -96,10 +96,10 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1100; /* Assure que l'icône reste toujours au-dessus du menu */
+  z-index: 1100; 
 }
 
-/* mode jour-nuit */ 
+
 .switch {
   position: relative;
   display: inline-block;
@@ -155,12 +155,12 @@ input:checked+.slider:before {
   background: rgb(246, 244, 236);
 }
 
-/* Responsive styles pour les écrans de moins de 900px */
+
 @media (max-width: 900px) {
   .navbar-with-img {
     display: flex;
     justify-content: space-between;
-    padding: 10px; /* Ajoute un peu de padding pour positionner correctement le contenu */
+    padding: 10px; 
   }
 
   .image-navbar {
@@ -173,7 +173,7 @@ input:checked+.slider:before {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 250px; /* Ajuste la largeur du menu pour le mobile */
+    width: 250px; 
     background-color: white;
     flex-direction: column;
     align-items: flex-start;
@@ -190,15 +190,15 @@ input:checked+.slider:before {
   }
 
   .navbar.open {
-    right: 0; /* Le menu se déplace à droite lors de l'ouverture */
+    right: 0; 
   }
 
   .menu-toggle {
     display: block;
     position: fixed;
     top: 10px;
-    right: 20px; /* Positionne l'icône dans le coin supérieur droit */
-    z-index: 1100; /* Assure que le bouton de menu est toujours visible */
+    right: 20px; 
+    z-index: 1100;
   }
 
   .dark-mode .menu-toggle {
@@ -208,7 +208,7 @@ input:checked+.slider:before {
   .navbar a
    {
     font-size: 1.4rem;
-    color: black; /* Change la couleur du texte des liens en blanc pour mobile */
+    color: black; 
   }
 
   .navbar button {
