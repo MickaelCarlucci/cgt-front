@@ -16,14 +16,6 @@ const nextConfig = {
     ],
   },
 
-  experimental: {
-    metadata: {
-      icons: {
-        icon: "/favicon.ico",
-      },
-    },
-  },
-
   async rewrites() {
     return [
       {
