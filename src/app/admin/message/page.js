@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import { fetchWithToken } from "../../utils/fetchWithToken";
+import { useRouter } from "next/navigation";
 import {
   Editor,
   EditorState,
@@ -50,36 +51,34 @@ export default function Page() {
   const applyBlockAlignment = (index, alignment) => {
     const contentState = editorStates[index].getCurrentContent();
     const selection = editorStates[index].getSelection();
-  
+
     // Appliquer les données d'alignement au bloc sélectionné
-    const newContentState = Modifier.setBlockData(
-      contentState,
-      selection,
-      { textAlign: alignment }
-    );
-  
+    const newContentState = Modifier.setBlockData(contentState, selection, {
+      textAlign: alignment,
+    });
+
     const newEditorState = EditorState.push(
       editorStates[index],
       newContentState,
-      'change-block-data'
+      "change-block-data"
     );
-  
+
     handleContentChange(index, newEditorState);
   };
 
   const blockStyleFn = (contentBlock) => {
-    const textAlign = contentBlock.getData().get('textAlign');
+    const textAlign = contentBlock.getData().get("textAlign");
     switch (textAlign) {
-      case 'left':
-        return 'align-left';
-      case 'center':
-        return 'align-center';
-      case 'right':
-        return 'align-right';
-      case 'justify':
-        return 'align-justify';
+      case "left":
+        return "align-left";
+      case "center":
+        return "align-center";
+      case "right":
+        return "align-right";
+      case "justify":
+        return "align-justify";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -197,6 +196,7 @@ export default function Page() {
     }
   }, [user, userId]);
 
+  const router = useRouter();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -224,10 +224,7 @@ export default function Page() {
         return;
       }
 
-      setTitle("");
-      setEditorStates([EditorState.createEmpty()]); // Réinitialiser les éditeurs
-      setImageFile(null);
-      setError("");
+      router.push("/");
     } catch (error) {
       setError("Erreur lors de la soumission.");
     }
@@ -291,34 +288,34 @@ export default function Page() {
                 >
                   {/* Boutons pour Gras, Italique, etc. */}
                   <div className="editor-text">
-                  <button
-    type="button"
-    onClick={() => applyBlockAlignment(index, 'left')}
-    style={{ padding: "5px 10px", marginRight: "5px" }}
-  >
-    Aligner à gauche
-  </button>
-  <button
-    type="button"
-    onClick={() => applyBlockAlignment(index, 'center')}
-    style={{ padding: "5px 10px", marginRight: "5px" }}
-  >
-    Centrer
-  </button>
-  <button
-    type="button"
-    onClick={() => applyBlockAlignment(index, 'right')}
-    style={{ padding: "5px 10px", marginRight: "5px" }}
-  >
-    Aligner à droite
-  </button>
-  <button
-    type="button"
-    onClick={() => applyBlockAlignment(index, 'justify')}
-    style={{ padding: "5px 10px", marginRight: "5px" }}
-  >
-    Justifier
-  </button>
+                    <button
+                      type="button"
+                      onClick={() => applyBlockAlignment(index, "left")}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Aligner à gauche
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyBlockAlignment(index, "center")}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Centrer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyBlockAlignment(index, "right")}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Aligner à droite
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyBlockAlignment(index, "justify")}
+                      style={{ padding: "5px 10px", marginRight: "5px" }}
+                    >
+                      Justifier
+                    </button>
                     <button
                       type="button"
                       onClick={() =>

@@ -85,6 +85,10 @@
         left: 100px;
     }
 
+    .navbar-admin.open a {
+        margin: auto;
+    }
+
     .menu-toggle-admin {
         display: block;
     }

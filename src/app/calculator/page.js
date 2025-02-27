@@ -125,8 +125,8 @@ export default function Page() {
               <input type="number" id="salariesBrut" step="0.01" required />
             </td>
           </tr>
-          <tr>
-            <td>
+          {/*<tr>
+             <td>
               <label>Salarié RQTH :</label>
             </td>
             <td>
@@ -137,6 +137,7 @@ export default function Page() {
               />
             </td>
           </tr>
+            */}
           <tr>
             <td>
               <label>Date de naissance :</label>

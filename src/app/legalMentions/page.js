@@ -26,10 +26,11 @@ export default function Page() {
         <p>mail: compliance@hostinger.com</p>
       </div>
       <div>
-        Les contenus du site <span className="bold">cgt-teleperformance.fr</span> (textes, images, logos,
-        etc.) sont la propriété exclusive du Syndicat CGT de l&apos;entreprise
-        Teteperformance. Toute reproduction totale ou partielle de ces éléments
-        est interdite sans l&apos;autorisation préalable du syndicat.
+        Les contenus du site <span className="bold">cgt-tp.fr</span> (textes,
+        images, logos, etc.) sont la propriété exclusive du Syndicat CGT de
+        l&apos;entreprise Teleperformance. Toute reproduction totale ou
+        partielle de ces éléments est interdite sans l&apos;autorisation
+        préalable du syndicat.
       </div>
       <div>
         <p className="bold underline">Protection des données personnelles :</p>
