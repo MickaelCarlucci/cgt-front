@@ -13,7 +13,21 @@
     background-color: rgba(107, 103, 103, 0.5);
     color: rgb(246, 244, 236)
   }
-  
+
+  .table-calculator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2%;
+  }
+
+  .selector-calculator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1%;
+  }
+
   h1 {
     text-align: center;
   }
@@ -24,15 +38,29 @@
     margin-top: 20px;
   }
   
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+
+  .button-calculator {
+    margin: auto;
+  }
+
+  .result-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2%;
   }
   
   .result-net {
     color: green;
     font-weight: bold;
+  }
+
+  .little-mention-calculator {
+    margin-top: 2%;
+  }
+
+  .little-mention-calculator p {
+    font-size: 0.8rem;
   }
 
   .dedicace {

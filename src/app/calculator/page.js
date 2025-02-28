@@ -3,114 +3,82 @@
 import { useState } from "react";
 import "./page.css";
 
-export default function Page() {
-  const [resultat, setResultat] = useState(null);
-  const [rqth, setRqth] = useState(false);
-  const [mutuelle, setMutuelle] = useState(0);
+export default function Calculateur() {
+  const [formData, setFormData] = useState({
+    status: "",
+    salariesBrut: "",
+    rqth: false,
+    dateNaissance: "",
+    dateAnciennete: "",
+    dateDepart: "",
+  });
+  const [result, setResult] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
   const calculerIndemnite = () => {
-    const status = document.getElementById("status").value;
-    const salariesBrut = parseFloat(
-      document.getElementById("salariesBrut").value
-    );
-    const dateNaissance = new Date(
-      document.getElementById("dateNaissance").value
-    );
-    const dateAnciennete = new Date(
-      document.getElementById("dateAnciennete").value
-    );
-    const dateDepart = new Date(document.getElementById("dateDepart").value);
-
-    let anciennete = dateDepart.getFullYear() - dateAnciennete.getFullYear();
+    const { status, salariesBrut, dateAnciennete, dateDepart, dateNaissance } =
+      formData;
     if (
-      dateDepart.getMonth() < dateAnciennete.getMonth() ||
-      (dateDepart.getMonth() === dateAnciennete.getMonth() &&
-        dateDepart.getDate() < dateAnciennete.getDate())
+      !status ||
+      !salariesBrut ||
+      !dateAnciennete ||
+      !dateDepart ||
+      !dateNaissance
     ) {
-      anciennete--;
+      alert("Veuillez remplir tous les champs");
+      return;
     }
 
-    const salaireReference = salariesBrut / 12;
-    let indemniteLegale = 0;
+    const salaireRef = salariesBrut / 12;
+    const dateAnc = new Date(dateAnciennete);
+    const dateDep = new Date(dateDepart);
+    const anciennete = dateDep.getFullYear() - dateAnc.getFullYear();
+    const age =
+      new Date().getFullYear() - new Date(dateNaissance).getFullYear();
 
-    if (status === "non_cadres") {
-      indemniteLegale += Math.min(10, anciennete) * (salaireReference * 0.25);
-      indemniteLegale +=
-        Math.max(0, anciennete - 10) * (salaireReference * (1 / 3));
-    } else {
-      indemniteLegale +=
-        Math.min(5, anciennete) * (salaireReference * (3 / 10));
-      indemniteLegale +=
-        Math.min(5, Math.max(0, anciennete - 5)) *
-        (salaireReference * (4 / 10));
-      indemniteLegale +=
-        Math.min(5, Math.max(0, anciennete - 10)) *
-        (salaireReference * (5 / 10));
-      indemniteLegale +=
-        Math.max(0, anciennete - 15) * (salaireReference * (6 / 10));
-    }
-
-    const age = Math.floor(
-      (dateDepart - dateNaissance) / (1000 * 60 * 60 * 24 * 365)
-    );
-    if (age >= 50 && age < 55) indemniteLegale *= 1.1;
-    else if (age >= 55) indemniteLegale *= 1.25;
-
-    const montantSpecifiqueParAnnee = 3000;
-    let indemniteSpecifique = anciennete * montantSpecifiqueParAnnee;
-    const plafond = age >= 58 ? 90000 : 70000;
+    let indemniteLegale = anciennete * (salaireRef * 0.25);
+    let indemniteSpecifique = anciennete * 3000;
     let montantTotal = indemniteLegale + indemniteSpecifique;
-    let isPlafonne = false;
+    const plafond = 70000;
+    if (montantTotal > plafond) montantTotal = plafond;
+    const montantNetTotal = montantTotal * 0.927;
+    const allocationBrute = salaireRef * 0.75;
+    const allocationNette = allocationBrute * 0.933;
 
-    if (montantTotal > plafond) {
-      indemniteSpecifique = plafond - indemniteLegale;
-      montantTotal = plafond;
-      isPlafonne = true;
-    }
-
-    let allocationMensuelleBrute = salaireReference * 0.75;
-    const allocationMinimale = 1801.8 * 0.85;
-    if (allocationMensuelleBrute < allocationMinimale) {
-      allocationMensuelleBrute = allocationMinimale;
-    }
-
-    let allocationMensuelleNette =
-      allocationMensuelleBrute * (1 - 0.067) - mutuelle;
-    let dispositionRQTH = rqth ? indemniteLegale : 0;
-    const montantNetTotal =
-      indemniteLegale +
-      dispositionRQTH +
-      (montantTotal - indemniteLegale) * 0.903;
-
-    setResultat({
+    setResult({
       anciennete,
       age,
-      salaireReference,
-      plafond,
+      salaireRef,
       indemniteLegale,
       indemniteSpecifique,
       montantTotal,
       montantNetTotal,
-      allocationMensuelleBrute,
-      allocationMensuelleNette,
-      dispositionRQTH,
-      isPlafonne,
+      allocationBrute,
+      allocationNette,
+      plafond,
     });
   };
 
   return (
     <div className="container-calculator">
       <h1>Calculateur d&apos;Indemnité</h1>
-      <p>Les informations saisies ne sont pas conservées.</p>
-
       <table className="table-calculator">
         <tbody>
           <tr>
+            <td>Statut :</td>
             <td>
-              <label>Statut :</label>
-            </td>
-            <td>
-              <select id="status" required>
+              <select
+                name="status"
+                onChange={handleChange}
+                value={formData.status}
+              >
                 <option value="">Sélectionnez</option>
                 <option value="non_cadres">Non Cadres</option>
                 <option value="cadres">Cadres</option>
@@ -118,83 +86,136 @@ export default function Page() {
             </td>
           </tr>
           <tr>
-            <td>
-              <label>Salaire Annuel Brut (€) :</label>
-            </td>
-            <td>
-              <input type="number" id="salariesBrut" step="0.01" required />
-            </td>
-          </tr>
-          {/*<tr>
-             <td>
-              <label>Salarié RQTH :</label>
-            </td>
+            <td>Salaire Annuel Brut (€) :</td>
             <td>
               <input
-                type="checkbox"
-                checked={rqth}
-                onChange={() => setRqth(!rqth)}
+                type="number"
+                name="salariesBrut"
+                onChange={handleChange}
+                value={formData.salariesBrut}
               />
             </td>
           </tr>
-            */}
           <tr>
+            <td>Date de naissance :</td>
             <td>
-              <label>Date de naissance :</label>
-            </td>
-            <td>
-              <input type="date" id="dateNaissance" required />
+              <input
+                type="date"
+                name="dateNaissance"
+                onChange={handleChange}
+                value={formData.dateNaissance}
+              />
             </td>
           </tr>
           <tr>
+            <td>Date d&apos;ancienneté :</td>
             <td>
-              <label>Date d&apos;ancienneté :</label>
-            </td>
-            <td>
-              <input type="date" id="dateAnciennete" required />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Date de départ :</label>
-            </td>
-            <td>
-              <input type="date" id="dateDepart" required />
+              <input
+                type="date"
+                name="dateAnciennete"
+                onChange={handleChange}
+                value={formData.dateAnciennete}
+              />
             </td>
           </tr>
           <tr>
-            <td colSpan="2">
-              <button onClick={calculerIndemnite}>Calculer</button>
+            <td>Date de départ prévisible :</td>
+            <td>
+              <input
+                type="date"
+                name="dateDepart"
+                onChange={handleChange}
+                value={formData.dateDepart}
+              />
             </td>
           </tr>
         </tbody>
       </table>
-
-      {resultat && (
-        <div className="result-table">
-          <h2>Résultats :</h2>
-          <p>Votre ancienneté : {resultat.anciennete} ans</p>
-          <p>Indemnité légale : {resultat.indemniteLegale.toFixed(2)} €</p>
-          <p>
-            Indemnité spécifique : {resultat.indemniteSpecifique.toFixed(2)} €
-          </p>
-          <p>
-            Montant Total Estimé : {resultat.montantTotal.toFixed(2)} €{" "}
-            {resultat.isPlafonne ? "(plafonné)" : ""}
-          </p>
-          <p className="result-net">
-            Montant net (après CSG/CRDS) : {resultat.montantNetTotal.toFixed(2)}{" "}
-            €
-          </p>
-          <p className="result-net">
-            Allocation mensuelle nette :{" "}
-            {resultat.allocationMensuelleNette.toFixed(2)} €
-          </p>
-        </div>
+      <button type="button" onClick={calculerIndemnite}>
+        Calculer
+      </button>
+      {result && (
+        <table className="result-table">
+          <tbody>
+            <tr>
+              <th colSpan="2">INFORMATIONS GÉNÉRALES</th>
+            </tr>
+            <tr>
+              <td>Votre ancienneté :</td>
+              <td>{result.anciennete} ans</td>
+            </tr>
+            <tr>
+              <td>Votre âge au départ :</td>
+              <td>{result.age} ans</td>
+            </tr>
+            <tr>
+              <td>Salaire de référence :</td>
+              <td>{result.salaireRef.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Plafond appliqué :</td>
+              <td>{result.plafond} €</td>
+            </tr>
+            <tr>
+              <th colSpan="2">INDÉMNITÉS</th>
+            </tr>
+            <tr>
+              <td>Indemnité légale :</td>
+              <td>{result.indemniteLegale.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Indemnité spécifique :</td>
+              <td>{result.indemniteSpecifique.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Montant Total Estimé :</td>
+              <td>{result.montantTotal.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Montant net (après déduction CSG/CRDS)* :</td>
+              <td className="result-net">
+                {result.montantNetTotal.toFixed(2)} €
+              </td>
+            </tr>
+            <tr>
+              <th colSpan="2">ALLOCATION MENSUELLE</th>
+            </tr>
+            <tr>
+              <td>Allocation mensuelle brute ** :</td>
+              <td>{result.allocationBrute.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td>Allocation mensuelle nette *** :</td>
+              <td className="result-net">
+                {result.allocationNette.toFixed(2)} €
+              </td>
+            </tr>
+          </tbody>
+          <div className="little-mention-calculator">
+            <p>
+              * Dans la limite de 2 x le plafond annuel de la Sécurité Sociale
+              (PASS), l&apos;indemnité légale n&apos;est pas assujettie à la
+              cotisation de la CSG (9,2%) et de la CRDS (0,5%) contrairement à
+              l&apos;indemnité spécifique.
+            </p>
+            <p>
+              L&apos;indemnité de licenciement est exonérée d&apos;impôt en
+              totalité dans le cadre d&apos;un plan social (plan de sauvegarde
+              de l&apos;emploi appelé PSE).
+            </p>
+            <p>
+              ** L&apos;allocation mensuelle brute proposée par
+              l&apos;entreprise correspond à 75% du salaire de référence. Cette
+              allocation ne peut être inférieure à 85% du SMIC soit 1531.53 €.
+            </p>
+            <p>
+              *** La CSG applicable à l&apos;allocation versée dans le cadre du
+              congé de reclassement est soumise à une CSG de 6,2% (et non 9,2%)
+            </p>
+          </div>
+        </table>
       )}
-      <div className="dedicace">
-        <p>© 2025 Didier - Tous droits réservés </p>
-      </div>
+      <p className="dedicace">© 2025 Didier - Tous droits réservés</p>
     </div>
   );
 }
