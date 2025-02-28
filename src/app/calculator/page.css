@@ -8,6 +8,11 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
+
+  .dark-mode .container-calculator {
+    background-color: rgba(107, 103, 103, 0.5);
+    color: rgb(246, 244, 236)
+  }
   
   h1 {
     text-align: center;
