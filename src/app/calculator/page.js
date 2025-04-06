@@ -101,7 +101,7 @@ export default function Calculateur() {
     const indemniteSpecifiqueInit = anciennete * indemniteSpecifiqueParAn;
     let indemniteSpecifique = indemniteSpecifiqueInit;
 
-    const plafond = age >= 58 ? 90000 : 70000;
+    const plafond = age >= 58 ? 90000 : 75000;
     let montantTotal = indemniteLegale + indemniteSpecifique;
     let isPlafonne = false;
 
@@ -177,6 +177,7 @@ export default function Calculateur() {
               />
             </td>
           </tr>
+          {/*
           <tr>
             <td>RQTH :</td>
             <td>
@@ -188,6 +189,7 @@ export default function Calculateur() {
               />
             </td>
           </tr>
+          */}
           <tr>
             <td>Date de naissance :</td>
             <td>
